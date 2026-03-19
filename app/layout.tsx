@@ -25,9 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+      <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ConfigProvider
+      <ConfigProvider
           theme={{
             algorithm: theme.defaultAlgorithm,
             token: {
@@ -59,12 +59,17 @@ export default function RootLayout({
               Card: {},
             },
           }}
-        >
-          <AntdRegistry>
+      >
+      <AntdRegistry>
+        <div className="app-shell">
+          <header className="app-header">
+            <span className="group-name">FS26 Group 31</span>
+          </header>
             <AntdApp>{children}</AntdApp>
-          </AntdRegistry>
-        </ConfigProvider>
-      </body>
+        </div>
+      </AntdRegistry>
+    </ConfigProvider>
+    </body>
     </html>
   );
 }

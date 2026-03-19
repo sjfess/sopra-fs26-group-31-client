@@ -60,3 +60,32 @@ a {
   min-height: 100vh;
   background-color: rgb(41, 44, 59);
 }
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.75rem 0.75rem 0.75rem 0.75rem;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  z-index: 1000;
+}
+
+.group-name {
+  font-weight: 600;
+}
+
+.app-content {
+  padding-top: 0.75rem;
+}
