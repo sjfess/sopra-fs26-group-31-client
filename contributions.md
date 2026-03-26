@@ -34,7 +34,7 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **@Fanelock**      | 23.3.26  | sjfess/sopra-fs26-group-31-server@5196fd1 | Implemented external api call to get data for card generation | The contribution is relevant due to the fact that it fullfills the external api call & lets us create the cards needed for the game |
+| **@Fanelock**      | 23.3.26  | [Commit 5196fd1](https://github.com/sjfess/sopra-fs26-group-31-server/commit/5196fd1770a28072f90e5d8b483c455bea6db12e) | Implemented external api call to get data for card generation | The contribution is relevant due to the fact that it fullfills the external api call & lets us create the cards needed for the game |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
