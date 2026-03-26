@@ -5,71 +5,72 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@/styles/globals.css";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Student XX-XXX-XXX",
-  description: "sopra-fs26-template-client",
+    title: "Historical Reconstruction",
+    description: "Rebuild the past, card by card.",
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  return (
-      <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <ConfigProvider
-          theme={{
-            algorithm: theme.defaultAlgorithm,
-            token: {
-              // general theme options are set in token, meaning all primary elements (button, menu, ...) will have this color
-              colorPrimary: "#22426b", // selected input field boarder will have this color as well
-              borderRadius: 8,
-              colorText: "#fff",
-              fontSize: 16,
-
-              // Alias Token
-              colorBgContainer: "#16181D",
-            },
-            // if a component type needs special styling, setting here will override default options set in token
-            components: {
-              Button: {
-                colorPrimary: "#75bd9d", // this will color all buttons in #75bd9d, overriding the default primaryColor #22426b set in token line 35
-                algorithm: true, // enable algorithm (redundant with line 33 but here for demo purposes)
-                controlHeight: 38,
-              },
-              Input: {
-                colorBorder: "gray", // color boarder selected is not overridden but instead is set by primary color in line 35
-                colorTextPlaceholder: "#888888",
-                algorithm: false, // disable algorithm (line 32)
-              },
-              Form: {
-                labelColor: "#fff",
-                algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
-              },
-              Card: {},
-            },
-          }}
-      >
-      <AntdRegistry>
-        <div className="app-shell">
-          <header className="app-header">
-            <span className="group-name">FS26 Group 31</span>
-          </header>
-            <AntdApp>{children}</AntdApp>
-        </div>
-      </AntdRegistry>
-    </ConfigProvider>
-    </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <ConfigProvider
+            theme={{
+                algorithm: theme.defaultAlgorithm,
+                token: {
+                    colorPrimary: "#e3cb2c",       // Gold als Primärfarbe
+                    borderRadius: 8,
+                    colorText: "#ffffff",
+                    fontSize: 16,
+                    colorBgContainer: "#1a3570",   // Navy als Container-Hintergrund
+                    fontFamily: "Georgia, serif",
+                },
+                components: {
+                    Button: {
+                        colorPrimary: "#e3cb2c",     // Gold für alle Buttons
+                        colorText: "#0f2557",        // Dunkles Navy als Button-Text
+                        algorithm: true,
+                        controlHeight: 44,
+                    },
+                    Input: {
+                        colorBgContainer: "#1e4080",
+                        colorBorder: "#e3cb2c",
+                        colorTextPlaceholder: "#8899bb",
+                        colorText: "#ffffff",
+                        algorithm: false,
+                    },
+                    Form: {
+                        labelColor: "#e3cb2c",
+                        algorithm: theme.defaultAlgorithm,
+                    },
+                    Select: {
+                        colorBgContainer: "#1e4080",
+                        colorBorder: "#e3cb2c",
+                        colorText: "#ffffff",
+                    },
+                },
+            }}
+        >
+            <AntdRegistry>
+                <div className="app-shell">
+                    <AntdApp>{children}</AntdApp>
+                </div>
+            </AntdRegistry>
+        </ConfigProvider>
+        </body>
+        </html>
+    );
 }
