@@ -14,8 +14,14 @@ const Profile: React.FC = () => {
   const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
   const { value: userId, clear: clearUserId } = useLocalStorage<string>("userId", "");
   const [user, setUser] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (!token) {
       router.push("/login");
       return;
@@ -31,7 +37,7 @@ const Profile: React.FC = () => {
     };
 
     fetchUser();
-  }, [token, userId]);
+  }, [mounted, token, userId]);
 
   const handleLogout = async () => {
     try {
