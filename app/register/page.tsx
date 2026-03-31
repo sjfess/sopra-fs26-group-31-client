@@ -4,10 +4,12 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Button, Form, Input, App } from "antd";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 interface FormFieldProps {
     username: string;
     password: string;
+    confirmPassword: string;
 }
 
 const Register: React.FC = () => {
@@ -15,10 +17,20 @@ const Register: React.FC = () => {
     const apiService = useApi();
     const [form] = Form.useForm();
     const { message } = App.useApp();
+    const setToken = useLocalStorage<string>("token", "");
+    const setId = useLocalStorage<string>("id", "");
+
+
+
 
     const handleRegister = async (values: FormFieldProps) => {
         try {
-            await apiService.post<User>("/users", values);
+            const {confirmPassword, ...userData} = values;
+            const user = await apiService.post<User>("/users", userData);
+
+            // im handleRegister:
+            if (user.token) setToken.set(user.token);
+            if (user.id) setId.set(String(user.id));
 
             message.success({
                 content: (
