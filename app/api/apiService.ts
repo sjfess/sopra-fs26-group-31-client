@@ -1,5 +1,5 @@
 import { getApiDomain } from "@/utils/domain";
-import { ApplicationError } from "@/types/error";
+import { ApplicationError } from "@/types/ApplicationError";
 
 export class ApiService {
   private baseURL: string;
