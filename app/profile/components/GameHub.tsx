@@ -10,11 +10,22 @@ const GameHub: React.FC = () => {
     const [lobbyCode, setLobbyCode] = useState("");
     const apiService = useApi();
     const router = useRouter();
+    const userId = Number(localStorage.getItem("userId"));
 
     const handleCreateGame = async () => {
         try {
-            const response = await apiService.post<{ id: number }>("/games?era=" + gameEra, null);
-            router.push("/lobby/" + response.id);
+
+            if (!userId) {
+                alert("No userId found. Please log in again.");
+                return;
+            }
+
+            if (!gameEra || !gameDifficulty) {
+                alert("Please select era and difficulty.");
+                return;
+            }
+            const response = await apiService.post<{ id: number }>("/games?era=" + gameEra + "&difficulty=" + gameDifficulty + "&userId=" + userId, null);
+            router.push("/gamelobby/" + response.id);
         } catch (error) {
             if (error instanceof Error) {
                 alert(`Something went wrong during the creation of the game:\n${error.message}`);
@@ -31,7 +42,7 @@ const GameHub: React.FC = () => {
                 `/games/join/${lobbyCode}`,
                 { userId: Number(userId) }
             );
-            router.push("/lobby/" + response.id);
+            router.push("/gamelobby/" + response.id);
         } catch (error) {
             if (error instanceof Error) {
                 alert(`Something went wrong while joining the game:\n${error.message}`);
@@ -53,10 +64,11 @@ const GameHub: React.FC = () => {
                                 placeholder="Select Era"
                                 onChange={(val) => setGameEra(val)}
                                 options={[
-                                    { value: "Medieval", label: "Medieval" },
-                                    { value: "Renaissance", label: "Renaissance" },
-                                    { value: "Modern", label: "Modern" },
-                                    { value: "Imperial Rome", label: "Imperial Rome" }
+                                    {value: "ANCIENT", label: "Ancient"},
+                                    { value: "MEDIEVAL", label: "Medieval" },
+                                    { value: "RENAISSANCE", label: "Renaissance" },
+                                    { value: "MODERN", label: "Modern" },
+                                    { value: "INFORMATION", label: "Information" }
                                 ]}
                             />
 
@@ -68,9 +80,9 @@ const GameHub: React.FC = () => {
                                 placeholder={"Select Game Difficulty"}
                                 onChange={(val) => setGameDifficulty(val)}
                                 options={[
-                                    { value: "Easy", label: "Easy" },
-                                    { value: "Medium", label: "Medium" },
-                                    { value: "Hard", label: "Hard" }
+                                    { value: "EASY", label: "Easy" },
+                                    { value: "MEDIUM", label: "Medium" },
+                                    { value: "HARD", label: "Hard" }
                                 ]}
                             />
 
