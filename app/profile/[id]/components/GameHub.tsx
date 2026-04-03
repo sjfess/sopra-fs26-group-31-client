@@ -2,7 +2,8 @@
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Button, Form, Input, Select, ConfigProvider } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react"
+
 
 const GameHub: React.FC = () => {
     const [gameEra, setGameEra] = useState("");
@@ -10,11 +11,16 @@ const GameHub: React.FC = () => {
     const [lobbyCode, setLobbyCode] = useState("");
     const apiService = useApi();
     const router = useRouter();
-    const userId = Number(localStorage.getItem("userId"));
+    const [userId, setUserId] = useState<string | null>(null);
+    useEffect(() => {
+        const id = localStorage.getItem("userId");
+        setUserId(id);
+    }, []);
+
 
     const handleCreateGame = async () => {
         try {
-
+            const userId = localStorage.getItem("userId");
             if (!userId) {
                 alert("No userId found. Please log in again.");
                 return;
@@ -24,7 +30,12 @@ const GameHub: React.FC = () => {
                 alert("Please select era and difficulty.");
                 return;
             }
-            const response = await apiService.post<{ id: number }>("/games?era=" + gameEra + "&difficulty=" + gameDifficulty + "&userId=" + userId, null);
+
+            const response = await apiService.post<{ id: number }>(
+                `/games?era=${gameEra}&difficulty=${gameDifficulty}&userId=${userId}`,
+                null
+            );
+
             router.push("/gamelobby/" + response.id);
         } catch (error) {
             if (error instanceof Error) {
@@ -34,21 +45,34 @@ const GameHub: React.FC = () => {
             }
         }
     };
-
     const handleJoinGame = async () => {
         try {
-            const userId = localStorage.getItem("userId"); // oder woher du die userId holst
+            const userId = localStorage.getItem("userId");
+            console.log("rawUserId:", userId);
+            console.log("lobbyCode:", lobbyCode);
+
+            if (!userId) {
+                alert("No userId found. Please log in again.");
+                return;
+            }
+
             const response = await apiService.post<{ id: number }>(
                 `/games/join/${lobbyCode}`,
-                { userId: Number(userId) }
+                { userId }
             );
+
             router.push("/gamelobby/" + response.id);
-        } catch (error) {
-            if (error instanceof Error) {
-                alert(`Something went wrong while joining the game:\n${error.message}`);
-            } else {
-                console.error("An unknown error occurred while joining the game.");
-            }
+        } catch (error: any) {
+            console.error("FULL JOIN ERROR:", error);
+            console.error("message:", error?.message);
+            console.error("status:", error?.status);
+            console.error("info:", error?.info);
+
+            alert(
+                `Join failed:\n${
+                    error?.message || "Unknown error"
+                }`
+            );
         }
     };
     return (

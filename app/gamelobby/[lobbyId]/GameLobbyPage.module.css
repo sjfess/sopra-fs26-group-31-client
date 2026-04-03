@@ -1,0 +1,865 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   GameLobbyPage.module.css
+   Color system matching globals.css:
+     bg-dark:    #0f2557  (deep navy — page background)
+     bg-medium:  #1a3570  (medium navy — panel backgrounds)
+     bg-light:   #243d82  (lighter navy — hover / active states)
+     gold:       #e3cb2c  (primary accent — borders, headings, CTAs)
+     text-white: #ffffff
+     text-muted: #cdd8f0  (light blue-grey)
+     text-faint: rgba(227,203,44,0.45)
+   Font: Georgia, serif (from globals)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Root ────────────────────────────────────────────────────────────────── */
+.root {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: #0f2557;
+    color: #ffffff;
+    font-family: Georgia, serif;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────────────────── */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    border: 1px solid #e3cb2c;
+    margin: 12px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.navLogo {
+    color: #e3cb2c;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+}
+
+.navLinks {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navLinks a {
+    color: #ffffff;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.navLinks a:hover,
+.navLinkActive {
+    color: #e3cb2c !important;
+}
+
+/* ── Banner ──────────────────────────────────────────────────────────────── */
+.lobbyBanner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px 44px 20px;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.motto {
+    font-size: 0.85rem;
+    color: #cdd8f0;
+    line-height: 1.65;
+    font-style: italic;
+    max-width: 180px;
+    flex-shrink: 0;
+}
+
+.lobbyTitleBlock {
+    flex: 1;
+    text-align: center;
+}
+
+.lobbyTitle {
+    font-family: Georgia, serif;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0 0 0.3rem;
+    letter-spacing: 0.01em;
+}
+
+.lobbySubtitle {
+    font-size: 0.9rem;
+    color: #cdd8f0;
+    margin: 0;
+}
+
+.lobbyMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: right;
+    font-size: 0.95rem;
+    color: #cdd8f0;
+    flex-shrink: 0;
+}
+
+.lobbyCodeRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.lobbyCode {
+    color: #e3cb2c;
+    font-size: 1.05rem;
+    font-family: Georgia, serif;
+    letter-spacing: 0.05em;
+}
+
+.copyBtn {
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 1px solid #e3cb2c;
+    background: transparent;
+    color: #e3cb2c;
+    cursor: pointer;
+    transition: background 0.18s;
+    font-family: Georgia, serif;
+}
+
+.copyBtn:hover {
+    background: rgba(227, 203, 44, 0.12);
+}
+
+.copyBtnCopied {
+    background: rgba(227, 203, 44, 0.18);
+    color: #e3cb2c;
+}
+
+/* ── Main Grid ───────────────────────────────────────────────────────────── */
+.lobbyGrid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    gap: 1.25rem;
+    padding: 0 1.5rem 2rem;
+    flex: 1;
+    align-items: start;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+@media (max-width: 960px) {
+    .lobbyGrid {
+        grid-template-columns: 1fr 1fr;
+        padding: 0 1rem 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .lobbyGrid {
+        grid-template-columns: 1fr;
+        padding: 0 0.75rem 1.5rem;
+    }
+    .lobbyBanner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+    .lobbyMeta { text-align: center; align-items: center; }
+    .lobbyCodeRow { justify-content: center; }
+    .motto { display: none; }
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+.panel {
+    background-color: #1a3570;
+    border: 1px solid #e3cb2c;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panelHeader {
+    padding: 14px 20px 12px;
+    border-bottom: 1px solid rgba(227, 203, 44, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.panelHeader h2 {
+    font-family: Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #e3cb2c;
+    letter-spacing: 0.02em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.panelBody {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+}
+
+.panelBodyNogap {
+    gap: 0;
+    padding: 0;
+}
+
+.panelFooter {
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid rgba(227, 203, 44, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ── Player count badge ──────────────────────────────────────────────────── */
+.playerCount {
+    font-size: 0.78rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(227, 203, 44, 0.12);
+    color: #e3cb2c;
+    border: 1px solid rgba(227, 203, 44, 0.35);
+}
+
+/* ── Player rows ─────────────────────────────────────────────────────────── */
+.playerRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.15s;
+}
+
+.playerRow:last-child {
+    border-bottom: none;
+}
+
+.playerRow:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.playerRowEmpty {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    opacity: 0.5;
+}
+
+.playerRowEmpty:last-child {
+    border-bottom: none;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #0f2557;
+    border: 1px solid #e3cb2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #e3cb2c;
+    flex-shrink: 0;
+    font-family: Georgia, serif;
+}
+
+.avatarEmpty {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px dashed rgba(227, 203, 44, 0.25);
+    flex-shrink: 0;
+}
+
+.playerInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.playerName {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.youBadge {
+    font-size: 0.68rem;
+    font-weight: bold;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    background: rgba(227, 203, 44, 0.18);
+    color: #e3cb2c;
+    border: 1px solid rgba(227, 203, 44, 0.4);
+    flex-shrink: 0;
+    font-family: Georgia, serif;
+}
+
+.playerStatus {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: #cdd8f0;
+    margin-top: 2px;
+}
+
+.statusDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.online  { background: #4caf50; }
+.offline { background: #888; }
+
+.playerRole {
+    font-size: 0.78rem;
+    font-weight: bold;
+    color: #cdd8f0;
+    flex-shrink: 0;
+}
+
+.hostRole {
+    color: #e3cb2c;
+}
+
+.waitingSlot {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+}
+
+/* ── Host-only hint ──────────────────────────────────────────────────────── */
+.hostOnlyHint {
+    font-size: 0.75rem;
+    color: rgba(227, 203, 44, 0.6);
+    font-style: italic;
+    margin: 0;
+}
+
+/* ── Settings ────────────────────────────────────────────────────────────── */
+.settingsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.settingsSectionPadTop {
+    padding-top: 0.5rem;
+}
+
+.settingsLabel {
+    font-size: 0.78rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #e3cb2c;
+}
+
+/* ── Tab group (Game Mode / Difficulty) ──────────────────────────────────── */
+.tabGroup {
+    display: flex;
+    gap: 0;
+    border: 1px solid rgba(227, 203, 44, 0.4);
+    border-radius: 4px;
+    overflow: hidden;
+    flex-wrap: wrap;
+}
+
+.tabGroupReadonly {
+    opacity: 0.6;
+}
+
+.tabBtn {
+    flex: 1;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.83rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    border: none;
+    border-right: 1px solid rgba(227, 203, 44, 0.3);
+    background: transparent;
+    color: #cdd8f0;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.tabBtn:last-child {
+    border-right: none;
+}
+
+.tabBtn:hover:not(:disabled) {
+    background: rgba(227, 203, 44, 0.1);
+    color: #ffffff;
+}
+
+.tabBtn:disabled {
+    cursor: not-allowed;
+}
+
+.tabBtnActive {
+    background: rgba(227, 203, 44, 0.18) !important;
+    color: #e3cb2c !important;
+}
+
+/* ── Era buttons (pill row) ──────────────────────────────────────────────── */
+.eraGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.eraBtn {
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    border: 1px solid rgba(227, 203, 44, 0.35);
+    color: #cdd8f0;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.eraBtn:hover:not(:disabled) {
+    background: rgba(227, 203, 44, 0.1);
+    color: #ffffff;
+    border-color: rgba(227, 203, 44, 0.65);
+}
+
+.eraBtn:disabled {
+    cursor: not-allowed;
+}
+
+.eraBtnActive {
+    background: rgba(227, 203, 44, 0.18) !important;
+    color: #e3cb2c !important;
+    border-color: #e3cb2c !important;
+}
+
+/* ── Static setting rows ─────────────────────────────────────────────────── */
+.settingRows {
+    margin-top: 0.375rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.settingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 0.85rem;
+}
+
+.settingRow:last-child {
+    border-bottom: none;
+}
+
+.settingKey {
+    color: #cdd8f0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+}
+
+.settingVal {
+    font-weight: bold;
+    color: #e3cb2c;
+    font-size: 0.85rem;
+}
+
+/* ── Start button ────────────────────────────────────────────────────────── */
+.notEnoughPlayers {
+    font-size: 0.8rem;
+    color: rgba(205, 216, 240, 0.7);
+    text-align: center;
+    margin: 0 0 0.25rem;
+    font-style: italic;
+}
+
+.btnStart {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    border: 1px solid #e3cb2c;
+    background: transparent;
+    color: #e3cb2c;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-decoration: underline;
+    transition: background 0.18s, color 0.18s;
+}
+
+.btnStart:hover:not(:disabled) {
+    background: rgba(227, 203, 44, 0.12);
+}
+
+.btnStart:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+.btnStartLoading {
+    opacity: 0.65;
+    cursor: wait;
+    text-decoration: none;
+}
+
+.waitingText {
+    text-align: center;
+    font-size: 0.875rem;
+    color: rgba(205, 216, 240, 0.75);
+    font-style: italic;
+    margin: 0;
+}
+
+/* ── Leave button ────────────────────────────────────────────────────────── */
+.btnLeave {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    background: transparent;
+    border: none;
+    color: #cdd8f0;
+    cursor: pointer;
+    text-decoration: underline;
+    letter-spacing: 0.03em;
+    transition: color 0.18s;
+}
+
+.btnLeave:hover {
+    color: #e3cb2c;
+}
+
+/* ── Invite section ──────────────────────────────────────────────────────── */
+.inviteSection {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(227, 203, 44, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(227, 203, 44, 0.4);
+    background: #0f2557;
+    color: #e3cb2c;
+    font-size: 0.875rem;
+    font-family: Georgia, serif;
+    outline: none;
+    transition: border-color 0.18s;
+}
+
+.searchInput:focus {
+    border-color: #e3cb2c;
+}
+
+.searchInput::placeholder {
+    color: rgba(227, 203, 44, 0.45);
+}
+
+.friendList {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(227, 203, 44, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    background: #0f2557;
+}
+
+.friendItem {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    color: #e3cb2c;
+    transition: background 0.13s;
+    border-bottom: 1px solid rgba(227, 203, 44, 0.1);
+}
+
+.friendItem:last-child {
+    border-bottom: none;
+}
+
+.friendItem:hover,
+.friendItem:focus {
+    background: rgba(227, 203, 44, 0.1);
+    outline: none;
+}
+
+.btnInvite {
+    align-self: stretch;
+    padding: 0.55rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    background: #e3cb2c;
+    border: none;
+    color: #0f2557;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.18s;
+}
+
+.btnInvite:hover:not(:disabled) {
+    background: #f0d83a;
+}
+
+.btnInvite:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ── Chat ────────────────────────────────────────────────────────────────── */
+.chatSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatHeader {
+    padding: 0.7rem 1.25rem 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    color: #e3cb2c;
+    border-bottom: 1px solid rgba(227, 203, 44, 0.2);
+    letter-spacing: 0.02em;
+}
+
+.chatMessages {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    min-height: 160px;
+    max-height: 220px;
+}
+
+.chatEmpty {
+    font-size: 0.85rem;
+    color: rgba(205, 216, 240, 0.5);
+    text-align: center;
+    margin: auto;
+    font-style: italic;
+}
+
+.chatMsg {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.chatMsgMine {
+    flex-direction: row-reverse;
+}
+
+.chatAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0f2557;
+    border: 1px solid #e3cb2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: bold;
+    color: #e3cb2c;
+    flex-shrink: 0;
+    font-family: Georgia, serif;
+}
+
+.chatBubble {
+    max-width: 75%;
+}
+
+.chatName {
+    font-size: 0.72rem;
+    font-weight: bold;
+    color: #cdd8f0;
+    margin-bottom: 0.2rem;
+    font-family: Georgia, serif;
+}
+
+.chatMsgMine .chatName {
+    text-align: right;
+}
+
+.chatText {
+    display: inline-block;
+    padding: 0.4rem 0.65rem;
+    border-radius: 4px;
+    font-size: 0.83rem;
+    line-height: 1.45;
+    background: #0f2557;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-family: Georgia, serif;
+}
+
+.chatMsgMine .chatText {
+    background: rgba(227, 203, 44, 0.13);
+    border-color: rgba(227, 203, 44, 0.3);
+}
+
+.chatInputRow {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid rgba(227, 203, 44, 0.2);
+}
+
+.chatInput {
+    flex: 1;
+    padding: 0.6rem 0.875rem;
+    border: none;
+    border-right: 1px solid rgba(227, 203, 44, 0.25);
+    background: #0f2557;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-family: Georgia, serif;
+    outline: none;
+    transition: background 0.15s;
+}
+
+.chatInput:focus {
+    background: rgba(15, 37, 87, 0.7);
+}
+
+.chatInput::placeholder {
+    color: rgba(205, 216, 240, 0.4);
+}
+
+.btnSend {
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    font-family: Georgia, serif;
+    background: #e3cb2c;
+    border: none;
+    color: #0f2557;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    letter-spacing: 0.03em;
+}
+
+.btnSend:hover:not(:disabled) {
+    background: #f0d83a;
+}
+
+.btnSend:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Loading screen ──────────────────────────────────────────────────────── */
+.loadingScreen {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0f2557;
+    color: #cdd8f0;
+    gap: 1rem;
+    font-family: Georgia, serif;
+}
+
+.loadingSpinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(227, 203, 44, 0.2);
+    border-top-color: #e3cb2c;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: #1a3570;
+    border: 1px solid #e3cb2c;
+    border-radius: 6px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-family: Georgia, serif;
+    color: #e3cb2c;
+    z-index: 500;
+    animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+    max-width: 340px;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(227, 203, 44, 0.25); border-radius: 3px; }
