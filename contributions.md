@@ -53,8 +53,8 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)** | 2026-03-30  | [7354064](https://github.com/sjfess/sopra-fs26-group-31-server/commit/735406425e49a4cf4142f0d7199fdb842999bb30)| Implemented final result aggregation for completed games, including total points, wins, and correct/incorrect placement statistics, and added backend/controller tests for finalization. Task #39 | This completes the backend logic for end-of-game result persistence and makes lifetime player statistics update automatically after each finished game. |
+|                    | 2026-04-04   | [8046a80](https://github.com/sjfess/sopra-fs26-group-31-server/commit/8046a808bccc86947df8d830b76ed680fbc63b20) | Implemented time- and streak-based scoring for Timeline Mode by extending GamePlayer with streak tracking, updating GameService to award points based on remaining time and consecutive correct placements, resetting streaks on wrong moves and turn timeout, and adding/adapting backend tests. Task #29| This completes the core backend logic for dynamic scoring in Timeline Mode and fulfills the user story requirement that points decrease over time and bonus points are awarded for consecutive correct answers.|
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
@@ -64,9 +64,19 @@ reason).
 
 ---
 
-## Contributions Week 3 - [Begin Date] to [End Date]
+## Contributions Week 3 - [06.04.2026] to [12.04.2026]
 
-_Continue with the same table format as above._
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
