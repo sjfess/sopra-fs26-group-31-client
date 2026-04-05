@@ -6,6 +6,7 @@ import { User } from "@/types/user";
 import { Button, Form, Input, App } from "antd";
 import useLocalStorage from "@/hooks/useLocalStorage";
 
+
 interface FormFieldProps {
     username: string;
     password: string;
@@ -18,7 +19,7 @@ const Register: React.FC = () => {
     const [form] = Form.useForm();
     const { message } = App.useApp();
     const setToken = useLocalStorage<string>("token", "");
-    const setId = useLocalStorage<string>("id", "");
+    const setId = useLocalStorage<number>("userId", 0);
 
 
 
@@ -29,8 +30,11 @@ const Register: React.FC = () => {
             const user = await apiService.post<User>("/users", userData);
 
             // im handleRegister:
-            if (user.token) setToken.set(user.token);
-            if (user.id) setId.set(String(user.id));
+            if (user.token) {setToken.set(user.token);}
+            if (user.id) {setId.set(Number(user.id));}
+
+            if (!user.id){console.error("No userId set")
+            }
 
             message.success({
                 content: (
@@ -43,7 +47,7 @@ const Register: React.FC = () => {
                 duration: 4,
             });
 
-            router.push("/profile");
+            router.push(`/profile/${user.id}`);
         } catch (error) {
             if (error instanceof Error) {
                 alert(`Something went wrong during registration:\n${error.message}`);

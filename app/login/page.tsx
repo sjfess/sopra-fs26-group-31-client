@@ -29,7 +29,7 @@ const Login: React.FC = () => {
                 setUserId(response.id);
             }
 
-            router.push("/profile");
+            router.push(`/profile/${response.id}`);
         } catch (error) {
             if (error instanceof Error) {
                 alert(`Something went wrong during the login:\n${error.message}`);

@@ -1,8 +1,10 @@
 
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface PlayerSummary {
     id: number;
     username: string;
+    online?: boolean;
 }
 
 export interface Game {
@@ -15,6 +17,9 @@ export interface Game {
     hostId: number;
     players: PlayerSummary[];
     timelineSize: number;
+    gameMode: string;
+    difficulty: Difficulty;
+    maxPlayers: number;
 }
 
 export interface EventCardGet {

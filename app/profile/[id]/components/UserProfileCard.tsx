@@ -5,6 +5,7 @@ import { User } from "@/types/user";
 
 interface UserProfileCardProps {
     user: User;
+    isOwnProfile: boolean;
 }
 
 const cardStyle: React.CSSProperties = {
