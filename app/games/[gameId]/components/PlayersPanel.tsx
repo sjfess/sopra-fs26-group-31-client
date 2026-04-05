@@ -2,25 +2,27 @@
 
 import React from "react";
 import styles from "../game.module.css";
+import { GamePlayerScore } from "@/types/game";
 
-interface Player {
-  id: number;
-  username: string;
-  initial: string;
-  online: boolean;
+interface PlayersPanelProps {
+  scores: GamePlayerScore[];
+  currentUserId: number;
 }
 
-const PlayersPanel: React.FC<{ players: Player[] }> = ({ players }) => (
+const PlayersPanel: React.FC<PlayersPanelProps> = ({ scores, currentUserId }) => (
   <div className={styles.panel}>
     <h3 className={styles.panelTitle}>Players</h3>
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      {players.map((p) => (
-        <div key={p.id} className={styles.playerRow}>
-          <div className={styles.playerAvatar}>{p.initial}</div>
+      {scores.map((p) => (
+        <div key={p.userId} className={styles.playerRow}>
+          <div className={styles.playerAvatar}>{p.username.charAt(0).toUpperCase()}</div>
           <div>
-            <div className={styles.playerName}>{p.username}</div>
-            <div className={p.online ? styles.playerStatusOnline : styles.playerStatusOffline}>
-              {p.online ? "Online" : "Offline"}
+            <div className={styles.playerName}>
+              {p.username}
+              {p.userId === currentUserId ? " (You)" : ""}
+            </div>
+            <div className={p.activeTurn ? styles.playerStatusOnline : styles.playerStatusOffline}>
+              {p.activeTurn ? "Active Turn" : `${p.score} pts`}
             </div>
           </div>
         </div>

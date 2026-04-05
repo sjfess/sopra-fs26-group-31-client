@@ -2,15 +2,10 @@
 
 import React from "react";
 import styles from "../game.module.css";
-
-interface TimelineCard {
-  title: string;
-  year: string;
-  imageUrl: string;
-}
+import { EventCardReveal } from "@/types/game";
 
 interface TimelineProps {
-  cards: TimelineCard[];
+  cards: EventCardReveal[];
   selectedPosition: number | null;
   onSelectPosition: (position: number) => void;
 }

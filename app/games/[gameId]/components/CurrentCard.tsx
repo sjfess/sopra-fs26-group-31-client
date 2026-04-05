@@ -9,9 +9,11 @@ interface CurrentCardProps {
   onPlace: () => void;
   onEarlier: () => void;
   onLater: () => void;
+  placing?: boolean;
+  disabled?: boolean;
 }
 
-const CurrentCard: React.FC<CurrentCardProps> = ({ card, onPlace, onEarlier, onLater }) => {
+const CurrentCard: React.FC<CurrentCardProps> = ({ card, onPlace, onEarlier, onLater, placing, disabled }) => {
   if (!card) return <div className={styles.waitingText}>Waiting for your turn...</div>;
 
   return (
@@ -24,7 +26,14 @@ const CurrentCard: React.FC<CurrentCardProps> = ({ card, onPlace, onEarlier, onL
         </div>
         <Button className={styles.goldBtn} onClick={onLater}>Later</Button>
       </div>
-      <Button className={styles.placeBtn} onClick={onPlace}>Place Card</Button>
+      <Button
+        className={styles.placeBtn}
+        onClick={onPlace}
+        loading={placing}
+        disabled={disabled}
+      >
+        Place Card
+      </Button>
     </div>
   );
 };
