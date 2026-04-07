@@ -17,6 +17,7 @@ const Login: React.FC = () => {
     const [form] = Form.useForm();
     const { set: setToken } = useLocalStorage<string>("token", "");
     const { set: setUserId } = useLocalStorage<string>("userId", "");
+    const { set: setUsername } = useLocalStorage<string>("username", "");
 
     const handleLogin = async (values: FormFieldProps) => {
         try {
@@ -27,6 +28,9 @@ const Login: React.FC = () => {
             }
             if (response.id) {
                 setUserId(response.id);
+            }
+            if (response.username) {
+                setUsername(response.username);
             }
 
             router.push(`/profile/${response.id}`);

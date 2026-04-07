@@ -1,6 +1,6 @@
 "use client";
 
-import { Game, PlayerSummary } from "@/types/game";
+import { Game, PlayerSummary, ChatMessageGetDTO } from "@/types/game";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
@@ -42,6 +42,7 @@ export default function GameLobbyPage() {
     const [toast, setToast] = useState<string | null>(null);
     const [codeCopied, setCodeCopied] = useState(false);
     const [userId, setUserId] = useState<number | null>(null);
+    const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
     const params = useParams();
     const lobbyId = params.lobbyId as string;
@@ -93,20 +94,39 @@ export default function GameLobbyPage() {
         }
         const parsed = Number(stored);
         setUserId(Number.isNaN(parsed) ? null : parsed);
+
+        const storedUsername = window.localStorage.getItem("username");
+        if (storedUsername) setCurrentUsername(storedUsername);
     }, []);
 
-    // Derived flags – recomputed on every render, so they are always in sync.
+
     const isHost =
         game !== null && userId !== null && Number(game.hostId) === Number(userId);
     const canStart = (game?.players?.length ?? 0) >= 2;
 
-    // FIX 1 continued – apiService is no longer a dependency; apiRef.current is used.
+
+
+    const fetchChat = useCallback(async () => {
+        try {
+            const messages = await apiRef.current.get<ChatMessageGetDTO[]>(
+                `/games/${lobbyId}/chat`
+            );
+            setChatMessages(messages.map(m => ({
+                from: m.username,
+                text: m.message,
+                mine: m.username === currentUsername  // username aus localStorage
+            })));
+        } catch (e) {
+            console.error("Failed to fetch chat:", e);
+        }
+    }, [lobbyId]);
+
     const fetchGame = useCallback(async () => {
         try {
             const response = await apiRef.current.get<Game>(`/games/${lobbyId}`);
             setGame(response);
 
-            // FIX 2 continued – only sync settings from server when no PUT is in-flight.
+
             if (!pendingSettingsRef.current) {
                 if (response.gameMode) setSelectedMode(response.gameMode as GameMode);
                 if (response.era) setSelectedEra(response.era as Era);
@@ -146,13 +166,15 @@ export default function GameLobbyPage() {
 
     useEffect(() => {
         void fetchGame();
+        void fetchChat();
         pollingRef.current = setInterval(() => {
             void fetchGame();
+            void fetchChat();
         }, 2000);
         return () => {
             if (pollingRef.current) clearInterval(pollingRef.current);
         };
-    }, [fetchGame]);
+    }, [fetchGame, fetchChat]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -257,18 +279,21 @@ export default function GameLobbyPage() {
         }
     };
 
-    const handleSendChat = () => {
+    const handleSendChat = async () => {
         const text = chatInput.trim();
-        if (!text || !game) return;
-        const me = game.players?.find(
-            (p: PlayerSummary) => Number(p.id) === Number(userId)
-        );
-        setChatMessages((prev) => [
-            ...prev,
-            { from: me?.username ?? "You", text, mine: true },
-        ]);
+        if (!text || !game || !userId) return;
         setChatInput("");
+        try {
+            await apiRef.current.post(`/games/${lobbyId}/chat`, {
+                playerId: userId,
+                message: text
+            });
+            void fetchChat();
+        } catch (e) {
+            console.error("Failed to send message:", e);
+        }
     };
+
 
     const handleInvite = () => {
         const name = friendSearch.trim();

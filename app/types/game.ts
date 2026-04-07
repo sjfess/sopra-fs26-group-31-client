@@ -7,10 +7,7 @@ export interface PlayerSummary {
     online?:boolean;
 }
 
-import Navbar from "@/profile/[id]/components/Navbar";
-import UserProfileCard from "@/profile/[id]/components/UserProfileCard";
-import FriendsPanel from "@/profile/[id]/components/FriendsPanel";
-import GameHub from "@/profile/[id]/components/GameHub";
+
 export interface Game {
     id: number;
     lobbyCode: string;
@@ -24,4 +21,11 @@ export interface Game {
     gameMode: string;
     difficulty: Difficulty;
     maxPlayers: number;
+}
+
+export type ChatMessageGetDTO = {
+    playerId: number;
+    username: string;
+    message: string;
+    timestamp: string;
 }
