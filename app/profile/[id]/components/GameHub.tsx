@@ -32,8 +32,8 @@ const GameHub: React.FC = () => {
             }
 
             const response = await apiService.post<{ id: number }>(
-                `/games?era=${gameEra}&difficulty=${gameDifficulty}&userId=${userId}`,
-                null
+                `/games`,
+                { era: gameEra, difficulty: gameDifficulty, userId }
             );
 
             router.push("/gamelobby/" + response.id);
