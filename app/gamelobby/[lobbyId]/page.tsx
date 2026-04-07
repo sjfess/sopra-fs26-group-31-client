@@ -130,7 +130,13 @@ export default function GameLobbyPage() {
                 showToast("Host closed the lobby.");
                 window.setTimeout(() => router.push("/dashboard"), 1500);
             }
-        } catch (error) {
+        } catch (error:any) {
+            if (error?.status === 404 || error?.info?.status === 404) {
+                if (pollingRef.current) clearInterval(pollingRef.current);
+                showToast("The lobby no longer exists.");
+                window.setTimeout(() => router.push("/dashboard"), 1500);
+                return;
+            }
             console.error("Failed to load game:", error);
             showToast("Failed to load lobby.");
         } finally {
@@ -224,14 +230,14 @@ export default function GameLobbyPage() {
     // it is available.
     // ─────────────────────────────────────────────────────────────────────────────
     const handleLeave = async () => {
-        if (!game) return; // only guard: we need the lobbyCode
+        if (!game || userId === null) return;
         try {
             await apiRef.current.delete(
-                `/games/leave/${game.lobbyCode}`,
-                userId !== null ? { userId } : {}
+                `/games/leave/${game.lobbyCode}?userId=${userId}`
             );
             if (pollingRef.current) clearInterval(pollingRef.current);
-            router.push("/dashboard");
+
+            router.push(`/profile/${userId}`);
         } catch (error) {
             console.error("Failed to leave lobby:", error);
             showToast("Failed to leave lobby. Please try again.");
@@ -354,7 +360,7 @@ export default function GameLobbyPage() {
                         <h2 id="players-heading">
                             Players
                             <span className={styles.playerCount}>
-                {game.players?.length ?? 0} / {game.maxPlayers ?? "?"}
+                {game.players?.length ?? 0} / {game.maxPlayers ?? "8"}
               </span>
                         </h2>
                     </div>
