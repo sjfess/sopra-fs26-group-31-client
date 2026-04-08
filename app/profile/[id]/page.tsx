@@ -13,16 +13,13 @@ import GameHub from "@/profile/[id]/components/GameHub";
 
 const Profile: React.FC = () => {
     const router = useRouter();
-    const { id } = useParams(); // ← ID aus der URL
+    const { id } = useParams();
     const apiService = useApi();
     const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
-    const { value: loggedInUserId } = useLocalStorage<string>("userId", "");
-    const { clear: clearUserId } = useLocalStorage<string>("userId", "");
+    const { value: loggedInUserId, clear: clearUserId } = useLocalStorage<string>("userId", "");
     const [user, setUser] = useState<User | null>(null);
+    const [isOwnProfile, setIsOwnProfile] = useState<boolean | null>(null);
     const [mounted, setMounted] = useState(false);
-
-    // Ist es das eigene Profil?
-    const isOwnProfile = String(loggedInUserId) === String(id);
 
     useEffect(() => {
         setMounted(true);
@@ -36,7 +33,7 @@ const Profile: React.FC = () => {
         }
         const fetchUser = async () => {
             try {
-                const response = await apiService.get<User>(`/users/${id}`); // ← id aus URL
+                const response = await apiService.get<User>(`/users/${id}`);
                 setUser(response);
             } catch (error) {
                 console.error("Failed to fetch user:", error);
@@ -44,6 +41,11 @@ const Profile: React.FC = () => {
         };
         fetchUser();
     }, [mounted, token, id]);
+
+    useEffect(() => {
+        if (!loggedInUserId) return;
+        setIsOwnProfile(String(loggedInUserId) === String(id));
+    }, [loggedInUserId, id]);
 
     const handleLogout = async () => {
         try {
@@ -56,7 +58,7 @@ const Profile: React.FC = () => {
         router.push("/login");
     };
 
-    if (!user) {
+    if (!mounted || !user || isOwnProfile === null) {
         return (
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", backgroundColor: "#0f2557" }}>
                 <Spin size="large" />
@@ -70,7 +72,7 @@ const Profile: React.FC = () => {
             <div style={{ display: "flex", gap: "24px", padding: "24px 32px", flex: 1 }}>
                 <UserProfileCard user={user} isOwnProfile={isOwnProfile} />
                 <FriendsPanel />
-                {isOwnProfile && ( // GameHub nur auf eigenem Profil
+                {isOwnProfile && (
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
                         <GameHub />
                     </div>
