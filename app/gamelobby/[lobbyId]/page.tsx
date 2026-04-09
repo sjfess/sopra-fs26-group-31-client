@@ -1,10 +1,11 @@
 "use client";
 
-import { Game, PlayerSummary, ChatMessageGetDTO } from "@/types/game";
+import { Game, PlayerSummary } from "@/types/game";
 import type { Friend } from "@/types/user";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
+import GameChat from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
 
 type GameMode = "TIMELINE" | "HISTORY_UNO";
@@ -34,12 +35,8 @@ export default function GameLobbyPage() {
     const [game, setGame] = useState<Game | null>(null);
     const [loading, setLoading] = useState(true);
     const [isStarting, setIsStarting] = useState(false);
-    const [chatInput, setChatInput] = useState("");
     const [friendSearch, setFriendSearch] = useState("");
     const [friends, setFriends] = useState<Friend[]>([]);
-    const [chatMessages, setChatMessages] = useState<
-        { from: string; text: string; mine: boolean }[]
-    >([]);
     const [selectedMode, setSelectedMode] = useState<GameMode>("TIMELINE");
     const [selectedEra, setSelectedEra] = useState<Era>("ANCIENT");
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("EASY");
@@ -57,7 +54,6 @@ export default function GameLobbyPage() {
     apiRef.current = apiService;
 
     const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const chatEndRef = useRef<HTMLDivElement>(null);
     const startedRef = useRef(false);
     const pendingSettingsRef = useRef(false);
 
@@ -85,24 +81,6 @@ export default function GameLobbyPage() {
     const isHost =
         game !== null && userId !== null && Number(game.hostId) === Number(userId);
     const canStart = (game?.players?.length ?? 0) >= 2;
-
-    const fetchChat = useCallback(async () => {
-        try {
-            const messages = await apiRef.current.get<ChatMessageGetDTO[]>(
-                `/games/${lobbyId}/chat`
-            );
-
-            setChatMessages(
-                messages.map((m) => ({
-                    from: m.username,
-                    text: m.message,
-                    mine: m.username === currentUsername,
-                }))
-            );
-        } catch (error) {
-            console.error("Failed to fetch chat:", error);
-        }
-    }, [lobbyId, currentUsername]);
 
     const fetchFriends = useCallback(async () => {
         if (!userId) return;
@@ -171,21 +149,15 @@ export default function GameLobbyPage() {
 
     useEffect(() => {
         void fetchGame();
-        void fetchChat();
 
         pollingRef.current = setInterval(() => {
             void fetchGame();
-            void fetchChat();
         }, 2000);
 
         return () => {
             if (pollingRef.current) clearInterval(pollingRef.current);
         };
-    }, [fetchGame, fetchChat]);
-
-    useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [chatMessages]);
+    }, [fetchGame]);
 
     const handleSelectMode = async (mode: GameMode) => {
         if (!isHost) return;
@@ -279,23 +251,6 @@ export default function GameLobbyPage() {
         } catch (error) {
             console.error("Failed to copy lobby code:", error);
             showToast("Could not copy lobby code.");
-        }
-    };
-
-    const handleSendChat = async () => {
-        const text = chatInput.trim();
-        if (!text || !game || !userId) return;
-
-        setChatInput("");
-
-        try {
-            await apiRef.current.post(`/games/${lobbyId}/chat`, {
-                playerId: userId,
-                message: text,
-            });
-            void fetchChat();
-        } catch (error) {
-            console.error("Failed to send message:", error);
         }
     };
 
@@ -693,64 +648,11 @@ export default function GameLobbyPage() {
                             </button>
                         </div>
 
-                        <div className={styles.chatSection}>
-                            <div className={styles.chatHeader} id="chat-label">
-                                Lobby Chat
-                            </div>
-
-                            <div
-                                className={styles.chatMessages}
-                                role="log"
-                                aria-labelledby="chat-label"
-                                aria-live="polite"
-                            >
-                                {chatMessages.length === 0 ? (
-                                    <div className={styles.chatEmpty}>
-                                        No messages yet. Say hi! 👋
-                                    </div>
-                                ) : (
-                                    chatMessages.map((msg, i) => (
-                                        <div
-                                            key={i}
-                                            className={`${styles.chatMsg} ${
-                                                msg.mine ? styles.chatMsgMine : ""
-                                            }`}
-                                        >
-                                            <div className={styles.chatAvatar} aria-hidden="true">
-                                                {msg.from.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div className={styles.chatBubble}>
-                                                <div className={styles.chatName}>{msg.from}</div>
-                                                <div className={styles.chatText}>{msg.text}</div>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                                <div ref={chatEndRef} />
-                            </div>
-
-                            <div className={styles.chatInputRow}>
-                                <input
-                                    className={styles.chatInput}
-                                    type="text"
-                                    placeholder="Write a message…"
-                                    value={chatInput}
-                                    onChange={(e) => setChatInput(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") void handleSendChat();
-                                    }}
-                                    aria-label="Chat message"
-                                    maxLength={200}
-                                />
-                                <button
-                                    className={styles.btnSend}
-                                    onClick={() => void handleSendChat()}
-                                    disabled={!chatInput.trim()}
-                                >
-                                    Send
-                                </button>
-                            </div>
-                        </div>
+                        <GameChat
+                            gameId={lobbyId}
+                            userId={userId}
+                            currentUsername={currentUsername}
+                        />
                     </div>
                 </section>
             </main>

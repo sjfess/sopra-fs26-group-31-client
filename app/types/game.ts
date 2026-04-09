@@ -50,6 +50,12 @@ export interface EventCardReveal {
     imageUrl: string;
 }
 
+export interface HandCard {
+    deckIndex: number;
+    title: string;
+    imageUrl: string;
+}
+
 export interface PlacementResult {
     correct: boolean;
     title: string;
@@ -67,4 +73,5 @@ export interface GamePlayerScore {
     correctStreak: number;
     bestStreak: number;
     currentCardIndex: number | null;
+    cardsInHand: number;
 }
