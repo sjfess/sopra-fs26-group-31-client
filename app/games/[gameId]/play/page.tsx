@@ -3,9 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
+import GameChat from "@/gamelobby/[lobbyId]/GameChat";
 import type { Game, GamePlayerScore, EventCardReveal, HandCard, PlacementResult } from "@/types/game";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FinalResult {
   userId: number;
@@ -16,8 +15,6 @@ interface FinalResult {
   winner: boolean;
   bestStreak: number;
 }
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const S = {
   page: {
@@ -58,7 +55,7 @@ const S = {
 
   gameGrid: {
     display: "grid",
-    gridTemplateColumns: "210px 1fr 210px",
+    gridTemplateColumns: "210px 1fr 260px",
     gap: "14px",
     alignItems: "start",
   } as React.CSSProperties,
@@ -88,10 +85,10 @@ const S = {
     marginBottom: "6px",
     borderRadius: "8px",
     background: active
-      ? "rgba(227,203,44,0.2)"
-      : isMe
-        ? "rgba(255,255,255,0.1)"
-        : "rgba(255,255,255,0.04)",
+        ? "rgba(227,203,44,0.2)"
+        : isMe
+            ? "rgba(255,255,255,0.1)"
+            : "rgba(255,255,255,0.04)",
     border: active ? "1px solid #e3cb2c" : "1px solid transparent",
     fontSize: "12px",
   }),
@@ -215,8 +212,6 @@ const S = {
   } as React.CSSProperties,
 };
 
-// ─── Component ─────────────────────────────────────────────────────────────────
-
 export default function TimelineGamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const router = useRouter();
@@ -226,21 +221,36 @@ export default function TimelineGamePage() {
   const [scores, setScores] = useState<GamePlayerScore[]>([]);
   const [timeline, setTimeline] = useState<EventCardReveal[]>([]);
   const [hand, setHand] = useState<HandCard[]>([]);
-  const [selectedCard, setSelectedCard] = useState<number | null>(null); // deckIndex
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [finalResults, setFinalResults] = useState<FinalResult[] | null>(null);
   const [toast, setToast] = useState<{ msg: string; correct: boolean | null } | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
-  const userId = typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : 0;
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem("userId");
+    const storedUsername = sessionStorage.getItem("username");
+
+    if (storedUserId) {
+      const parsed = Number(storedUserId);
+      if (!Number.isNaN(parsed)) {
+        setUserId(parsed);
+      }
+    }
+
+    if (storedUsername) {
+      setCurrentUsername(storedUsername);
+    }
+  }, []);
 
   function showToast(msg: string, correct: boolean | null) {
     setToast({ msg, correct });
     setTimeout(() => setToast(null), 2500);
   }
-
-  // ── Fetch everything ────────────────────────────────────────────────────────
 
   const fetchAll = useCallback(async () => {
     try {
@@ -253,7 +263,7 @@ export default function TimelineGamePage() {
       setScores(s);
       setTimeline(tl);
 
-      if (g.status === "IN_PROGRESS") {
+      if (g.status === "IN_PROGRESS" && userId !== null) {
         const h = await api.get<HandCard[]>(`/games/${gameId}/hand?userId=${userId}`);
         setHand(h);
       }
@@ -263,20 +273,24 @@ export default function TimelineGamePage() {
           const results = await api.post<FinalResult[]>(`/games/${gameId}/finalize`, {});
           setFinalResults(results);
         } catch {
-          // finalize already called — ignore
+          // ignore
         }
       }
     } catch (err) {
       console.error("Fetch error:", err);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId, userId]);
 
   useEffect(() => {
+    if (userId === null) return;
+
     fetchAll().finally(() => setLoading(false));
     pollingRef.current = setInterval(fetchAll, 2000);
-    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
-  }, [fetchAll]);
+
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [fetchAll, userId]);
 
   useEffect(() => {
     if (game?.status === "FINISHED" && pollingRef.current) {
@@ -284,8 +298,6 @@ export default function TimelineGamePage() {
       pollingRef.current = null;
     }
   }, [game?.status]);
-
-  // ── Actions ─────────────────────────────────────────────────────────────────
 
   const myScore = scores.find((s) => s.userId === userId);
   const isMyTurn = myScore?.activeTurn ?? false;
@@ -303,10 +315,10 @@ export default function TimelineGamePage() {
         position,
       });
       showToast(
-        result.correct
-          ? `✓ Correct! ${result.title} (${result.year})`
-          : `✗ Wrong! ${result.title} was from ${result.year}`,
-        result.correct,
+          result.correct
+              ? `✓ Correct! ${result.title} (${result.year})`
+              : `✗ Wrong! ${result.title} was from ${result.year}`,
+          result.correct,
       );
       setSelectedCard(null);
       await fetchAll();
@@ -315,26 +327,22 @@ export default function TimelineGamePage() {
     }
   }
 
-  // ── Loading ─────────────────────────────────────────────────────────────────
-
   if (loading) {
     return (
-      <div style={S.center}>
-        <div style={{ color: "#e3cb2c", fontSize: "18px" }}>Loading game…</div>
-      </div>
+        <div style={S.center}>
+          <div style={{ color: "#e3cb2c", fontSize: "18px" }}>Loading game…</div>
+        </div>
     );
   }
 
   if (!game) {
     return (
-      <div style={S.center}>
-        <div style={{ color: "#e74c3c" }}>Game not found.</div>
-        <button style={S.btn("ghost")} onClick={() => router.push("/")}>Back to Home</button>
-      </div>
+        <div style={S.center}>
+          <div style={{ color: "#e74c3c" }}>Game not found.</div>
+          <button style={S.btn("ghost")} onClick={() => router.push("/")}>Back to Home</button>
+        </div>
     );
   }
-
-  // ── Results ─────────────────────────────────────────────────────────────────
 
   if (game.status === "FINISHED") {
     if (!finalResults) {
@@ -342,204 +350,196 @@ export default function TimelineGamePage() {
     }
     const sorted = [...finalResults].sort((a, b) => b.score - a.score);
     return (
-      <div style={S.center}>
-        <h1 style={{ color: "#e3cb2c", marginBottom: "4px" }}>Game Over!</h1>
-        <div style={S.resultsCard}>
-          <div style={S.panelTitle}>Final Results</div>
-          {sorted.map((r, i) => (
-            <div key={r.userId} style={S.resultRow(r.winner)}>
+        <div style={S.center}>
+          <h1 style={{ color: "#e3cb2c", marginBottom: "4px" }}>Game Over!</h1>
+          <div style={S.resultsCard}>
+            <div style={S.panelTitle}>Final Results</div>
+            {sorted.map((r, i) => (
+                <div key={r.userId} style={S.resultRow(r.winner)}>
               <span style={{ fontWeight: r.winner ? "bold" : "normal" }}>
                 {i + 1}. {r.username} {r.winner ? "👑" : ""}
               </span>
-              <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>{r.score} pts</span>
-              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)" }}>
+                  <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>{r.score} pts</span>
+                  <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)" }}>
                 {r.correctPlacements}✓ / {r.incorrectPlacements}✗
               </span>
-            </div>
-          ))}
+                </div>
+            ))}
+          </div>
+          <button style={S.btn("primary")} onClick={() => router.push("/")}>Back to Home</button>
         </div>
-        <button style={S.btn("primary")} onClick={() => router.push("/")}>Back to Home</button>
-      </div>
     );
   }
-
-  // ── Game ────────────────────────────────────────────────────────────────────
 
   const activePlayer = scores.find((s) => s.activeTurn);
 
   return (
-    <div style={S.page}>
-      {/* Toast notification */}
-      {toast && <div style={S.toast(toast.correct)}>{toast.msg}</div>}
+      <div style={S.page}>
+        {toast && <div style={S.toast(toast.correct)}>{toast.msg}</div>}
 
-      {/* Header */}
-      <div style={S.header}>
-        <h1 style={S.title}>Timeline — {game.era}</h1>
-        <div style={{ display: "flex", gap: "20px", fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>
-          <span>Deck: <strong style={{ color: "#e3cb2c" }}>{game.cardsRemaining}</strong> left</span>
-          <span>Timeline: <strong style={{ color: "#e3cb2c" }}>{game.timelineSize}</strong></span>
-          <span style={{ color: "#e3cb2c" }}>{game.difficulty}</span>
-        </div>
-        <div style={{ fontSize: "13px" }}>
-          {isMyTurn
-            ? <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>⭐ Your turn!</span>
-            : activePlayer
-              ? <span style={{ color: "rgba(255,255,255,0.7)" }}>Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong></span>
-              : null}
-        </div>
-      </div>
-
-      {/* Grid */}
-      <div style={S.gameGrid}>
-
-        {/* Left: Players */}
-        <div style={S.panel}>
-          <div style={S.panelTitle}>Players</div>
-          {scores
-            .slice()
-            .sort((a, b) => a.turnOrder - b.turnOrder)
-            .map((s) => (
-              <div key={s.userId} style={S.playerRow(s.activeTurn, s.userId === userId)}>
-                <div>
-                  <div style={{ fontWeight: s.userId === userId ? "bold" : "normal" }}>
-                    {s.username}{s.userId === userId ? " (you)" : ""}
-                  </div>
-                  <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginTop: "2px" }}>
-                    {s.cardsInHand} cards{s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
-                  </div>
-                </div>
-                <span style={S.badge}>{s.score}</span>
-              </div>
-            ))}
+        <div style={S.header}>
+          <h1 style={S.title}>Timeline — {game.era}</h1>
+          <div style={{ display: "flex", gap: "20px", fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>
+            <span>Deck: <strong style={{ color: "#e3cb2c" }}>{game.cardsRemaining}</strong> left</span>
+            <span>Timeline: <strong style={{ color: "#e3cb2c" }}>{game.timelineSize}</strong></span>
+            <span style={{ color: "#e3cb2c" }}>{game.difficulty}</span>
+          </div>
+          <div style={{ fontSize: "13px" }}>
+            {isMyTurn
+                ? <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>⭐ Your turn!</span>
+                : activePlayer
+                    ? <span style={{ color: "rgba(255,255,255,0.7)" }}>Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong></span>
+                    : null}
+          </div>
         </div>
 
-        {/* Center: Timeline + Hand */}
-        <div>
-          {/* Timeline */}
-          <div style={S.timelineArea}>
-            <div style={S.panelTitle}>
-              Timeline
-              {selectedCard !== null && isMyTurn && (
-                <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: "normal", marginLeft: "8px" }}>
+        <div style={S.gameGrid}>
+          <div style={S.panel}>
+            <div style={S.panelTitle}>Players</div>
+            {scores
+                .slice()
+                .sort((a, b) => a.turnOrder - b.turnOrder)
+                .map((s) => (
+                    <div key={s.userId} style={S.playerRow(s.activeTurn, s.userId === userId)}>
+                      <div>
+                        <div style={{ fontWeight: s.userId === userId ? "bold" : "normal" }}>
+                          {s.username}{s.userId === userId ? " (you)" : ""}
+                        </div>
+                        <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginTop: "2px" }}>
+                          {s.cardsInHand} cards{s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
+                        </div>
+                      </div>
+                      <span style={S.badge}>{s.score}</span>
+                    </div>
+                ))}
+          </div>
+
+          <div>
+            <div style={S.timelineArea}>
+              <div style={S.panelTitle}>
+                Timeline
+                {selectedCard !== null && isMyTurn && (
+                    <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: "normal", marginLeft: "8px" }}>
                   — click a slot to place
                 </span>
-              )}
-            </div>
-            <div style={S.timelineRow}>
-              {/* Slot before first card */}
-              <SlotButton
-                position={0}
-                active={hoveredSlot === 0 && selectedCard !== null && isMyTurn}
-                canPlace={selectedCard !== null && isMyTurn}
-                onHover={setHoveredSlot}
-                onPlace={handlePlaceCard}
-              />
-
-              {timeline.map((card, i) => (
-                <div key={card.id} style={{ display: "flex", alignItems: "center" }}>
-                  <div style={S.timelineCard}>
-                    {card.imageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={card.imageUrl} alt={card.title} style={S.cardImg} />
-                    )}
-                    <div style={{ lineHeight: "1.3" }}>{card.title}</div>
-                    <div style={S.cardYear}>{card.year}</div>
-                  </div>
-                  <SlotButton
-                    position={i + 1}
-                    active={hoveredSlot === i + 1 && selectedCard !== null && isMyTurn}
+                )}
+              </div>
+              <div style={S.timelineRow}>
+                <SlotButton
+                    position={0}
+                    active={hoveredSlot === 0 && selectedCard !== null && isMyTurn}
                     canPlace={selectedCard !== null && isMyTurn}
                     onHover={setHoveredSlot}
                     onPlace={handlePlaceCard}
-                  />
-                </div>
-              ))}
+                />
 
-              {timeline.length === 0 && (
-                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", margin: "auto", paddingLeft: "16px" }}>
-                  No cards placed yet — place the first one!
-                </div>
-              )}
+                {timeline.map((card, i) => (
+                    <div key={card.id ?? `${card.title}-${card.year}-${i}`} style={{ display: "flex", alignItems: "center" }}>
+                      <div style={S.timelineCard}>
+                        {card.imageUrl && (
+                            <img src={card.imageUrl} alt={card.title} style={S.cardImg} />
+                        )}
+                        <div style={{ lineHeight: "1.3" }}>{card.title}</div>
+                        <div style={S.cardYear}>{card.year}</div>
+                      </div>
+                      <SlotButton
+                          position={i + 1}
+                          active={hoveredSlot === i + 1 && selectedCard !== null && isMyTurn}
+                          canPlace={selectedCard !== null && isMyTurn}
+                          onHover={setHoveredSlot}
+                          onPlace={handlePlaceCard}
+                      />
+                    </div>
+                ))}
+
+                {timeline.length === 0 && (
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", margin: "auto", paddingLeft: "16px" }}>
+                      No cards placed yet — place the first one!
+                    </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Hand */}
-          <div style={S.panel}>
-            <div style={S.panelTitle}>
-              Your Hand ({hand.length} cards)
-              {!isMyTurn && (
-                <span style={{ color: "rgba(255,255,255,0.45)", fontWeight: "normal", marginLeft: "6px" }}>
+            <div style={S.panel}>
+              <div style={S.panelTitle}>
+                Your Hand ({hand.length} cards)
+                {!isMyTurn && (
+                    <span style={{ color: "rgba(255,255,255,0.45)", fontWeight: "normal", marginLeft: "6px" }}>
                   — waiting for your turn
                 </span>
+                )}
+              </div>
+              {hand.length === 0 ? (
+                  <div style={{ color: "rgba(255,255,255,0.45)", textAlign: "center", padding: "16px 0", fontSize: "13px" }}>
+                    No cards in hand
+                  </div>
+              ) : (
+                  <div style={S.handRow}>
+                    {hand.map((card) => (
+                        <div
+                            key={card.deckIndex}
+                            style={S.handCard(selectedCard === card.deckIndex)}
+                            onClick={() => handleSelectCard(card.deckIndex)}
+                            title={isMyTurn ? "Click to select, then click a timeline slot" : "Not your turn"}
+                        >
+                          {card.imageUrl && (
+                              <img src={card.imageUrl} alt={card.title} style={S.cardImg} />
+                          )}
+                          <div style={{ lineHeight: "1.3" }}>{card.title}</div>
+                          {selectedCard === card.deckIndex && (
+                              <div style={{ color: "#e3cb2c", marginTop: "4px", fontSize: "10px" }}>✓ Selected</div>
+                          )}
+                        </div>
+                    ))}
+                  </div>
               )}
             </div>
-            {hand.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.45)", textAlign: "center", padding: "16px 0", fontSize: "13px" }}>
-                No cards in hand
-              </div>
-            ) : (
-              <div style={S.handRow}>
-                {hand.map((card) => (
-                  <div
-                    key={card.deckIndex}
-                    style={S.handCard(selectedCard === card.deckIndex)}
-                    onClick={() => handleSelectCard(card.deckIndex)}
-                    title={isMyTurn ? "Click to select, then click a timeline slot" : "Not your turn"}
-                  >
-                    {card.imageUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={card.imageUrl} alt={card.title} style={S.cardImg} />
-                    )}
-                    <div style={{ lineHeight: "1.3" }}>{card.title}</div>
-                    {selectedCard === card.deckIndex && (
-                      <div style={{ color: "#e3cb2c", marginTop: "4px", fontSize: "10px" }}>✓ Selected</div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Right: My Stats + How to Play */}
-        <div style={S.panel}>
-          <div style={S.panelTitle}>Your Stats</div>
-          {myScore ? (
-            <div style={{ fontSize: "13px", display: "flex", flexDirection: "column", gap: "10px" }}>
-              <StatRow label="Score" value={<strong style={{ color: "#e3cb2c", fontSize: "15px" }}>{myScore.score}</strong>} />
-              <StatRow label="Cards in hand" value={myScore.cardsInHand} />
-              <StatRow label="Streak" value={`${myScore.correctStreak} 🔥`} />
-              <StatRow label="Best streak" value={myScore.bestStreak} />
+          <div style={S.panel}>
+            <div style={S.panelTitle}>Your Stats</div>
+            {myScore ? (
+                <div style={{ fontSize: "13px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <StatRow label="Score" value={<strong style={{ color: "#e3cb2c", fontSize: "15px" }}>{myScore.score}</strong>} />
+                  <StatRow label="Cards in hand" value={myScore.cardsInHand} />
+                  <StatRow label="Streak" value={`${myScore.correctStreak} 🔥`} />
+                  <StatRow label="Best streak" value={myScore.bestStreak} />
+                </div>
+            ) : (
+                <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>Not in this game</div>
+            )}
+
+            <div style={{ marginTop: "22px" }}>
+              <div style={S.panelTitle}>How to Play</div>
+              <ol style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)", paddingLeft: "16px", lineHeight: "1.9", margin: 0 }}>
+                <li>On your turn, select a card from your hand</li>
+                <li>Click a slot on the timeline to place it</li>
+                <li>Correct → one less card in hand</li>
+                <li>Wrong → card discarded, draw a new one</li>
+                <li>Goal: be one of the first 3 players with 0 cards</li>
+              </ol>
             </div>
-          ) : (
-            <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>Not in this game</div>
-          )}
 
-          <div style={{ marginTop: "22px" }}>
-            <div style={S.panelTitle}>How to Play</div>
-            <ol style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)", paddingLeft: "16px", lineHeight: "1.9", margin: 0 }}>
-              <li>On your turn, select a card from your hand</li>
-              <li>Click a slot on the timeline to place it</li>
-              <li>Correct → one less card in hand</li>
-              <li>Wrong → card discarded, draw a new one</li>
-              <li>Goal: be one of the first 3 players with 0 cards</li>
-            </ol>
+            <div style={{ marginTop: "22px" }}>
+              <GameChat
+                  gameId={gameId}
+                  userId={userId}
+                  currentUsername={currentUsername}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
-// ─── Small helper components ──────────────────────────────────────────────────
-
 function SlotButton({
-  position,
-  active,
-  canPlace,
-  onHover,
-  onPlace,
-}: {
+                      position,
+                      active,
+                      canPlace,
+                      onHover,
+                      onPlace,
+                    }: {
   position: number;
   active: boolean;
   canPlace: boolean;
@@ -547,36 +547,36 @@ function SlotButton({
   onPlace: (pos: number) => void;
 }) {
   return (
-    <div
-      style={{
-        minWidth: active ? "16px" : "8px",
-        height: "110px",
-        background: active ? "rgba(227,203,44,0.35)" : "rgba(255,255,255,0.08)",
-        border: active ? "2px dashed #e3cb2c" : "1px dashed rgba(255,255,255,0.15)",
-        borderRadius: "6px",
-        cursor: canPlace ? "pointer" : "default",
-        flexShrink: 0,
-        transition: "all 0.15s",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "14px",
-        color: active ? "#e3cb2c" : "transparent",
-      }}
-      onClick={() => canPlace && onPlace(position)}
-      onMouseEnter={() => canPlace && onHover(position)}
-      onMouseLeave={() => onHover(null)}
-    >
-      {active ? "+" : ""}
-    </div>
+      <div
+          style={{
+            minWidth: active ? "16px" : "8px",
+            height: "110px",
+            background: active ? "rgba(227,203,44,0.35)" : "rgba(255,255,255,0.08)",
+            border: active ? "2px dashed #e3cb2c" : "1px dashed rgba(255,255,255,0.15)",
+            borderRadius: "6px",
+            cursor: canPlace ? "pointer" : "default",
+            flexShrink: 0,
+            transition: "all 0.15s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "14px",
+            color: active ? "#e3cb2c" : "transparent",
+          }}
+          onClick={() => canPlace && onPlace(position)}
+          onMouseEnter={() => canPlace && onHover(position)}
+          onMouseLeave={() => onHover(null)}
+      >
+        {active ? "+" : ""}
+      </div>
   );
 }
 
 function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
-      <span>{value}</span>
-    </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
+        <span>{value}</span>
+      </div>
   );
 }
