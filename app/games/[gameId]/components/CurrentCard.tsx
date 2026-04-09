@@ -2,10 +2,14 @@
 
 import React from "react";
 import { Button } from "antd";
-import styles from "../game.module.css";
+import styles from "../play/game.module.css";
+import { EventCardGet } from "@/types/game";
 
 interface CurrentCardProps {
-  card: { title: string; imageUrl: string } | null;
+  drawnCard: EventCardGet | null;
+  isMyTurn: boolean;
+  onDraw: () => void;
+  drawing?: boolean;
   onPlace: () => void;
   onEarlier: () => void;
   onLater: () => void;
@@ -13,16 +17,37 @@ interface CurrentCardProps {
   disabled?: boolean;
 }
 
-const CurrentCard: React.FC<CurrentCardProps> = ({ card, onPlace, onEarlier, onLater, placing, disabled }) => {
-  if (!card) return <div className={styles.waitingText}>Waiting for your turn...</div>;
+const CurrentCard: React.FC<CurrentCardProps> = ({
+  drawnCard,
+  isMyTurn,
+  onDraw,
+  drawing,
+  onPlace,
+  onEarlier,
+  onLater,
+  placing,
+  disabled,
+}) => {
+  if (!isMyTurn) {
+    return <div className={styles.waitingText}>Waiting for your turn...</div>;
+  }
+
+  if (!drawnCard) {
+    return (
+      <div className={styles.currentCardSection}>
+        <Button className={styles.goldBtn} onClick={onDraw} loading={drawing}>
+          Draw Card
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.currentCardSection}>
-      <span className={styles.currentCardLabel}>Current Card</span>
       <div className={styles.currentCardRow}>
         <Button className={styles.goldBtn} onClick={onEarlier}>Earlier</Button>
         <div className={styles.currentCardBox}>
-          <span className={styles.currentCardTitle}>{card.title}</span>
+          <span className={styles.currentCardTitle}>{drawnCard.title}</span>
         </div>
         <Button className={styles.goldBtn} onClick={onLater}>Later</Button>
       </div>

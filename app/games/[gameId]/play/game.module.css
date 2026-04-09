@@ -314,6 +314,48 @@
   font-style: italic;
 }
 
+/* Hand of cards */
+.handPanel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.handCard {
+  width: 90px;
+  height: 120px;
+  background-color: #1a3570;
+  border: 2px dashed #4a6fa5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.handCard:hover {
+  border-color: #e3cb2c;
+  background-color: #1e3a7a;
+}
+
+.handCardSelected {
+  composes: handCard;
+  border: 2px solid #e3cb2c;
+  background-color: #2a4a80;
+}
+
+.handCardTitle {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
 /* Game Log */
 .logPanel {
   composes: panel;

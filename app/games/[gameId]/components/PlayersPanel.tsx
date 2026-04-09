@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import styles from "../game.module.css";
+import styles from "../play/game.module.css";
 import { GamePlayerScore } from "@/types/game";
 
 interface PlayersPanelProps {

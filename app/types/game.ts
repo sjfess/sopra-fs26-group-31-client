@@ -51,4 +51,5 @@ export interface GamePlayerScore {
     activeTurn: boolean;
     correctStreak: number;
     bestStreak: number;
+    currentCardIndex: number | null;
 }

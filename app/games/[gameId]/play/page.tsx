@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Spin, message } from "antd";
 import { useApi } from "@/hooks/useApi";
-import PlayersPanel from "./components/PlayersPanel";
-import StatsPanel from "./components/StatsPanel";
-import Timeline from "./components/Timeline";
-import CurrentCard from "./components/CurrentCard";
-import GameLog from "./components/GameLog";
+import PlayersPanel from "../components/PlayersPanel";
+import StatsPanel from "../components/StatsPanel";
+import Timeline from "../components/Timeline";
+import CurrentCard from "../components/CurrentCard";
+import GameLog from "../components/GameLog";
 import styles from "./game.module.css";
 import {
   Game as GameType,
@@ -23,6 +23,10 @@ export interface LogEntry {
   action: string;
 }
 
+export interface HandCard extends EventCardReveal {
+  deckIndex: number;
+}
+
 const Game: React.FC = () => {
   const router = useRouter();
   const { gameId } = useParams() as { gameId: string };
@@ -32,11 +36,12 @@ const Game: React.FC = () => {
   const [game, setGame] = useState<GameType | null>(null);
   const [timeline, setTimeline] = useState<EventCardReveal[]>([]);
   const [scores, setScores] = useState<GamePlayerScore[]>([]);
-  const [currentCard, setCurrentCard] = useState<EventCardGet | null>(null);
-  const [cardIndex, setCardIndex] = useState<number | null>(null);
+  const [drawnCard, setDrawnCard] = useState<EventCardGet | null>(null);
+  const [drawnCardIndex, setDrawnCardIndex] = useState<number | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<number | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [drawing, setDrawing] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [lastResult, setLastResult] = useState<PlacementResult | null>(null);
 
@@ -55,39 +60,24 @@ const Game: React.FC = () => {
       setTimeline(timelineData);
       setScores(scoresData);
       setLoading(false);
+
+      // Sync drawn card index from server state (e.g. after reconnect)
+      const myScore = scoresData.find((s) => s.userId === userId);
+      if (myScore?.currentCardIndex != null) {
+        setDrawnCardIndex(myScore.currentCardIndex);
+      }
+
       return { gameData, scoresData };
     } catch (error) {
       console.error("Failed to fetch game state:", error);
       setLoading(false);
       return null;
     }
-  }, [apiService, gameId]);
-
-  const drawCard = useCallback(async () => {
-    if (currentCard) return;
-    try {
-      const card = await apiService.post<EventCardGet>(`/games/${gameId}/draw`, {});
-      setCurrentCard(card);
-      setCardIndex(card.id);
-      setSelectedPosition(null);
-      setLastResult(null);
-    } catch (error) {
-      console.error("Failed to draw card:", error);
-    }
-  }, [apiService, gameId, currentCard]);
+  }, [apiService, gameId, userId]);
 
   // Initial fetch + polling
   useEffect(() => {
-    const init = async () => {
-      const result = await fetchGameState();
-      if (result) {
-        const myScore = result.scoresData.find((s: GamePlayerScore) => s.userId === userId);
-        if (myScore?.activeTurn) {
-          await drawCard();
-        }
-      }
-    };
-    void init();
+    void fetchGameState();
 
     pollingRef.current = setInterval(() => {
       void fetchGameState();
@@ -99,20 +89,42 @@ const Game: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId]);
 
-  // Auto-draw when it becomes my turn
+  // Reset drawn card when turn changes away from us
   useEffect(() => {
-    if (isMyTurn && !currentCard && !placing) {
-      void drawCard();
+    if (!isMyTurn) {
+      setDrawnCard(null);
+      setDrawnCardIndex(null);
+      setSelectedPosition(null);
     }
-  }, [isMyTurn, currentCard, placing, drawCard]);
+  }, [isMyTurn]);
+
+  const handleDraw = async () => {
+    if (drawing) return;
+    setDrawing(true);
+    try {
+      const card = await apiService.post<EventCardGet>(`/games/${gameId}/draw`, {});
+      const scoresData = await apiService.get<GamePlayerScore[]>(`/games/${gameId}/scores`);
+      setScores(scoresData);
+      const myScore = scoresData.find((s) => s.userId === userId);
+      setDrawnCard(card);
+      setDrawnCardIndex(myScore?.currentCardIndex ?? null);
+    } catch (error) {
+      console.error("Failed to draw card:", error);
+      if (error instanceof Error) {
+        message.error(error.message);
+      }
+    } finally {
+      setDrawing(false);
+    }
+  };
 
   const handlePlace = async () => {
-    if (selectedPosition === null || cardIndex === null || placing) return;
+    if (selectedPosition === null || drawnCardIndex === null || placing) return;
 
     setPlacing(true);
     try {
       const result = await apiService.post<PlacementResult>(`/games/${gameId}/moves`, {
-        cardIndex,
+        cardIndex: drawnCardIndex,
         position: selectedPosition,
       });
 
@@ -134,8 +146,8 @@ const Game: React.FC = () => {
         message.error(`Incorrect! ${result.title} was actually ${result.year}`);
       }
 
-      setCurrentCard(null);
-      setCardIndex(null);
+      setDrawnCard(null);
+      setDrawnCardIndex(null);
       setSelectedPosition(null);
 
       await fetchGameState();
@@ -195,12 +207,15 @@ const Game: React.FC = () => {
             </div>
           )}
           <CurrentCard
-            card={isMyTurn ? currentCard : null}
+            drawnCard={drawnCard}
+            isMyTurn={isMyTurn}
+            onDraw={handleDraw}
+            drawing={drawing}
             onPlace={handlePlace}
-            onEarlier={() => setSelectedPosition((p) => (p !== null && p > 0 ? p - 1 : 0))}
-            onLater={() => setSelectedPosition((p) => (p !== null && p < timeline.length ? p + 1 : timeline.length))}
+            onEarlier={() => setSelectedPosition((p) => (p === null ? 0 : p > 0 ? p - 1 : 0))}
+            onLater={() => setSelectedPosition((p) => (p === null ? timeline.length : p < timeline.length ? p + 1 : timeline.length))}
             placing={placing}
-            disabled={selectedPosition === null}
+            disabled={selectedPosition === null || drawnCardIndex === null}
           />
         </div>
 
