@@ -13,14 +13,15 @@ const GameHub: React.FC = () => {
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
     useEffect(() => {
-        const id = localStorage.getItem("userId");
+        const id = sessionStorage.getItem("userId");
         setUserId(id);
     }, []);
 
 
     const handleCreateGame = async () => {
         try {
-            const userId = localStorage.getItem("userId");
+            const userId = sessionStorage.getItem("userId");
+            console.log("createGame called with userId={}", userId);
             if (!userId) {
                 alert("No userId found. Please log in again.");
                 return;
@@ -47,7 +48,7 @@ const GameHub: React.FC = () => {
     };
     const handleJoinGame = async () => {
         try {
-            const userId = localStorage.getItem("userId");
+            const userId = sessionStorage.getItem("userId");
             console.log("rawUserId:", userId);
             console.log("lobbyCode:", lobbyCode);
 

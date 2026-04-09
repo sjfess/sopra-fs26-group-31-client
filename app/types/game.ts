@@ -7,10 +7,7 @@ export interface PlayerSummary {
     online?:boolean;
 }
 
-import Navbar from "@/profile/[id]/components/Navbar";
-import UserProfileCard from "@/profile/[id]/components/UserProfileCard";
-import FriendsPanel from "@/profile/[id]/components/FriendsPanel";
-import GameHub from "@/profile/[id]/components/GameHub";
+
 export interface Game {
     id: number;
     lobbyCode: string;
@@ -24,4 +21,50 @@ export interface Game {
     gameMode: string;
     difficulty: Difficulty;
     maxPlayers: number;
+}
+
+export type ChatMessageGetDTO = {
+    playerId: number;
+    username: string;
+    message: string;
+    timestamp: string;
+}
+
+export interface GameInvite {
+    id: number;
+    gameId: number;
+    lobbyCode: string;
+    fromUsername: string;
+}
+
+export interface EventCardGet {
+    id: number;
+    title: string;
+    imageUrl: string;
+}
+
+export interface EventCardReveal {
+    id: number;
+    title: string;
+    year: number;
+    imageUrl: string;
+}
+
+export interface PlacementResult {
+    correct: boolean;
+    title: string;
+    year: number;
+    imageUrl: string;
+    timelineSize: number;
+}
+
+export interface GamePlayerScore {
+    userId: number;
+    username: string;
+    score: number;
+    turnOrder: number;
+    activeTurn: boolean;
+    correctStreak: number;
+    bestStreak: number;
+    currentCardIndex: number | null;
 }

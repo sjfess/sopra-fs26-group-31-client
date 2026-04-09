@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Button, Form, Input, App } from "antd";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 
 
 interface FormFieldProps {
@@ -18,8 +18,10 @@ const Register: React.FC = () => {
     const apiService = useApi();
     const [form] = Form.useForm();
     const { message } = App.useApp();
-    const setToken = useLocalStorage<string>("token", "");
-    const setId = useLocalStorage<number>("userId", 0);
+    const { set: setToken } = useSessionStorage<string>("token", "");
+    const { set: setId } = useSessionStorage<number>("userId", 0);
+    const { set: setUsername } = useSessionStorage<string>("username", "");
+
 
 
 
@@ -30,8 +32,9 @@ const Register: React.FC = () => {
             const user = await apiService.post<User>("/users", userData);
 
             // im handleRegister:
-            if (user.token) {setToken.set(user.token);}
-            if (user.id) {setId.set(Number(user.id));}
+            if (user.token) {setToken(user.token);}
+            if (user.id) {setId(Number(user.id));}
+            if (user.username) {setUsername(user.username);}
 
             if (!user.id){console.error("No userId set")
             }
