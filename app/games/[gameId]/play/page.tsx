@@ -1,230 +1,582 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Spin, message } from "antd";
-import { useApi } from "@/hooks/useApi";
-import PlayersPanel from "../components/PlayersPanel";
-import StatsPanel from "../components/StatsPanel";
-import Timeline from "../components/Timeline";
-import CurrentCard from "../components/CurrentCard";
-import GameLog from "../components/GameLog";
-import styles from "./game.module.css";
-import {
-  Game as GameType,
-  EventCardGet,
-  EventCardReveal,
-  PlacementResult,
-  GamePlayerScore,
-} from "@/types/game";
+import { ApiService } from "@/api/apiService";
+import type { Game, GamePlayerScore, EventCardReveal, HandCard, PlacementResult } from "@/types/game";
 
-export interface LogEntry {
-  player: string;
-  action: string;
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface FinalResult {
+  userId: number;
+  username: string;
+  score: number;
+  correctPlacements: number;
+  incorrectPlacements: number;
+  winner: boolean;
+  bestStreak: number;
 }
 
-export interface HandCard extends EventCardReveal {
-  deckIndex: number;
-}
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
-const Game: React.FC = () => {
+const S = {
+  page: {
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #0f2557 0%, #1a3570 100%)",
+    color: "#fff",
+    fontFamily: "Georgia, serif",
+    padding: "16px",
+  } as React.CSSProperties,
+
+  center: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
+    flexDirection: "column" as const,
+    gap: "16px",
+  } as React.CSSProperties,
+
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "16px",
+    padding: "12px 16px",
+    background: "rgba(255,255,255,0.08)",
+    borderRadius: "10px",
+    flexWrap: "wrap" as const,
+    gap: "8px",
+  } as React.CSSProperties,
+
+  title: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#e3cb2c",
+    margin: 0,
+  } as React.CSSProperties,
+
+  gameGrid: {
+    display: "grid",
+    gridTemplateColumns: "210px 1fr 210px",
+    gap: "14px",
+    alignItems: "start",
+  } as React.CSSProperties,
+
+  panel: {
+    background: "rgba(255,255,255,0.07)",
+    borderRadius: "10px",
+    padding: "14px",
+  } as React.CSSProperties,
+
+  panelTitle: {
+    fontSize: "12px",
+    fontWeight: "bold",
+    color: "#e3cb2c",
+    textTransform: "uppercase" as const,
+    letterSpacing: "1px",
+    marginBottom: "10px",
+    borderBottom: "1px solid rgba(227,203,44,0.3)",
+    paddingBottom: "6px",
+  } as React.CSSProperties,
+
+  playerRow: (active: boolean, isMe: boolean): React.CSSProperties => ({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px 10px",
+    marginBottom: "6px",
+    borderRadius: "8px",
+    background: active
+      ? "rgba(227,203,44,0.2)"
+      : isMe
+        ? "rgba(255,255,255,0.1)"
+        : "rgba(255,255,255,0.04)",
+    border: active ? "1px solid #e3cb2c" : "1px solid transparent",
+    fontSize: "12px",
+  }),
+
+  badge: {
+    background: "#e3cb2c",
+    color: "#0f2557",
+    borderRadius: "4px",
+    padding: "2px 6px",
+    fontSize: "11px",
+    fontWeight: "bold",
+  } as React.CSSProperties,
+
+  timelineArea: {
+    background: "rgba(255,255,255,0.05)",
+    borderRadius: "10px",
+    padding: "14px",
+    marginBottom: "14px",
+  } as React.CSSProperties,
+
+  timelineRow: {
+    display: "flex",
+    alignItems: "center",
+    overflowX: "auto" as const,
+    paddingBottom: "8px",
+    minHeight: "130px",
+    gap: "0",
+  } as React.CSSProperties,
+
+  timelineCard: {
+    minWidth: "88px",
+    maxWidth: "88px",
+    background: "rgba(255,255,255,0.1)",
+    border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: "8px",
+    padding: "6px",
+    textAlign: "center" as const,
+    fontSize: "10px",
+    flexShrink: 0,
+  } as React.CSSProperties,
+
+  cardYear: {
+    color: "#e3cb2c",
+    fontWeight: "bold",
+    fontSize: "12px",
+    marginTop: "4px",
+  } as React.CSSProperties,
+
+  handRow: {
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap" as const,
+    justifyContent: "center",
+  } as React.CSSProperties,
+
+  handCard: (selected: boolean): React.CSSProperties => ({
+    width: "96px",
+    background: selected ? "rgba(227,203,44,0.2)" : "rgba(255,255,255,0.08)",
+    border: selected ? "2px solid #e3cb2c" : "2px solid rgba(255,255,255,0.12)",
+    borderRadius: "10px",
+    padding: "8px",
+    textAlign: "center" as const,
+    cursor: "pointer",
+    fontSize: "11px",
+    transition: "all 0.15s",
+  }),
+
+  btn: (variant: "primary" | "ghost"): React.CSSProperties => ({
+    padding: "8px 20px",
+    borderRadius: "8px",
+    border: "none",
+    cursor: "pointer",
+    fontFamily: "Georgia, serif",
+    fontWeight: "bold",
+    fontSize: "13px",
+    background: variant === "primary" ? "#e3cb2c" : "rgba(255,255,255,0.15)",
+    color: variant === "primary" ? "#0f2557" : "#fff",
+  }),
+
+  toast: (correct: boolean | null): React.CSSProperties => ({
+    position: "fixed" as const,
+    top: "72px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    background: correct === null ? "#666" : correct ? "#27ae60" : "#c0392b",
+    color: "#fff",
+    padding: "12px 28px",
+    borderRadius: "10px",
+    fontWeight: "bold",
+    fontSize: "15px",
+    zIndex: 1000,
+    boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+    whiteSpace: "nowrap",
+  }),
+
+  resultsCard: {
+    background: "rgba(255,255,255,0.07)",
+    borderRadius: "12px",
+    padding: "24px",
+    maxWidth: "520px",
+    width: "100%",
+  } as React.CSSProperties,
+
+  resultRow: (winner: boolean): React.CSSProperties => ({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    marginBottom: "8px",
+    background: winner ? "rgba(227,203,44,0.15)" : "rgba(255,255,255,0.05)",
+    border: winner ? "1px solid #e3cb2c" : "1px solid transparent",
+  }),
+
+  cardImg: {
+    width: "100%",
+    height: "56px",
+    objectFit: "cover" as const,
+    borderRadius: "4px",
+    marginBottom: "4px",
+  } as React.CSSProperties,
+};
+
+// ─── Component ─────────────────────────────────────────────────────────────────
+
+export default function TimelineGamePage() {
+  const { gameId } = useParams<{ gameId: string }>();
   const router = useRouter();
-  const { gameId } = useParams() as { gameId: string };
-  const apiService = useApi();
+  const api = new ApiService();
+
+  const [game, setGame] = useState<Game | null>(null);
+  const [scores, setScores] = useState<GamePlayerScore[]>([]);
+  const [timeline, setTimeline] = useState<EventCardReveal[]>([]);
+  const [hand, setHand] = useState<HandCard[]>([]);
+  const [selectedCard, setSelectedCard] = useState<number | null>(null); // deckIndex
+  const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [finalResults, setFinalResults] = useState<FinalResult[] | null>(null);
+  const [toast, setToast] = useState<{ msg: string; correct: boolean | null } | null>(null);
+
+  const userId = typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : 0;
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const [game, setGame] = useState<GameType | null>(null);
-  const [timeline, setTimeline] = useState<EventCardReveal[]>([]);
-  const [scores, setScores] = useState<GamePlayerScore[]>([]);
-  const [drawnCard, setDrawnCard] = useState<EventCardGet | null>(null);
-  const [drawnCardIndex, setDrawnCardIndex] = useState<number | null>(null);
-  const [selectedPosition, setSelectedPosition] = useState<number | null>(null);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [drawing, setDrawing] = useState(false);
-  const [placing, setPlacing] = useState(false);
-  const [lastResult, setLastResult] = useState<PlacementResult | null>(null);
+  function showToast(msg: string, correct: boolean | null) {
+    setToast({ msg, correct });
+    setTimeout(() => setToast(null), 2500);
+  }
 
-  const userId = Number(localStorage.getItem("userId"));
+  // ── Fetch everything ────────────────────────────────────────────────────────
 
-  const isMyTurn = scores.find((s) => s.activeTurn)?.userId === userId;
-
-  const fetchGameState = useCallback(async () => {
+  const fetchAll = useCallback(async () => {
     try {
-      const [gameData, timelineData, scoresData] = await Promise.all([
-        apiService.get<GameType>(`/games/${gameId}`),
-        apiService.get<EventCardReveal[]>(`/games/${gameId}/timeline`),
-        apiService.get<GamePlayerScore[]>(`/games/${gameId}/scores`),
+      const [g, s, tl] = await Promise.all([
+        api.get<Game>(`/games/${gameId}`),
+        api.get<GamePlayerScore[]>(`/games/${gameId}/scores`),
+        api.get<EventCardReveal[]>(`/games/${gameId}/timeline`),
       ]);
-      setGame(gameData);
-      setTimeline(timelineData);
-      setScores(scoresData);
-      setLoading(false);
+      setGame(g);
+      setScores(s);
+      setTimeline(tl);
 
-      // Sync drawn card index from server state (e.g. after reconnect)
-      const myScore = scoresData.find((s) => s.userId === userId);
-      if (myScore?.currentCardIndex != null) {
-        setDrawnCardIndex(myScore.currentCardIndex);
+      if (g.status === "IN_PROGRESS") {
+        const h = await api.get<HandCard[]>(`/games/${gameId}/hand?userId=${userId}`);
+        setHand(h);
       }
 
-      return { gameData, scoresData };
-    } catch (error) {
-      console.error("Failed to fetch game state:", error);
-      setLoading(false);
-      return null;
-    }
-  }, [apiService, gameId, userId]);
-
-  // Initial fetch + polling
-  useEffect(() => {
-    void fetchGameState();
-
-    pollingRef.current = setInterval(() => {
-      void fetchGameState();
-    }, 2000);
-
-    return () => {
-      if (pollingRef.current) clearInterval(pollingRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameId]);
-
-  // Reset drawn card when turn changes away from us
-  useEffect(() => {
-    if (!isMyTurn) {
-      setDrawnCard(null);
-      setDrawnCardIndex(null);
-      setSelectedPosition(null);
-    }
-  }, [isMyTurn]);
-
-  const handleDraw = async () => {
-    if (drawing) return;
-    setDrawing(true);
-    try {
-      const card = await apiService.post<EventCardGet>(`/games/${gameId}/draw`, {});
-      const scoresData = await apiService.get<GamePlayerScore[]>(`/games/${gameId}/scores`);
-      setScores(scoresData);
-      const myScore = scoresData.find((s) => s.userId === userId);
-      setDrawnCard(card);
-      setDrawnCardIndex(myScore?.currentCardIndex ?? null);
-    } catch (error) {
-      console.error("Failed to draw card:", error);
-      if (error instanceof Error) {
-        message.error(error.message);
+      if (g.status === "FINISHED") {
+        try {
+          const results = await api.post<FinalResult[]>(`/games/${gameId}/finalize`, {});
+          setFinalResults(results);
+        } catch {
+          // finalize already called — ignore
+        }
       }
-    } finally {
-      setDrawing(false);
+    } catch (err) {
+      console.error("Fetch error:", err);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameId, userId]);
 
-  const handlePlace = async () => {
-    if (selectedPosition === null || drawnCardIndex === null || placing) return;
+  useEffect(() => {
+    fetchAll().finally(() => setLoading(false));
+    pollingRef.current = setInterval(fetchAll, 2000);
+    return () => { if (pollingRef.current) clearInterval(pollingRef.current); };
+  }, [fetchAll]);
 
-    setPlacing(true);
+  useEffect(() => {
+    if (game?.status === "FINISHED" && pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  }, [game?.status]);
+
+  // ── Actions ─────────────────────────────────────────────────────────────────
+
+  const myScore = scores.find((s) => s.userId === userId);
+  const isMyTurn = myScore?.activeTurn ?? false;
+
+  function handleSelectCard(deckIndex: number) {
+    if (!isMyTurn) return;
+    setSelectedCard((prev) => (prev === deckIndex ? null : deckIndex));
+  }
+
+  async function handlePlaceCard(position: number) {
+    if (!isMyTurn || selectedCard === null) return;
     try {
-      const result = await apiService.post<PlacementResult>(`/games/${gameId}/moves`, {
-        cardIndex: drawnCardIndex,
-        position: selectedPosition,
+      const result = await api.post<PlacementResult>(`/games/${gameId}/moves`, {
+        cardIndex: selectedCard,
+        position,
       });
-
-      setLastResult(result);
-
-      const activePlayer = scores.find((s) => s.activeTurn);
-      const playerName = activePlayer?.username ?? "Unknown";
-      setLogs((prev) => [
-        ...prev,
-        {
-          player: playerName,
-          action: `placed ${result.title} (${result.year}) — ${result.correct ? "Correct" : "Incorrect"}`,
-        },
-      ]);
-
-      if (result.correct) {
-        message.success(`Correct! ${result.title} — ${result.year}`);
-      } else {
-        message.error(`Incorrect! ${result.title} was actually ${result.year}`);
-      }
-
-      setDrawnCard(null);
-      setDrawnCardIndex(null);
-      setSelectedPosition(null);
-
-      await fetchGameState();
-    } catch (error) {
-      console.error("Failed to place card:", error);
-      if (error instanceof Error) {
-        message.error(error.message);
-      }
-    } finally {
-      setPlacing(false);
+      showToast(
+        result.correct
+          ? `✓ Correct! ${result.title} (${result.year})`
+          : `✗ Wrong! ${result.title} was from ${result.year}`,
+        result.correct,
+      );
+      setSelectedCard(null);
+      await fetchAll();
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Error placing card", null);
     }
-  };
+  }
+
+  // ── Loading ─────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
-      <div className={styles.page} style={{ justifyContent: "center", alignItems: "center" }}>
-        <Spin size="large" />
+      <div style={S.center}>
+        <div style={{ color: "#e3cb2c", fontSize: "18px" }}>Loading game…</div>
       </div>
     );
   }
 
-  const myScore = scores.find((s) => s.userId === userId);
+  if (!game) {
+    return (
+      <div style={S.center}>
+        <div style={{ color: "#e74c3c" }}>Game not found.</div>
+        <button style={S.btn("ghost")} onClick={() => router.push("/")}>Back to Home</button>
+      </div>
+    );
+  }
+
+  // ── Results ─────────────────────────────────────────────────────────────────
+
+  if (game.status === "FINISHED") {
+    if (!finalResults) {
+      return <div style={S.center}><div style={{ color: "#e3cb2c" }}>Loading results…</div></div>;
+    }
+    const sorted = [...finalResults].sort((a, b) => b.score - a.score);
+    return (
+      <div style={S.center}>
+        <h1 style={{ color: "#e3cb2c", marginBottom: "4px" }}>Game Over!</h1>
+        <div style={S.resultsCard}>
+          <div style={S.panelTitle}>Final Results</div>
+          {sorted.map((r, i) => (
+            <div key={r.userId} style={S.resultRow(r.winner)}>
+              <span style={{ fontWeight: r.winner ? "bold" : "normal" }}>
+                {i + 1}. {r.username} {r.winner ? "👑" : ""}
+              </span>
+              <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>{r.score} pts</span>
+              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)" }}>
+                {r.correctPlacements}✓ / {r.incorrectPlacements}✗
+              </span>
+            </div>
+          ))}
+        </div>
+        <button style={S.btn("primary")} onClick={() => router.push("/")}>Back to Home</button>
+      </div>
+    );
+  }
+
+  // ── Game ────────────────────────────────────────────────────────────────────
+
+  const activePlayer = scores.find((s) => s.activeTurn);
 
   return (
-    <div className={styles.page}>
-      {/* Top Bar */}
-      <div className={styles.topBar}>
-        <div className={styles.topBarLeft}>
-          <span className={styles.modeLabel}>Timeline Mode</span>
-          <span className={styles.topicLabel}>{game?.era ?? ""}</span>
-          <span className={styles.lobbyCode}>Lobby Code: {game?.lobbyCode ?? ""}</span>
+    <div style={S.page}>
+      {/* Toast notification */}
+      {toast && <div style={S.toast(toast.correct)}>{toast.msg}</div>}
+
+      {/* Header */}
+      <div style={S.header}>
+        <h1 style={S.title}>Timeline — {game.era}</h1>
+        <div style={{ display: "flex", gap: "20px", fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>
+          <span>Deck: <strong style={{ color: "#e3cb2c" }}>{game.cardsRemaining}</strong> left</span>
+          <span>Timeline: <strong style={{ color: "#e3cb2c" }}>{game.timelineSize}</strong></span>
+          <span style={{ color: "#e3cb2c" }}>{game.difficulty}</span>
         </div>
-        <div className={styles.topBarRight}>
-          <span className={styles.turnsLeft}>{game?.cardsRemaining ?? 0} cards left</span>
-          <Button className={styles.leaveBtn} onClick={() => router.push("/profile")}>
-            Leave Game
-          </Button>
+        <div style={{ fontSize: "13px" }}>
+          {isMyTurn
+            ? <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>⭐ Your turn!</span>
+            : activePlayer
+              ? <span style={{ color: "rgba(255,255,255,0.7)" }}>Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong></span>
+              : null}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className={styles.content}>
-        <div className={styles.leftSidebar}>
-          <PlayersPanel scores={scores} currentUserId={userId} />
-          <StatsPanel
-            score={myScore?.score ?? 0}
-            cardsRemaining={game?.cardsRemaining ?? 0}
-            streak={myScore?.correctStreak ?? 0}
-          />
+      {/* Grid */}
+      <div style={S.gameGrid}>
+
+        {/* Left: Players */}
+        <div style={S.panel}>
+          <div style={S.panelTitle}>Players</div>
+          {scores
+            .slice()
+            .sort((a, b) => a.turnOrder - b.turnOrder)
+            .map((s) => (
+              <div key={s.userId} style={S.playerRow(s.activeTurn, s.userId === userId)}>
+                <div>
+                  <div style={{ fontWeight: s.userId === userId ? "bold" : "normal" }}>
+                    {s.username}{s.userId === userId ? " (you)" : ""}
+                  </div>
+                  <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginTop: "2px" }}>
+                    {s.cardsInHand} cards{s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
+                  </div>
+                </div>
+                <span style={S.badge}>{s.score}</span>
+              </div>
+            ))}
         </div>
 
-        <div className={styles.center}>
-          <Timeline cards={timeline} selectedPosition={selectedPosition} onSelectPosition={setSelectedPosition} />
-          {lastResult && (
-            <div style={{ color: lastResult.correct ? "#4caf50" : "#f44336", fontWeight: "bold", fontSize: "0.9rem" }}>
-              {lastResult.correct ? "Correct!" : "Incorrect!"} {lastResult.title} — {lastResult.year}
+        {/* Center: Timeline + Hand */}
+        <div>
+          {/* Timeline */}
+          <div style={S.timelineArea}>
+            <div style={S.panelTitle}>
+              Timeline
+              {selectedCard !== null && isMyTurn && (
+                <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: "normal", marginLeft: "8px" }}>
+                  — click a slot to place
+                </span>
+              )}
             </div>
-          )}
-          <CurrentCard
-            drawnCard={drawnCard}
-            isMyTurn={isMyTurn}
-            onDraw={handleDraw}
-            drawing={drawing}
-            onPlace={handlePlace}
-            onEarlier={() => setSelectedPosition((p) => (p === null ? 0 : p > 0 ? p - 1 : 0))}
-            onLater={() => setSelectedPosition((p) => (p === null ? timeline.length : p < timeline.length ? p + 1 : timeline.length))}
-            placing={placing}
-            disabled={selectedPosition === null || drawnCardIndex === null}
-          />
+            <div style={S.timelineRow}>
+              {/* Slot before first card */}
+              <SlotButton
+                position={0}
+                active={hoveredSlot === 0 && selectedCard !== null && isMyTurn}
+                canPlace={selectedCard !== null && isMyTurn}
+                onHover={setHoveredSlot}
+                onPlace={handlePlaceCard}
+              />
+
+              {timeline.map((card, i) => (
+                <div key={card.id} style={{ display: "flex", alignItems: "center" }}>
+                  <div style={S.timelineCard}>
+                    {card.imageUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={card.imageUrl} alt={card.title} style={S.cardImg} />
+                    )}
+                    <div style={{ lineHeight: "1.3" }}>{card.title}</div>
+                    <div style={S.cardYear}>{card.year}</div>
+                  </div>
+                  <SlotButton
+                    position={i + 1}
+                    active={hoveredSlot === i + 1 && selectedCard !== null && isMyTurn}
+                    canPlace={selectedCard !== null && isMyTurn}
+                    onHover={setHoveredSlot}
+                    onPlace={handlePlaceCard}
+                  />
+                </div>
+              ))}
+
+              {timeline.length === 0 && (
+                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", margin: "auto", paddingLeft: "16px" }}>
+                  No cards placed yet — place the first one!
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Hand */}
+          <div style={S.panel}>
+            <div style={S.panelTitle}>
+              Your Hand ({hand.length} cards)
+              {!isMyTurn && (
+                <span style={{ color: "rgba(255,255,255,0.45)", fontWeight: "normal", marginLeft: "6px" }}>
+                  — waiting for your turn
+                </span>
+              )}
+            </div>
+            {hand.length === 0 ? (
+              <div style={{ color: "rgba(255,255,255,0.45)", textAlign: "center", padding: "16px 0", fontSize: "13px" }}>
+                No cards in hand
+              </div>
+            ) : (
+              <div style={S.handRow}>
+                {hand.map((card) => (
+                  <div
+                    key={card.deckIndex}
+                    style={S.handCard(selectedCard === card.deckIndex)}
+                    onClick={() => handleSelectCard(card.deckIndex)}
+                    title={isMyTurn ? "Click to select, then click a timeline slot" : "Not your turn"}
+                  >
+                    {card.imageUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={card.imageUrl} alt={card.title} style={S.cardImg} />
+                    )}
+                    <div style={{ lineHeight: "1.3" }}>{card.title}</div>
+                    {selectedCard === card.deckIndex && (
+                      <div style={{ color: "#e3cb2c", marginTop: "4px", fontSize: "10px" }}>✓ Selected</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className={styles.rightSidebar}>
-          <GameLog logs={logs} />
+        {/* Right: My Stats + How to Play */}
+        <div style={S.panel}>
+          <div style={S.panelTitle}>Your Stats</div>
+          {myScore ? (
+            <div style={{ fontSize: "13px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <StatRow label="Score" value={<strong style={{ color: "#e3cb2c", fontSize: "15px" }}>{myScore.score}</strong>} />
+              <StatRow label="Cards in hand" value={myScore.cardsInHand} />
+              <StatRow label="Streak" value={`${myScore.correctStreak} 🔥`} />
+              <StatRow label="Best streak" value={myScore.bestStreak} />
+            </div>
+          ) : (
+            <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>Not in this game</div>
+          )}
+
+          <div style={{ marginTop: "22px" }}>
+            <div style={S.panelTitle}>How to Play</div>
+            <ol style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)", paddingLeft: "16px", lineHeight: "1.9", margin: 0 }}>
+              <li>On your turn, select a card from your hand</li>
+              <li>Click a slot on the timeline to place it</li>
+              <li>Correct → one less card in hand</li>
+              <li>Wrong → card discarded, draw a new one</li>
+              <li>Goal: be one of the first 3 players with 0 cards</li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default Game;
+// ─── Small helper components ──────────────────────────────────────────────────
+
+function SlotButton({
+  position,
+  active,
+  canPlace,
+  onHover,
+  onPlace,
+}: {
+  position: number;
+  active: boolean;
+  canPlace: boolean;
+  onHover: (pos: number | null) => void;
+  onPlace: (pos: number) => void;
+}) {
+  return (
+    <div
+      style={{
+        minWidth: active ? "16px" : "8px",
+        height: "110px",
+        background: active ? "rgba(227,203,44,0.35)" : "rgba(255,255,255,0.08)",
+        border: active ? "2px dashed #e3cb2c" : "1px dashed rgba(255,255,255,0.15)",
+        borderRadius: "6px",
+        cursor: canPlace ? "pointer" : "default",
+        flexShrink: 0,
+        transition: "all 0.15s",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "14px",
+        color: active ? "#e3cb2c" : "transparent",
+      }}
+      onClick={() => canPlace && onPlace(position)}
+      onMouseEnter={() => canPlace && onHover(position)}
+      onMouseLeave={() => onHover(null)}
+    >
+      {active ? "+" : ""}
+    </div>
+  );
+}
+
+function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <span style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
