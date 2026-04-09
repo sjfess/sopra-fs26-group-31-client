@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import { Spin } from "antd";
 import Navbar from "@/profile/[id]/components/Navbar";
@@ -15,8 +15,8 @@ const Profile: React.FC = () => {
     const router = useRouter();
     const { id } = useParams();
     const apiService = useApi();
-    const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
-    const { value: loggedInUserId, clear: clearUserId } = useLocalStorage<string>("userId", "");
+    const { value: token, clear: clearToken } = useSessionStorage<string>("token", "");
+    const { value: loggedInUserId, clear: clearUserId } = useSessionStorage<string>("userId", "");
     const [user, setUser] = useState<User | null>(null);
     const [isOwnProfile, setIsOwnProfile] = useState<boolean | null>(null);
     const [mounted, setMounted] = useState(false);
@@ -49,7 +49,13 @@ const Profile: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            await apiService.post("/auth/logout", {});
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/auth/logout`, {
+                method: "POST",
+                headers: {
+                    "Authorization": token,
+                    "Content-Type": "application/json",
+                },
+            });
         } catch {
             // proceed anyway
         }

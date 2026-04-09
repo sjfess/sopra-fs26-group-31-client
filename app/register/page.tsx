@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Button, Form, Input, App } from "antd";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 
 
 interface FormFieldProps {
@@ -18,9 +18,9 @@ const Register: React.FC = () => {
     const apiService = useApi();
     const [form] = Form.useForm();
     const { message } = App.useApp();
-    const { set: setToken } = useLocalStorage<string>("token", "");
-    const { set: setId } = useLocalStorage<number>("userId", 0);
-    const { set: setUsername } = useLocalStorage<string>("username", "");
+    const { set: setToken } = useSessionStorage<string>("token", "");
+    const { set: setId } = useSessionStorage<number>("userId", 0);
+    const { set: setUsername } = useSessionStorage<string>("username", "");
 
 
 

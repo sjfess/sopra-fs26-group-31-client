@@ -8,3 +8,18 @@ export interface User {
   totalWins: number | null;
   totalPoints: number | null;
 }
+
+export interface FriendRequest {
+  id: number;
+  senderId: number;
+  senderUsername: string;
+  receiverId: number;
+  receiverUsername: string;
+  status: string;
+}
+
+export interface Friend {
+  id: number;
+  username: string;
+  status: string;
+}

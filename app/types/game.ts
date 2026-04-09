@@ -29,3 +29,10 @@ export type ChatMessageGetDTO = {
     message: string;
     timestamp: string;
 }
+
+export interface GameInvite {
+    id: number;
+    gameId: number;
+    lobbyCode: string;
+    fromUsername: string;
+}
