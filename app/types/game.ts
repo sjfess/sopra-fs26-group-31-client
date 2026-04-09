@@ -4,9 +4,8 @@ export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 export interface PlayerSummary {
     id: number;
     username: string;
-    online?:boolean;
+    online?: boolean;
 }
-
 
 export interface Game {
     id: number;
@@ -28,4 +27,36 @@ export type ChatMessageGetDTO = {
     username: string;
     message: string;
     timestamp: string;
+}
+
+export interface EventCardGet {
+    id: number;
+    title: string;
+    imageUrl: string;
+}
+
+export interface EventCardReveal {
+    id: number;
+    title: string;
+    year: number;
+    imageUrl: string;
+}
+
+export interface PlacementResult {
+    correct: boolean;
+    title: string;
+    year: number;
+    imageUrl: string;
+    timelineSize: number;
+}
+
+export interface GamePlayerScore {
+    userId: number;
+    username: string;
+    score: number;
+    turnOrder: number;
+    activeTurn: boolean;
+    correctStreak: number;
+    bestStreak: number;
+    currentCardIndex: number | null;
 }
