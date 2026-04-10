@@ -19,7 +19,7 @@ interface FinalResult {
 const S = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0f2557 0%, #1a3570 100%)",
+    background: "#0f2557",
     color: "#fff",
     fontFamily: "Georgia, serif",
     padding: "16px",
@@ -40,8 +40,9 @@ const S = {
     alignItems: "center",
     marginBottom: "16px",
     padding: "12px 16px",
-    background: "rgba(255,255,255,0.08)",
-    borderRadius: "10px",
+    background: "#1a3570",
+    border: "1px solid #e3cb2c",
+    borderRadius: "8px",
     flexWrap: "wrap" as const,
     gap: "8px",
   } as React.CSSProperties,
@@ -61,8 +62,9 @@ const S = {
   } as React.CSSProperties,
 
   panel: {
-    background: "rgba(255,255,255,0.07)",
-    borderRadius: "10px",
+    background: "#1a3570",
+    border: "1px solid #e3cb2c",
+    borderRadius: "8px",
     padding: "14px",
   } as React.CSSProperties,
 
@@ -87,8 +89,8 @@ const S = {
     background: active
         ? "rgba(227,203,44,0.2)"
         : isMe
-            ? "rgba(255,255,255,0.1)"
-            : "rgba(255,255,255,0.04)",
+            ? "rgba(227,203,44,0.08)"
+            : "transparent",
     border: active ? "1px solid #e3cb2c" : "1px solid transparent",
     fontSize: "12px",
   }),
@@ -103,8 +105,9 @@ const S = {
   } as React.CSSProperties,
 
   timelineArea: {
-    background: "rgba(255,255,255,0.05)",
-    borderRadius: "10px",
+    background: "#0f2557",
+    border: "1px solid rgba(227,203,44,0.3)",
+    borderRadius: "8px",
     padding: "14px",
     marginBottom: "14px",
   } as React.CSSProperties,
@@ -121,8 +124,8 @@ const S = {
   timelineCard: {
     minWidth: "88px",
     maxWidth: "88px",
-    background: "rgba(255,255,255,0.1)",
-    border: "1px solid rgba(255,255,255,0.2)",
+    background: "#1a3570",
+    border: "1px solid rgba(227,203,44,0.3)",
     borderRadius: "8px",
     padding: "6px",
     textAlign: "center" as const,
@@ -146,9 +149,9 @@ const S = {
 
   handCard: (selected: boolean): React.CSSProperties => ({
     width: "96px",
-    background: selected ? "rgba(227,203,44,0.2)" : "rgba(255,255,255,0.08)",
-    border: selected ? "2px solid #e3cb2c" : "2px solid rgba(255,255,255,0.12)",
-    borderRadius: "10px",
+    background: selected ? "rgba(227,203,44,0.2)" : "#1a3570",
+    border: selected ? "2px solid #e3cb2c" : "2px solid rgba(227,203,44,0.3)",
+    borderRadius: "8px",
     padding: "8px",
     textAlign: "center" as const,
     cursor: "pointer",
@@ -159,13 +162,13 @@ const S = {
   btn: (variant: "primary" | "ghost"): React.CSSProperties => ({
     padding: "8px 20px",
     borderRadius: "8px",
-    border: "none",
+    border: variant === "primary" ? "none" : "1px solid #e3cb2c",
     cursor: "pointer",
     fontFamily: "Georgia, serif",
     fontWeight: "bold",
     fontSize: "13px",
-    background: variant === "primary" ? "#e3cb2c" : "rgba(255,255,255,0.15)",
-    color: variant === "primary" ? "#0f2557" : "#fff",
+    background: variant === "primary" ? "#e3cb2c" : "transparent",
+    color: variant === "primary" ? "#0f2557" : "#e3cb2c",
   }),
 
   toast: (correct: boolean | null): React.CSSProperties => ({
@@ -185,7 +188,8 @@ const S = {
   }),
 
   resultsCard: {
-    background: "rgba(255,255,255,0.07)",
+    background: "#1a3570",
+    border: "1px solid #e3cb2c",
     borderRadius: "12px",
     padding: "24px",
     maxWidth: "520px",
@@ -199,7 +203,7 @@ const S = {
     padding: "10px 14px",
     borderRadius: "8px",
     marginBottom: "8px",
-    background: winner ? "rgba(227,203,44,0.15)" : "rgba(255,255,255,0.05)",
+    background: winner ? "rgba(227,203,44,0.15)" : "transparent",
     border: winner ? "1px solid #e3cb2c" : "1px solid transparent",
   }),
 
@@ -360,7 +364,7 @@ export default function TimelineGamePage() {
                 {i + 1}. {r.username} {r.winner ? "👑" : ""}
               </span>
                   <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>{r.score} pts</span>
-                  <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)" }}>
+                  <span style={{ fontSize: "11px", color: "#cdd8f0" }}>
                 {r.correctPlacements}✓ / {r.incorrectPlacements}✗
               </span>
                 </div>
@@ -379,7 +383,7 @@ export default function TimelineGamePage() {
 
         <div style={S.header}>
           <h1 style={S.title}>Timeline — {game.era}</h1>
-          <div style={{ display: "flex", gap: "20px", fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>
+          <div style={{ display: "flex", gap: "20px", fontSize: "13px", color: "#cdd8f0" }}>
             <span>Deck: <strong style={{ color: "#e3cb2c" }}>{game.cardsRemaining}</strong> left</span>
             <span>Timeline: <strong style={{ color: "#e3cb2c" }}>{game.timelineSize}</strong></span>
             <span style={{ color: "#e3cb2c" }}>{game.difficulty}</span>
@@ -388,7 +392,7 @@ export default function TimelineGamePage() {
             {isMyTurn
                 ? <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>⭐ Your turn!</span>
                 : activePlayer
-                    ? <span style={{ color: "rgba(255,255,255,0.7)" }}>Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong></span>
+                    ? <span style={{ color: "#cdd8f0" }}>Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong></span>
                     : null}
           </div>
         </div>
@@ -405,7 +409,7 @@ export default function TimelineGamePage() {
                         <div style={{ fontWeight: s.userId === userId ? "bold" : "normal" }}>
                           {s.username}{s.userId === userId ? " (you)" : ""}
                         </div>
-                        <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginTop: "2px" }}>
+                        <div style={{ fontSize: "10px", color: "#cdd8f0", marginTop: "2px" }}>
                           {s.cardsInHand} cards{s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
                         </div>
                       </div>
@@ -419,7 +423,7 @@ export default function TimelineGamePage() {
               <div style={S.panelTitle}>
                 Timeline
                 {selectedCard !== null && isMyTurn && (
-                    <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: "normal", marginLeft: "8px" }}>
+                    <span style={{ color: "#cdd8f0", fontWeight: "normal", marginLeft: "8px" }}>
                   — click a slot to place
                 </span>
                 )}
@@ -453,7 +457,7 @@ export default function TimelineGamePage() {
                 ))}
 
                 {timeline.length === 0 && (
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", margin: "auto", paddingLeft: "16px" }}>
+                    <div style={{ color: "#cdd8f0", fontSize: "13px", margin: "auto", paddingLeft: "16px" }}>
                       No cards placed yet — place the first one!
                     </div>
                 )}
@@ -464,13 +468,13 @@ export default function TimelineGamePage() {
               <div style={S.panelTitle}>
                 Your Hand ({hand.length} cards)
                 {!isMyTurn && (
-                    <span style={{ color: "rgba(255,255,255,0.45)", fontWeight: "normal", marginLeft: "6px" }}>
+                    <span style={{ color: "#cdd8f0", fontWeight: "normal", marginLeft: "6px" }}>
                   — waiting for your turn
                 </span>
                 )}
               </div>
               {hand.length === 0 ? (
-                  <div style={{ color: "rgba(255,255,255,0.45)", textAlign: "center", padding: "16px 0", fontSize: "13px" }}>
+                  <div style={{ color: "#cdd8f0", textAlign: "center", padding: "16px 0", fontSize: "13px" }}>
                     No cards in hand
                   </div>
               ) : (
@@ -506,12 +510,12 @@ export default function TimelineGamePage() {
                   <StatRow label="Best streak" value={myScore.bestStreak} />
                 </div>
             ) : (
-                <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>Not in this game</div>
+                <div style={{ color: "#cdd8f0", fontSize: "12px" }}>Not in this game</div>
             )}
 
             <div style={{ marginTop: "22px" }}>
               <div style={S.panelTitle}>How to Play</div>
-              <ol style={{ fontSize: "11px", color: "rgba(255,255,255,0.6)", paddingLeft: "16px", lineHeight: "1.9", margin: 0 }}>
+              <ol style={{ fontSize: "11px", color: "#cdd8f0", paddingLeft: "16px", lineHeight: "1.9", margin: 0 }}>
                 <li>On your turn, select a card from your hand</li>
                 <li>Click a slot on the timeline to place it</li>
                 <li>Correct → one less card in hand</li>
@@ -551,8 +555,8 @@ function SlotButton({
           style={{
             minWidth: active ? "16px" : "8px",
             height: "110px",
-            background: active ? "rgba(227,203,44,0.35)" : "rgba(255,255,255,0.08)",
-            border: active ? "2px dashed #e3cb2c" : "1px dashed rgba(255,255,255,0.15)",
+            background: active ? "rgba(227,203,44,0.35)" : "#0f2557",
+            border: active ? "2px dashed #e3cb2c" : "1px dashed rgba(227,203,44,0.2)",
             borderRadius: "6px",
             cursor: canPlace ? "pointer" : "default",
             flexShrink: 0,
@@ -575,7 +579,7 @@ function SlotButton({
 function StatRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
+        <span style={{ color: "#cdd8f0" }}>{label}</span>
         <span>{value}</span>
       </div>
   );
