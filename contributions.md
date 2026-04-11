@@ -53,20 +53,31 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)** | 2026-03-30  | [7354064](https://github.com/sjfess/sopra-fs26-group-31-server/commit/735406425e49a4cf4142f0d7199fdb842999bb30)| Implemented final result aggregation for completed games, including total points, wins, and correct/incorrect placement statistics, and added backend/controller tests for finalization. Task #39 | This completes the backend logic for end-of-game result persistence and makes lifetime player statistics update automatically after each finished game. |
+|                    | 2026-04-04   | [8046a80](https://github.com/sjfess/sopra-fs26-group-31-server/commit/8046a808bccc86947df8d830b76ed680fbc63b20) | Implemented time- and streak-based scoring for Timeline Mode by extending GamePlayer with streak tracking, updating GameService to award points based on remaining time and consecutive correct placements, resetting streaks on wrong moves and turn timeout, and adding/adapting backend tests. Task #29| This completes the core backend logic for dynamic scoring in Timeline Mode and fulfills the user story requirement that points decrease over time and bonus points are awarded for consecutive correct answers.|
+| **[@Fanelock](https://github.com/Fanelock)** | 01.04.2026   | [6018338](https://github.com/sjfess/sopra-fs26-group-31-server/commit/60183386eb64057869f2cad12b4b6ed0cacffaea), [d90e360](https://github.com/sjfess/sopra-fs26-group-31-server/commit/d90e36098c3ef21a4bc77bd96a2a8f876faa3b94) | Implemented Turn Timeout detection, backend for broadcasting turn timeout to clientside as well as tests for said functions | The contribution is relevant to ensure smooth game flow so that when a players turn is over, the next players turn is started even if the first player didnt play a card |
+|                    | 05.04.2026   | [f72cf42](https://github.com/sjfess/sopra-fs26-group-31-server/commit/f72cf424367732fccf3bf3f7cd77c431377ad008), [c0f8c5f](https://github.com/sjfess/sopra-fs26-group-31-server/commit/c0f8c5f21835ce52714f38bc7233471b2aa364dc) | Implemented Persistent data storage so that user data gets saved even when server gets shut down or a new deployment is made. Game instances are deleted after conclusion to avoid database bloating | Contribution is relevant as to make sure that user data gets saved so that users keep their account as well as their score for the overall global leaderboard |
 | **[@marcokingo](https://github.com/marcokingo)** | 05.04.26 | [Commit 5212349](https://github.com/sjfess/sopra-fs26-group-31-server/commit/521234993abc2c35d6cc3a42c054dc609b2c9f23) | Added placement API test for timeline card placement ([task #27](https://github.com/sjfess/sopra-fs26-group-31-server/issues/27)) | Ensures the placement API endpoint behaves correctly, covering validation logic that is critical for the core gameplay mechanic of placing cards on the timeline. |
 |                    | 03.04.26 | [Commit 9a467ba](https://github.com/sjfess/sopra-fs26-group-31-client/commit/9a467ba550e5b292367836ebf8bae9dc80055f94), [Commit f34a9a7](https://github.com/sjfess/sopra-fs26-group-31-client/commit/f34a9a743678bd947e116ee43473806a68a7356e) | Built timeline UI with placement interaction and game logic ([task #3](https://github.com/sjfess/sopra-fs26-group-31-client/issues/3)) | The timeline UI is the central interface players use during the game. This contribution implements both the visual component and the frontend logic for card placement, completing the client-side gameplay experience. |
+| ****[@sjfess](https://github.com/sjfess)**** | 03.04.26   | [Commit 
+13b3144](13b31443e6a6fd7a2f3af0d572c5b3c2effa367d) | Implemented the Game Lobby UI and Game Lobby logic| A user needs to be able to create a game and join a game and further the host of the game lobby needs to be able to adjust the settings of the game lobby itself. |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
+
+## Contributions Week 3 - [06.04.2026] to [12.04.2026]
+
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
----
-
-## Contributions Week 3 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
 
 ---
 
