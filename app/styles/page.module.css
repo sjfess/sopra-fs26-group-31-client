@@ -130,3 +130,324 @@
 .btnSecondary:hover {
   background-color: rgb(227 203 44) !important;
 }
+
+/* Results Page */
+
+/* Card */
+.resultsCard {
+  background: #102b6a;
+  border: 2px solid #e3cb2c;
+  border-radius: 8px;
+  padding: 32px 40px;
+  width: 100%;
+  max-width: 860px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Titles */
+.resultsCardTitle {
+  color: #e3cb2c;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.resultsCardSubtitle {
+  color: #cdd8f0;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Winner Box */
+.resultsWinnerBox {
+  background: #0a1a3e;
+  border: 2px solid #e3cb2c;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 24px;
+  margin-bottom: 28px;
+}
+
+.resultsWinnerBadge {
+  background: #0f2557;
+  border: 2px solid #e3cb2c;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e3cb2c;
+  font-weight: bold;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.resultsWinnerName {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.resultsWinnerStats {
+  color: #e3cb2c;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* Layout */
+.resultsContentRow {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.resultsTableWrap {
+  flex: 1;
+}
+
+/* Table */
+.resultsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.resultsTh {
+  color: #e3cb2c;
+  font-weight: bold;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e3cb2c44;
+}
+
+.resultsThCenter {
+  color: #e3cb2c;
+  font-weight: bold;
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid #e3cb2c44;
+}
+
+.resultsTd {
+  color: #cdd8f0;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ffffff18;
+  text-align: left;
+}
+
+.resultsTdCenter {
+  color: #cdd8f0;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ffffff18;
+  text-align: center;
+}
+
+/* Summary */
+.resultsSummaryBox {
+  background: #0a1a3e;
+  border: 2px solid #e3cb2c44;
+  border-radius: 8px;
+  padding: 16px 20px;
+  min-width: 190px;
+}
+
+.resultsSummaryTitle {
+  color: #e3cb2c;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.resultsSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.resultsSummaryLabel {
+  color: #cdd8f0;
+}
+
+.resultsSummaryValue {
+  color: #e3cb2c;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+/* Button */
+.resultsBtnRematch {
+  background-color: #c0392b !important;
+  border-color: #c0392b !important;
+  color: #fff !important;
+  font-weight: bold !important;
+  border-radius: 999px !important;
+  padding: 0 32px !important;
+  height: 46px !important;
+}
+
+/* About Page */
+
+.aboutPage {
+  background-color: #0f2557;
+  min-height: 100vh;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.aboutHero {
+  text-align: center;
+  padding: 64px 24px 40px;
+  border-bottom: 1px solid rgba(227, 203, 44, 0.2);
+}
+
+.aboutHeroTitle {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #e3cb2c;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.aboutHeroSub {
+  margin-top: 16px;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+.aboutSection {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.aboutSectionTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #e3cb2c;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(227, 203, 44, 0.25);
+  padding-bottom: 10px;
+}
+
+.aboutDivider {
+  border-color: rgba(227, 203, 44, 0.1);
+  margin: 0;
+}
+
+/* Steps grid */
+.aboutStepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.aboutStepCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(227, 203, 44, 0.15);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+
+.aboutStepBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e3cb2c;
+  color: #0f2557;
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.aboutStepTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.aboutStepBody {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* Team grid */
+.aboutTeamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.aboutMemberCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(227, 203, 44, 0.15);
+  border-radius: 12px;
+  padding: 20px 18px;
+  text-align: center;
+}
+
+.aboutMemberName {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.aboutMemberGithub {
+  font-size: 0.82rem;
+  color: #e3cb2c;
+  text-decoration: none;
+}
+
+.aboutMemberGithub:hover {
+  text-decoration: underline;
+}
+
+/* Why box */
+.aboutWhyBox {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(227, 203, 44, 0.15);
+  border-radius: 12px;
+  padding: 28px 32px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.97rem;
+}
+
+/* Back button */
+.aboutBackBtn {
+  display: block;
+  margin: 0 auto 48px;
+  padding: 10px 32px;
+  background-color: transparent;
+  border: 1px solid rgba(227, 203, 44, 0.5);
+  border-radius: 8px;
+  color: #e3cb2c;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.aboutBackBtn:hover {
+  background-color: rgba(227, 203, 44, 0.08);
+}
