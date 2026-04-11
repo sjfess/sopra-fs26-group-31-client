@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "antd";
 import styles from "@/styles/page.module.css";
@@ -10,8 +10,8 @@ import VictorPopup from "@/results/[gameId]/components/VictorPopup";
 
 import { useGameResults } from "@/hooks/useGameResults";
 import { useGameDuration } from "@/hooks/useGameDuration";
-
-// TODO: REMOVE MOCK MODE BEFORE PRODUCTION
+import { getApiDomain } from "@/utils/domain";
+import useSessionStorage from "@/hooks/useSessionStorage";
 
 // Display-name mappings
 
@@ -28,29 +28,34 @@ const MODE_LABELS: Record<string, string> = {
   HISTORY_UNO: "History Uno",
 };
 
-// Component-part
+// Component
 
 export default function ResultsPage() {
   const router = useRouter();
   const { gameId } = useParams() as { gameId: string };
 
-  const FORCE_MOCK = true;
-  const MOCK_DURATION = 18;
+  const [mounted, setMounted] = useState(false);
+  const { value: token } = useSessionStorage<string>("token", "");
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!token) {
+      router.push("/login");
+    }
+  }, [mounted, token]);
 
   const {
     results,
     game,
     loading,
     error,
-    isMock,
     showPopup,
     setShowPopup,
-  } = useGameResults(gameId, FORCE_MOCK);
+  } = useGameResults(gameId);
 
-  const duration = useGameDuration(
-      gameId,
-      FORCE_MOCK ? MOCK_DURATION : undefined
-  );
+  const duration = useGameDuration(gameId);
 
   const winner = useMemo(
       () => results.find((r) => r.winner) ?? results[0],
@@ -68,9 +73,30 @@ export default function ResultsPage() {
       )
       : 0;
 
-  // TODO: Implement once backend rematch endpoint is ready
   const handleRematch = async () => {
-    console.log("Rematch clicked — implement endpoint here");
+    const userId = sessionStorage.getItem("userId");
+    if (!userId) {
+      console.error("No userId in sessionStorage — cannot request rematch.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${getApiDomain()}/games/${gameId}/rematch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: Number(userId) }),
+      });
+
+      if (!res.ok) {
+        console.error("Rematch request failed:", res.status);
+        return;
+      }
+
+      const newGame = await res.json();
+      router.push(`/gamelobby/${newGame.id}`);
+    } catch (e) {
+      console.error("Rematch error:", e);
+    }
   };
 
   if (loading) {
@@ -103,11 +129,6 @@ export default function ResultsPage() {
 
         <main className={styles.main} style={{ padding: "32px 16px" }}>
           <div className={styles.resultsCard}>
-
-            {isMock && (
-                <div className={styles.resultsMockBadge}>
-                </div>
-            )}
 
             <h1 className={styles.resultsCardTitle}>Match Results</h1>
 
@@ -177,9 +198,7 @@ export default function ResultsPage() {
 
                     {duration !== null && (
                         <div className={styles.resultsSummaryRow}>
-                    <span className={styles.resultsSummaryLabel}>
-                      Duration
-                    </span>
+                          <span className={styles.resultsSummaryLabel}>Duration</span>
                           <span className={styles.resultsSummaryValue}>
                       {duration} min
                     </span>
@@ -194,9 +213,7 @@ export default function ResultsPage() {
                     </div>
 
                     <div className={styles.resultsSummaryRow}>
-                  <span className={styles.resultsSummaryLabel}>
-                    Difficulty
-                  </span>
+                      <span className={styles.resultsSummaryLabel}>Difficulty</span>
                       <span className={styles.resultsSummaryValue}>
                     {game.difficulty.charAt(0) +
                         game.difficulty.slice(1).toLowerCase()}
@@ -219,9 +236,7 @@ export default function ResultsPage() {
               <Button
                   size="large"
                   className={styles.resultsBtnRematch}
-                  style={{ opacity: 0.5, cursor: "not-allowed" }}
                   onClick={handleRematch}
-                  disabled
               >
                 Rematch
               </Button>
