@@ -70,17 +70,18 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | 2026-04-08   | [cc55da4](https://github.com/sjfess/sopra-fs26-group-31-server/commit/cc55da417de87cfa24ae2c2bb3868b59fbd2116f) [bbebaab](https://github.com/sjfess/sopra-fs26-group-31-server/commit/bbebaab563f1c903566bab78917fa2e33aede945)| Implemented timeline end-of-game logic based on players finishing their hand, added cards-in-hand tracking to GamePlayer, updated GameService to finalize games when the required number of players have placed all cards or the deck is exhausted, and adapted related service tests. Closes #37| This establishes a practical and finite win condition for Timeline mode, ensures games end reliably before the full deck is exhausted, and aligns backend logic with the intended M3 gameplay flow. |
+|                    | 2026-04-11  | [3ebf4b1](https://github.com/sjfess/sopra-fs26-group-31-server/commit/3ebf4b1be590dcb4cc288664a61c69818b57e055) | Implemented rematch functionality by creating a new game from a finished game, preserving the same players, host, era, difficulty, and game mode. Added backend support across service, controller, entity, repository, and DTO layers, and extended tests to verify rematch creation and behavior. Closes #64 | This enables players to immediately start a new round after a finished match without rebuilding the lobby manually, improves replayability, and keeps rematch handling clean and robust by creating a fresh game instance instead of resetting old game state. |
+| **[@sjfess](https://github.com/sjfess)** | 2026-04-8   | [Commit d07e739](https://github.com/sjfess/sopra-fs26-group-31-client/commit/d07e739cb7826cf6f3b938be8ec835f5ea5b1a34) | Implemented the friends system UI and also adjusted the GameLobby page and Profile page | As a user i want to be able to add friends and create a gamelobby and invite my friends. Also users are able to see which friends are online or offline and who they can invite.|
+|                    | 2026-04-09   | [Commit 928f11f](https://github.com/sjfess/sopra-fs26-group-31-server/commit/928f11fbac8d14f7ec2a6f8ce8e59112dfc365ed) | Implemented the friendsystem logic | To have a working friendssystem the backend needs to carry the logical components to work with the frontend |
+| **[@marcokingo](https://github.com/marcokingo)** | 2026-04-11 | [Commit 3853b5d](https://github.com/sjfess/sopra-fs26-group-31-client/commit/3853b5d75927be81fcacfe2d245db68e9a3ca728) | Skip player turn when timer elapses ([issue #8](https://github.com/sjfess/sopra-fs26-group-31-client/issues/8)) | This contribution is relevant because when a player's timer runs out their turn needs to be automatically skipped to keep the game flow going in multiplayer Timeline Mode. |
+|                    | 2026-04-11 | [Commit 3853b5d](https://github.com/sjfess/sopra-fs26-group-31-client/commit/3853b5d75927be81fcacfe2d245db68e9a3ca728) | Broadcast timeout and turn change to clients ([issue #6](https://github.com/sjfess/sopra-fs26-group-31-client/issues/6)) | This contribution is relevant because all connected clients need to be notified when a turn times out and changes so the UI stays in sync across all players. |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
-
 ## Contributions Week 4 - [Begin Date] to [End Date]
 
 _Continue with the same table format as above._
