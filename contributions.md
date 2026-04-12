@@ -59,8 +59,7 @@ reason).
 |                    | 05.04.2026   | [f72cf42](https://github.com/sjfess/sopra-fs26-group-31-server/commit/f72cf424367732fccf3bf3f7cd77c431377ad008), [c0f8c5f](https://github.com/sjfess/sopra-fs26-group-31-server/commit/c0f8c5f21835ce52714f38bc7233471b2aa364dc) | Implemented Persistent data storage so that user data gets saved even when server gets shut down or a new deployment is made. Game instances are deleted after conclusion to avoid database bloating | Contribution is relevant as to make sure that user data gets saved so that users keep their account as well as their score for the overall global leaderboard |
 | **[@marcokingo](https://github.com/marcokingo)** | 05.04.26 | [Commit 5212349](https://github.com/sjfess/sopra-fs26-group-31-server/commit/521234993abc2c35d6cc3a42c054dc609b2c9f23) | Added placement API test for timeline card placement ([task #27](https://github.com/sjfess/sopra-fs26-group-31-server/issues/27)) | Ensures the placement API endpoint behaves correctly, covering validation logic that is critical for the core gameplay mechanic of placing cards on the timeline. |
 |                    | 03.04.26 | [Commit 9a467ba](https://github.com/sjfess/sopra-fs26-group-31-client/commit/9a467ba550e5b292367836ebf8bae9dc80055f94), [Commit f34a9a7](https://github.com/sjfess/sopra-fs26-group-31-client/commit/f34a9a743678bd947e116ee43473806a68a7356e) | Built timeline UI with placement interaction and game logic ([task #3](https://github.com/sjfess/sopra-fs26-group-31-client/issues/3)) | The timeline UI is the central interface players use during the game. This contribution implements both the visual component and the frontend logic for card placement, completing the client-side gameplay experience. |
-| ****[@sjfess](https://github.com/sjfess)**** | 03.04.26   | [Commit 
-13b3144](13b31443e6a6fd7a2f3af0d572c5b3c2effa367d) | Implemented the Game Lobby UI and Game Lobby logic| A user needs to be able to create a game and join a game and further the host of the game lobby needs to be able to adjust the settings of the game lobby itself. |
+| ****[@sjfess](https://github.com/sjfess)**** | 03.04.26   | [Commit 13b3144](https://github.com/sjfess/sopra-fs26-group-31-client/commit/13b31443e6a6fd7a2f3af0d572c5b3c2effa367d) | Implemented the Game Lobby UI and Game Lobby logic| A user needs to be able to create a game and join a game and further the host of the game lobby needs to be able to adjust the settings of the game lobby itself. |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
@@ -82,9 +81,18 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
-## Contributions Week 4 - [Begin Date] to [End Date]
+## Contributions Week 4 - [13.04.2026] to [19.04.2026]
 
-_Continue with the same table format as above._
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
