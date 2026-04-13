@@ -693,6 +693,8 @@ export default function TimelineGamePage() {
       setScores(s);
       setTimeline(tl);
 
+      if (g.status === "FINISHED") return;
+
       if (g.status === "IN_PROGRESS" && userId !== null) {
         const h = await api.get<HandCard[]>(`/games/${gameId}/hand?userId=${userId}`);
         setHand(h);
@@ -700,14 +702,6 @@ export default function TimelineGamePage() {
         setHand([]);
       }
 
-      if (g.status === "FINISHED") {
-        try {
-          const results = await api.post<FinalResult[]>(`/games/${gameId}/finalize`, {});
-          setFinalResults(results);
-        } catch {
-          // ignore
-        }
-      }
     } catch (err) {
       console.error("Fetch error:", err);
     }
@@ -726,11 +720,14 @@ export default function TimelineGamePage() {
   }, [fetchAll, userId]);
 
   useEffect(() => {
-    if (game?.status === "FINISHED" && pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
+    if (game?.status === "FINISHED") {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+      router.push(`/results/${gameId}`);
     }
-  }, [game?.status]);
+  }, [game?.status, gameId, router]);
 
   const myScore = scores.find((s) => s.userId === userId);
   const isMyTurn = myScore?.activeTurn ?? false;
@@ -811,17 +808,7 @@ export default function TimelineGamePage() {
     );
   }
 
-  if (game.status === "FINISHED") {
-    if (!finalResults) {
-      return (
-          <div style={S.center}>
-            <div style={{ color: "#e3cb2c" }}>Loading results…</div>
-          </div>
-      );
-    }
 
-    return <FinalResultsView finalResults={finalResults} router={router} S={S} />;
-  }
 
   return (
       <div style={S.page}>
