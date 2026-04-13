@@ -7,15 +7,32 @@ import styles from "@/styles/page.module.css";
 export default function Navbar() {
     const router = useRouter();
 
+    const goToProfile = () => {
+        const raw = sessionStorage.getItem("userId");
+        const userId = raw ? JSON.parse(raw) : null;
+        if (userId) {
+            router.push(`/profile/${userId}`);
+        } else {
+            router.push("/login");
+        }
+    };
+
+    const navItems: { label: string; action: () => void }[] = [
+        { label: "Home", action: goToProfile },
+        { label: "Profile", action: goToProfile },
+        { label: "Leaderboard", action: () => router.push("/leaderboard") },
+        { label: "About", action: () => router.push("/about") },
+    ];
+
     return (
         <nav className={styles.navbar}>
             <span className={styles.navTitle}>Historical Reconstruction</span>
 
             <div className={styles.navLinks}>
-                {["Home", "Profile", "Leaderboard", "About"].map((label) => (
-                    <span key={label} onClick={() => router.push(`/${label.toLowerCase()}`)}>
-            {label}
-          </span>
+                {navItems.map((item) => (
+                    <span key={item.label} onClick={item.action}>
+                        {item.label}
+                    </span>
                 ))}
             </div>
 

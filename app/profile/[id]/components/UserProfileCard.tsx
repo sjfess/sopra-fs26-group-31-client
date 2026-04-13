@@ -98,7 +98,12 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
                 <div style={statBoxStyle}>
                     <div style={{ color: "#cdd8f0", fontSize: "0.75rem" }}>Accuracy</div>
                     <div style={{ color: "#e3cb2c", fontWeight: "bold", fontSize: "1.4rem" }}>
-                        0%
+                        {(() => {
+                            const correct = user.totalCorrectPlacements ?? 0;
+                            const incorrect = user.totalIncorrectPlacements ?? 0;
+                            const total = correct + incorrect;
+                            return total > 0 ? `${Math.round((correct / total) * 100)}%` : "N/A";
+                        })()}
                     </div>
                 </div>
             </div>

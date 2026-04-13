@@ -66,8 +66,9 @@ export function useGameResults(gameId: string) {
                 setResults(sorted);
                 setGame(gameData);
 
-                const winner = sorted.find((r) => r.winner);
-                if (winner && winner.username === sessionStorage.getItem("username")) {
+                const storedUsername = sessionStorage.getItem("username");
+                const currentUsername = storedUsername ? JSON.parse(storedUsername) : null;
+                if (currentUsername && sorted.some((r) => r.winner && r.username === currentUsername)) {
                     setShowPopup(true);
                 }
             } catch (e: unknown) {

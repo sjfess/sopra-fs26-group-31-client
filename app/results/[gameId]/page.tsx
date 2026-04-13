@@ -57,21 +57,10 @@ export default function ResultsPage() {
 
   const duration = useGameDuration(gameId);
 
-  const winner = useMemo(
-      () => results.find((r) => r.winner) ?? results[0],
+  const winners = useMemo(
+      () => results.filter((r) => r.winner),
       [results]
   );
-
-  const accuracy = winner
-      ? Math.round(
-          (winner.correctPlacements /
-              Math.max(
-                  winner.correctPlacements + winner.incorrectPlacements,
-                  1
-              )) *
-          100
-      )
-      : 0;
 
   const handleRematch = async () => {
     const userId = sessionStorage.getItem("userId");
@@ -138,19 +127,21 @@ export default function ResultsPage() {
                   : ""}
             </p>
 
-            {winner && (
+            {winners.length > 0 && (
                 <div className={styles.resultsWinnerBox}>
                   <div className={styles.resultsWinnerBadge}>1</div>
-
                   <div>
                     <p className={styles.resultsWinnerName}>
-                      Winner: {winner.username}
+                      {winners.length === 1 ? "Winner" : "Winners"}:{" "}
+                      {winners.map((w) => w.username).join(", ")}
                     </p>
-
                     <p className={styles.resultsWinnerStats}>
-                      {winner.score.toLocaleString()} pts ·{" "}
-                      {winner.correctPlacements} correct placements · Accuracy{" "}
-                      {accuracy}%
+                      {winners[0].score.toLocaleString()} pts ·{" "}
+                      {winners[0].correctPlacements} correct placements · Accuracy{" "}
+                      {Math.round(
+                          (winners[0].correctPlacements /
+                              Math.max(winners[0].correctPlacements + winners[0].incorrectPlacements, 1)) * 100
+                      )}%
                     </p>
                   </div>
                 </div>
@@ -219,14 +210,15 @@ export default function ResultsPage() {
                         game.difficulty.slice(1).toLowerCase()}
                   </span>
                     </div>
-
-                    {winner && (
-                        <div className={styles.resultsSummaryRow}>
-                          <span className={styles.resultsSummaryLabel}>Winner</span>
-                          <span className={styles.resultsSummaryValue}>
-                      {winner.username}
-                    </span>
-                        </div>
+                    {winners.length > 0 && (
+                      <div className={styles.resultsSummaryRow}>
+                        <span className={styles.resultsSummaryLabel}>
+                          {winners.length === 1 ? "Winner" : "Winners"}
+                        </span>
+                        <span className={styles.resultsSummaryValue}>
+                          {winners.map((w) => w.username).join(", ")}
+                        </span>
+                      </div>
                     )}
                   </div>
               )}
@@ -244,7 +236,11 @@ export default function ResultsPage() {
               <Button
                   size="large"
                   className={styles.btnPrimary}
-                  onClick={() => router.push("/")}
+                  onClick={() => {
+                    const raw = sessionStorage.getItem("userId");
+                    const userId = raw ? JSON.parse(raw) : null;
+                    router.push(userId ? `/profile/${userId}` : "/login");
+                  }}
               >
                 Main Menu
               </Button>
@@ -261,9 +257,9 @@ export default function ResultsPage() {
           </div>
         </main>
 
-        {showPopup && winner && (
+        {showPopup && winners.length > 0 && (
             <VictorPopup
-                name={winner.username}
+                name={winners.map((w) => w.username).join(" & ")}
                 onClose={() => setShowPopup(false)}
             />
         )}
