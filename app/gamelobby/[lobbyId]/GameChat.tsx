@@ -23,8 +23,9 @@ export default function GameChat({
         { id: string; from: string; text: string; mine: boolean }[]
     >([]);
 
-    const chatEndRef = useRef<HTMLDivElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
     const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const previousMessageCountRef = useRef(0);
 
     const fetchChat = useCallback(async () => {
         try {
@@ -56,7 +57,16 @@ export default function GameChat({
     }, [fetchChat]);
 
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        const chatContainer = chatContainerRef.current;
+        if (!chatContainer) return;
+
+        const shouldSmoothScroll = previousMessageCountRef.current > 0;
+        chatContainer.scrollTo({
+            top: chatContainer.scrollHeight,
+            behavior: shouldSmoothScroll ? "smooth" : "auto",
+        });
+
+        previousMessageCountRef.current = chatMessages.length;
     }, [chatMessages]);
 
     const handleSendChat = async () => {
@@ -83,6 +93,7 @@ export default function GameChat({
             </div>
 
             <div
+                ref={chatContainerRef}
                 className={styles.chatMessages}
                 role="log"
                 aria-labelledby="chat-label"
@@ -110,7 +121,6 @@ export default function GameChat({
                         </div>
                     ))
                 )}
-                <div ref={chatEndRef} />
             </div>
 
             <div className={styles.chatInputRow}>
