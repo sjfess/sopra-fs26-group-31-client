@@ -83,6 +83,23 @@ reason).
 ---
 ## Contributions Week 4 - [13.04.2026] to [19.04.2026]
 
+## Note: Contributions from Week 3 - [06.04.2026] to [12.04.2026] should count for this week, due to the easter break.
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | 2026-04-15  |[27dcdd8](https://github.com/sjfess/sopra-fs26-group-31-server/commit/27dcdd8ea95c58d71f51a80fceabbac5c5114af9)| Expanded backend test coverage for rematch and game flow edge cases. Added and refined controller and service tests for rematch authorization and invalid requests, drawCard error handling, placeCard invalid states, and finalizeGame failure cases to validate robustness of the new rematch-related backend logic. Closes #64 | These tests strengthen reliability of the rematch and game flow implementation by covering important edge cases and failure paths, reducing the risk of regressions and ensuring the backend behaves correctly under invalid or exceptional conditions. |
+|                    |2026-04-08 or 2026-04-11| See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
+
+## Contributions Week 5 - [20.04.2026] to [26.04.2026]
+
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
@@ -93,12 +110,6 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
----
-
-## Contributions Week 5 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
 
 ---
 
