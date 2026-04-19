@@ -90,8 +90,8 @@ reason).
 | **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | 2026-04-15  |[27dcdd8](https://github.com/sjfess/sopra-fs26-group-31-server/commit/27dcdd8ea95c58d71f51a80fceabbac5c5114af9)| Expanded backend test coverage for rematch and game flow edge cases. Added and refined controller and service tests for rematch authorization and invalid requests, drawCard error handling, placeCard invalid states, and finalizeGame failure cases to validate robustness of the new rematch-related backend logic. Closes #64 | These tests strengthen reliability of the rematch and game flow implementation by covering important edge cases and failure paths, reducing the risk of regressions and ensuring the backend behaves correctly under invalid or exceptional conditions. |
 |                    |2026-04-08 or 2026-04-11| See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
 | **[@Fanelock](https://github.com/Fanelock)** | 11.4.26   | See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@milchazor](https://github.com/milchazor)** |2026-4-19 | [bad7406](https://github.com/sjfess/sopra-fs26-group-31-server/pull/72/changes/bad740610af303d6da60fc0309184ae128ca9a36) | Added Test Cases to Friend Requests and Chat | Not essential, but required for good test coverage |
+|                    | 2026-4-19  | [ddc6feb](https://github.com/sjfess/sopra-fs26-group-31-server/pull/72/changes/ddc6feb5e0a58d1ac78813d7db5ab7c799d35e34) | Moved Turn Timer from backend to frontend| Not essential, but makes game more playable / lets everybody know how much time is left |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
