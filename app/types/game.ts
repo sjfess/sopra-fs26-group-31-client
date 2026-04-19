@@ -70,6 +70,7 @@ export interface GamePlayerScore {
     score: number;
     turnOrder: number;
     activeTurn: boolean;
+    turnStartedAt: string | null;
     correctStreak: number;
     bestStreak: number;
     currentCardIndex: number | null;

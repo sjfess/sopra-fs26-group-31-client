@@ -353,10 +353,12 @@ function getStyles(screen: ScreenSize) {
 function PlayersPanel({
                         scores,
                         userId,
+                        turnSecondsLeft,
                         S,
                       }: {
   scores: GamePlayerScore[];
   userId: number | null;
+  turnSecondsLeft: number;
   S: ReturnType<typeof getStyles>;
 }) {
   return (
@@ -383,7 +385,10 @@ function PlayersPanel({
                       {s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
                     </div>
                   </div>
-                  <span style={S.badge}>{s.score}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    {s.activeTurn && <TurnTimer secondsLeft={turnSecondsLeft} compact />}
+                    <span style={S.badge}>{s.score}</span>
+                  </div>
                 </div>
             ))}
       </div>
@@ -652,8 +657,12 @@ export default function TimelineGamePage() {
   const [userId, setUserId] = useState<number | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string | null>(null);
 
+  const TURN_LIMIT_SECONDS = 30;
+  const [turnSecondsLeft, setTurnSecondsLeft] = useState<number>(TURN_LIMIT_SECONDS);
+
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
@@ -716,6 +725,7 @@ export default function TimelineGamePage() {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
     };
   }, [fetchAll, userId]);
 
@@ -732,6 +742,35 @@ export default function TimelineGamePage() {
   const myScore = scores.find((s) => s.userId === userId);
   const isMyTurn = myScore?.activeTurn ?? false;
   const activePlayer = scores.find((s) => s.activeTurn);
+  const activeTurnStartedAt = activePlayer?.turnStartedAt ?? null;
+
+  // Countdown timer — resets whenever the active player changes.
+  // Uses turnStartedAt from the backend as the source of truth so it
+  // self-corrects on every poll even if the local clock drifts.
+  useEffect(() => {
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    if (!activeTurnStartedAt) {
+      setTurnSecondsLeft(TURN_LIMIT_SECONDS);
+      return;
+    }
+
+    function tick() {
+      const elapsedMs = Date.now() - new Date(activeTurnStartedAt!).getTime();
+      const remaining = Math.max(0, Math.round(TURN_LIMIT_SECONDS - elapsedMs / 1000));
+      setTurnSecondsLeft(remaining);
+    }
+
+    tick();
+    countdownRef.current = setInterval(tick, 1000);
+
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+        countdownRef.current = null;
+      }
+    };
+  }, [activeTurnStartedAt]);
 
   useEffect(() => {
     if (!isMyTurn) {
@@ -827,7 +866,7 @@ export default function TimelineGamePage() {
             <span style={{ color: "#e3cb2c" }}>{game.difficulty}</span>
           </div>
 
-          <div style={{ fontSize: screen === "mobile" ? "12px" : "13px" }}>
+          <div style={{ fontSize: screen === "mobile" ? "12px" : "13px", display: "flex", alignItems: "center", gap: "10px" }}>
             {isMyTurn ? (
                 <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>⭐ Your turn!</span>
             ) : activePlayer ? (
@@ -835,19 +874,22 @@ export default function TimelineGamePage() {
               Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong>
             </span>
             ) : null}
+            {activePlayer && (
+                <TurnTimer secondsLeft={turnSecondsLeft} />
+            )}
           </div>
         </div>
 
         {(screen === "mobile" || screen === "tablet") && (
             <div style={S.mobileTopStats}>
-              <PlayersPanel scores={scores} userId={userId} S={S} />
+              <PlayersPanel scores={scores} userId={userId} turnSecondsLeft={turnSecondsLeft} S={S} />
               <StatsPanel myScore={myScore} S={S} />
             </div>
         )}
 
         <div style={S.gameGrid}>
           <div style={S.desktopSidePanel}>
-            <PlayersPanel scores={scores} userId={userId} S={S} />
+            <PlayersPanel scores={scores} userId={userId} turnSecondsLeft={turnSecondsLeft} S={S} />
           </div>
 
           <div>
@@ -898,6 +940,63 @@ export default function TimelineGamePage() {
               </div>
           )}
         </div>
+      </div>
+  );
+}
+
+function TurnTimer({ secondsLeft, compact = false }: { secondsLeft: number; compact?: boolean }) {
+  const urgent = secondsLeft <= 10;
+  const color = urgent ? "#e74c3c" : secondsLeft <= 20 ? "#f0a500" : "#e3cb2c";
+
+  if (compact) {
+    return (
+        <span
+            style={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              color,
+              minWidth: "26px",
+              textAlign: "right",
+            }}
+        >
+          {secondsLeft}s
+        </span>
+    );
+  }
+
+  const circumference = 2 * Math.PI * 12;
+  const progress = (secondsLeft / 30) * circumference;
+
+  return (
+      <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: urgent ? "rgba(231,76,60,0.12)" : "rgba(255,255,255,0.06)",
+            border: `1px solid ${urgent ? "rgba(231,76,60,0.4)" : "rgba(255,255,255,0.12)"}`,
+            borderRadius: "20px",
+            padding: "4px 10px 4px 6px",
+          }}
+      >
+        <svg width="28" height="28" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx="14" cy="14" r="12" fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="2.5" />
+          <circle
+              cx="14"
+              cy="14"
+              r="12"
+              fill="none"
+              stroke={color}
+              strokeWidth="2.5"
+              strokeDasharray={`${circumference}`}
+              strokeDashoffset={`${circumference - progress}`}
+              strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 0.9s linear, stroke 0.3s" }}
+          />
+        </svg>
+        <span style={{ fontSize: "13px", fontWeight: "bold", color, minWidth: "24px" }}>
+          {secondsLeft}s
+        </span>
       </div>
   );
 }
