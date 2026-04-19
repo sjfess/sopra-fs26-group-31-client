@@ -7,6 +7,8 @@ export interface User {
   totalGamesPlayed: number | null;
   totalWins: number | null;
   totalPoints: number | null;
+  totalCorrectPlacements?: number;
+  totalIncorrectPlacements?: number;
 }
 
 export interface FriendRequest {
