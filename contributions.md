@@ -89,8 +89,7 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | 2026-04-15  |[27dcdd8](https://github.com/sjfess/sopra-fs26-group-31-server/commit/27dcdd8ea95c58d71f51a80fceabbac5c5114af9)| Expanded backend test coverage for rematch and game flow edge cases. Added and refined controller and service tests for rematch authorization and invalid requests, drawCard error handling, placeCard invalid states, and finalizeGame failure cases to validate robustness of the new rematch-related backend logic. Closes #64 | These tests strengthen reliability of the rematch and game flow implementation by covering important edge cases and failure paths, reducing the risk of regressions and ensuring the backend behaves correctly under invalid or exceptional conditions. |
 |                    |2026-04-08 or 2026-04-11| See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@Fanelock](https://github.com/Fanelock)** | 2026-04-08 or 2026-04-11   | See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
@@ -104,7 +103,7 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@Fanelock](https://github.com/Fanelock)** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
