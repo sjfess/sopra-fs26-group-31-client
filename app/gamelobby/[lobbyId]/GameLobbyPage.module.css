@@ -859,7 +859,3 @@
     to   { opacity: 1; transform: none; }
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────────────────── */
-:global(::-webkit-scrollbar)       { width: 5px; }
-:global(::-webkit-scrollbar-track) { background: transparent; }
-:global(::-webkit-scrollbar-thumb) { background: rgba(227, 203, 44, 0.25); border-radius: 3px; }
