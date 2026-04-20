@@ -120,7 +120,7 @@ export class ApiService {
     const res = await fetch(url, {
       method: "DELETE",
       headers: this.defaultHeaders,
-      body: data ? JSON.stringify(data) : undefined,  // ✅ optional body
+      body: data ? JSON.stringify(data) : undefined,
     });
     return this.processResponse<T>(
         res,

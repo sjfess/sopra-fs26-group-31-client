@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import { Button, Form, Input } from "antd";
 
@@ -15,8 +15,9 @@ const Login: React.FC = () => {
     const router = useRouter();
     const apiService = useApi();
     const [form] = Form.useForm();
-    const { set: setToken } = useLocalStorage<string>("token", "");
-    const { set: setUserId } = useLocalStorage<string>("userId", "");
+    const { set: setToken } = useSessionStorage<string>("token", "");
+    const { set: setUserId } = useSessionStorage<string>("userId", "");
+    const { set: setUsername } = useSessionStorage<string>("username", "");
 
     const handleLogin = async (values: FormFieldProps) => {
         try {
@@ -28,8 +29,11 @@ const Login: React.FC = () => {
             if (response.id) {
                 setUserId(response.id);
             }
+            if (response.username) {
+                setUsername(response.username);
+            }
 
-            router.push("/profile");
+            router.push(`/profile/${response.id}`);
         } catch (error) {
             if (error instanceof Error) {
                 alert(`Something went wrong during the login:\n${error.message}`);
