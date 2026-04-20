@@ -860,6 +860,6 @@
 }
 
 /* ── Scrollbar ───────────────────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 5px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(227, 203, 44, 0.25); border-radius: 3px; }
+:global(::-webkit-scrollbar)       { width: 5px; }
+:global(::-webkit-scrollbar-track) { background: transparent; }
+:global(::-webkit-scrollbar-thumb) { background: rgba(227, 203, 44, 0.25); border-radius: 3px; }
