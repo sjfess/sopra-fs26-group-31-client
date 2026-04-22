@@ -59,8 +59,7 @@ reason).
 |                    | 05.04.2026   | [f72cf42](https://github.com/sjfess/sopra-fs26-group-31-server/commit/f72cf424367732fccf3bf3f7cd77c431377ad008), [c0f8c5f](https://github.com/sjfess/sopra-fs26-group-31-server/commit/c0f8c5f21835ce52714f38bc7233471b2aa364dc) | Implemented Persistent data storage so that user data gets saved even when server gets shut down or a new deployment is made. Game instances are deleted after conclusion to avoid database bloating | Contribution is relevant as to make sure that user data gets saved so that users keep their account as well as their score for the overall global leaderboard |
 | **[@marcokingo](https://github.com/marcokingo)** | 05.04.26 | [Commit 5212349](https://github.com/sjfess/sopra-fs26-group-31-server/commit/521234993abc2c35d6cc3a42c054dc609b2c9f23) | Added placement API test for timeline card placement ([task #27](https://github.com/sjfess/sopra-fs26-group-31-server/issues/27)) | Ensures the placement API endpoint behaves correctly, covering validation logic that is critical for the core gameplay mechanic of placing cards on the timeline. |
 |                    | 03.04.26 | [Commit 9a467ba](https://github.com/sjfess/sopra-fs26-group-31-client/commit/9a467ba550e5b292367836ebf8bae9dc80055f94), [Commit f34a9a7](https://github.com/sjfess/sopra-fs26-group-31-client/commit/f34a9a743678bd947e116ee43473806a68a7356e) | Built timeline UI with placement interaction and game logic ([task #3](https://github.com/sjfess/sopra-fs26-group-31-client/issues/3)) | The timeline UI is the central interface players use during the game. This contribution implements both the visual component and the frontend logic for card placement, completing the client-side gameplay experience. |
-| ****[@sjfess](https://github.com/sjfess)**** | 03.04.26   | [Commit 
-13b3144](13b31443e6a6fd7a2f3af0d572c5b3c2effa367d) | Implemented the Game Lobby UI and Game Lobby logic| A user needs to be able to create a game and join a game and further the host of the game lobby needs to be able to adjust the settings of the game lobby itself. |
+| ****[@sjfess](https://github.com/sjfess)**** | 03.04.26   | [Commit 13b3144](https://github.com/sjfess/sopra-fs26-group-31-client/commit/13b31443e6a6fd7a2f3af0d572c5b3c2effa367d) | Implemented the Game Lobby UI and Game Lobby logic| A user needs to be able to create a game and join a game and further the host of the game lobby needs to be able to adjust the settings of the game lobby itself. |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
@@ -76,21 +75,40 @@ reason).
 |                    | 2026-04-09   | [Commit 928f11f](https://github.com/sjfess/sopra-fs26-group-31-server/commit/928f11fbac8d14f7ec2a6f8ce8e59112dfc365ed) | Implemented the friendsystem logic | To have a working friendssystem the backend needs to carry the logical components to work with the frontend |
 | **[@marcokingo](https://github.com/marcokingo)** | 2026-04-11 | [Commit 3853b5d](https://github.com/sjfess/sopra-fs26-group-31-client/commit/3853b5d75927be81fcacfe2d245db68e9a3ca728) | Skip player turn when timer elapses ([issue #8](https://github.com/sjfess/sopra-fs26-group-31-client/issues/8)) | This contribution is relevant because when a player's timer runs out their turn needs to be automatically skipped to keep the game flow going in multiplayer Timeline Mode. |
 |                    | 2026-04-11 | [Commit 3853b5d](https://github.com/sjfess/sopra-fs26-group-31-client/commit/3853b5d75927be81fcacfe2d245db68e9a3ca728) | Broadcast timeout and turn change to clients ([issue #6](https://github.com/sjfess/sopra-fs26-group-31-client/issues/6)) | This contribution is relevant because all connected clients need to be notified when a turn times out and changes so the UI stays in sync across all players. |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@milchazor](https://github.com/milchazor)**| 2026-4-12   | [b5cae26](https://github.com/sjfess/sopra-fs26-group-31-server/commit/b5cae26d48e0671d89fd08511fe992d769bae069) |Implemented Turn timer, started backend, tracked frontend -> More accurate, hard to track in backend and update frontend with REST. Scoring done already | This Feature is relevant because it adds a Stress Element to the game and stops People from going AFK] |
+|                    | 2026-4-12   | [2d16154](https://github.com/sjfess/sopra-fs26-group-31-server/commit/2d16154b2a980f4f981c1d51b9c214db84e9d726) | 9 Tasks added for Scoring, Streak handling and also Timer | It checks the functionality of the code, Shows error when code is changed in a way that causes new isses|
+| **[@Fanelock](https://github.com/Fanelock)** | 11.4.26   | [c4c3b4c](https://github.com/sjfess/sopra-fs26-group-31-client/commit/c4c3b4ca5aae1785dc26f7219422be877e5001e8), [aea104f](https://github.com/sjfess/sopra-fs26-group-31-client/commit/aea104ff0002e0fc202f3bd8374cb6790806aba3) | Implemented the match result screen with pop-up for the victor to match the mockup. Refs [Task #17](https://github.com/sjfess/sopra-fs26-group-31-client/issues/17)  | The result screen is a core part of the game loop, providing players with meaningful feedback at the end of each match. |
+|                    | 11.4.26   | [896466e](https://github.com/sjfess/sopra-fs26-group-31-client/commit/896466e2a8edd1a0b067591bcf81e2ea08ea9618) | Implemented the about page which explains the project, how the game works and shows the team working on it. Refs [Task #18](https://github.com/sjfess/sopra-fs26-group-31-client/issues/18) | The about page serves as a publicly accessible entry point to the project, requiring no registration to view. It explains the game's concept, rules, and the team behind it. Making it accessible without login ensures any visitor or evaluator can understand the game's purpose immediately. |
+
+---
+## Contributions Week 4 - [13.04.2026] to [19.04.2026]
+
+## Note: Contributions from Week 3 - [06.04.2026] to [12.04.2026] should count for this week, due to the easter break.
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | 2026-04-15  |[27dcdd8](https://github.com/sjfess/sopra-fs26-group-31-server/commit/27dcdd8ea95c58d71f51a80fceabbac5c5114af9)| Expanded backend test coverage for rematch and game flow edge cases. Added and refined controller and service tests for rematch authorization and invalid requests, drawCard error handling, placeCard invalid states, and finalizeGame failure cases to validate robustness of the new rematch-related backend logic. Closes #64 | These tests strengthen reliability of the rematch and game flow implementation by covering important edge cases and failure paths, reducing the risk of regressions and ensuring the backend behaves correctly under invalid or exceptional conditions. |
+|                    |2026-04-08 or 2026-04-11| See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
+| **[@Fanelock](https://github.com/Fanelock)** | 11.4.26   | See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
+| **[@milchazor](https://github.com/milchazor)** |2026-4-19 | [bad7406](https://github.com/sjfess/sopra-fs26-group-31-server/pull/72/changes/bad740610af303d6da60fc0309184ae128ca9a36) | Added Test Cases to Friend Requests and Chat | Not essential, but required for good test coverage |
+|                    | 2026-4-19  | [ddc6feb](https://github.com/sjfess/sopra-fs26-group-31-server/pull/72/changes/ddc6feb5e0a58d1ac78813d7db5ab7c799d35e34) | Moved Turn Timer from backend to frontend| Not essential, but makes game more playable / lets everybody know how much time is left |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
-## Contributions Week 4 - [Begin Date] to [End Date]
 
-_Continue with the same table format as above._
+## Contributions Week 5 - [20.04.2026] to [26.04.2026]
 
----
-
-## Contributions Week 5 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@Fanelock](https://github.com/Fanelock)** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
 
