@@ -353,9 +353,9 @@ export default function GameLobbyPage() {
                             Home
                         </button>
                     </li>
-                    <li>
+                    {/* <li>
                         <a href="/leaderboard">Leaderboard</a>
-                    </li>
+                    </li> */}
                 </ul>
             </nav>
 
