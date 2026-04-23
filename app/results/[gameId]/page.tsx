@@ -12,6 +12,7 @@ import { useGameResults } from "@/hooks/useGameResults";
 import { useGameDuration } from "@/hooks/useGameDuration";
 import { getApiDomain } from "@/utils/domain";
 import useSessionStorage from "@/hooks/useSessionStorage";
+import type { Game } from "@/types/game";
 
 // Display-name mappings
 
@@ -61,6 +62,49 @@ export default function ResultsPage() {
       () => results.filter((r) => r.winner),
       [results]
   );
+
+  const getRematchLobbyId = (gameData: Partial<Game> | null | undefined) => {
+    const candidate =
+      gameData?.rematchGameId ?? gameData?.successorGameId ?? gameData?.nextGameId;
+    if (candidate === null || candidate === undefined || candidate === "") {
+      return null;
+    }
+
+    const parsed = Number(candidate);
+    return Number.isNaN(parsed) ? String(candidate) : parsed;
+  };
+
+  useEffect(() => {
+    if (!mounted || !token || !gameId) return;
+
+    let active = true;
+
+    const checkRematch = async () => {
+      try {
+        const res = await fetch(`${getApiDomain()}/games/${gameId}`);
+        if (!res.ok || !active) return;
+
+        const gameData = (await res.json()) as Partial<Game>;
+        const rematchLobbyId = getRematchLobbyId(gameData);
+
+        if (rematchLobbyId !== null) {
+          router.push(`/gamelobby/${rematchLobbyId}`);
+        }
+      } catch (error) {
+        console.error("Failed to check rematch lobby:", error);
+      }
+    };
+
+    void checkRematch();
+    const intervalId = window.setInterval(() => {
+      void checkRematch();
+    }, 2000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [mounted, token, gameId, router]);
 
   const handleRematch = async () => {
     const userId = sessionStorage.getItem("userId");

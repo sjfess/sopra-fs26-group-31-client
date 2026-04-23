@@ -62,6 +62,18 @@ export default function GameLobbyPage() {
         window.setTimeout(() => setToast(null), 2500);
     }, []);
 
+    const getRematchLobbyId = useCallback((gameData: Partial<Game> | null | undefined) => {
+        const candidate =
+            gameData?.rematchGameId ?? gameData?.successorGameId ?? gameData?.nextGameId;
+
+        if (candidate === null || candidate === undefined || candidate === "") {
+            return null;
+        }
+
+        const parsed = Number(candidate);
+        return Number.isNaN(parsed) ? String(candidate) : parsed;
+    }, []);
+
     useEffect(() => {
         const stored = window.sessionStorage.getItem("userId");
         if (!stored) {
@@ -129,6 +141,13 @@ export default function GameLobbyPage() {
             const response = await apiRef.current.get<Game>(`/games/${lobbyId}`);
             setGame(response);
 
+            const rematchLobbyId = getRematchLobbyId(response);
+            if (rematchLobbyId !== null && String(rematchLobbyId) !== String(lobbyId)) {
+                if (pollingRef.current) clearInterval(pollingRef.current);
+                router.push(`/gamelobby/${rematchLobbyId}`);
+                return;
+            }
+
             if (!pendingSettingsRef.current) {
                 if (response.gameMode) setSelectedMode(response.gameMode as GameMode);
                 if (response.era) setSelectedEra(response.era as Era);
@@ -169,7 +188,7 @@ export default function GameLobbyPage() {
         } finally {
             setLoading(false);
         }
-    }, [lobbyId, router, showToast]);
+    }, [getRematchLobbyId, lobbyId, router, showToast]);
 
     useEffect(() => {
         void fetchFriends();
