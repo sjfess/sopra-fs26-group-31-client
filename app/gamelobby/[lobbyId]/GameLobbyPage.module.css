@@ -56,7 +56,7 @@
 }
 
 .navLinks a:hover,
-.navLinkActive {
+.navLinks a.navLinkActive {
     color: #e3cb2c !important;
 }
 
@@ -857,5 +857,21 @@
 @keyframes toastIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: none; }
+}
+
+
+.navLinkActive {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: white;
+    text-decoration: none;
+    transition: color 180ms ease;
+}
+
+.navLinkActive:hover {
+    color: #f5c542;
 }
 

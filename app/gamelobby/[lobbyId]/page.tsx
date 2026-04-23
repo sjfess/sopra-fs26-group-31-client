@@ -96,6 +96,34 @@ export default function GameLobbyPage() {
         }
     }, [userId]);
 
+    // ── handleLeave defined before fetchGame so it can be referenced there ──
+    const handleLeave = useCallback(async () => {
+        if (pollingRef.current) clearInterval(pollingRef.current);
+
+        // Read current game/userId from refs so we can call this from fetchGame too
+        const currentGame = game;
+        const currentUserId = userId;
+
+        if (!currentGame || currentUserId === null) {
+            router.push(`/profile/${currentUserId}`);
+            return;
+        }
+
+        try {
+            await apiRef.current.delete(
+                `/games/leave/${currentGame.lobbyCode}?userId=${currentUserId}`
+            );
+            router.push(`/profile/${currentUserId}`);
+        } catch (error) {
+            console.error("Failed to leave lobby:", error);
+            // Still redirect even on error so the user isn't stuck
+            router.push(`/profile/${currentUserId}`);
+        }
+    }, [game, userId, router]);
+
+    const handleLeaveRef = useRef(handleLeave);
+    handleLeaveRef.current = handleLeave;
+
     const fetchGame = useCallback(async () => {
         try {
             const response = await apiRef.current.get<Game>(`/games/${lobbyId}`);
@@ -126,13 +154,13 @@ export default function GameLobbyPage() {
             if (response.status === "CLOSED") {
                 if (pollingRef.current) clearInterval(pollingRef.current);
                 showToast("Host closed the lobby.");
-                window.setTimeout(() => router.push("/dashboard"), 1500);
+                window.setTimeout(() => void handleLeaveRef.current(), 1500);
             }
         } catch (error: any) {
             if (error?.status === 404 || error?.info?.status === 404) {
                 if (pollingRef.current) clearInterval(pollingRef.current);
                 showToast("The lobby no longer exists.");
-                window.setTimeout(() => router.push("/dashboard"), 1500);
+                window.setTimeout(() => void handleLeaveRef.current(), 1500);
                 return;
             }
 
@@ -223,20 +251,6 @@ export default function GameLobbyPage() {
             console.error("Failed to start game:", error);
             showToast("Failed to start game. Please try again.");
             setIsStarting(false);
-        }
-    };
-
-    const handleLeave = async () => {
-        if (!game || userId === null) return;
-
-        try {
-            await apiRef.current.delete(`/games/leave/${game.lobbyCode}?userId=${userId}`);
-
-            if (pollingRef.current) clearInterval(pollingRef.current);
-            router.push(`/profile/${userId}`);
-        } catch (error) {
-            console.error("Failed to leave lobby:", error);
-            showToast("Failed to leave lobby. Please try again.");
         }
     };
 
@@ -332,9 +346,12 @@ export default function GameLobbyPage() {
                 <div className={styles.navLogo}>Historical Reconstruction</div>
                 <ul className={styles.navLinks} role="list">
                     <li>
-                        <a href="/dashboard" className={styles.navLinkActive}>
+                        <button
+                            className={styles.navLinkActive}
+                            onClick={() => void handleLeave()}
+                        >
                             Home
-                        </a>
+                        </button>
                     </li>
                     <li>
                         <a href="/leaderboard">Leaderboard</a>
@@ -442,8 +459,8 @@ export default function GameLobbyPage() {
                     <div className={styles.panelFooter}>
                         <button
                             className={styles.btnLeave}
-                            onClick={handleLeave}
-                            aria-label="Leave this lobby and return to dashboard"
+                            onClick={() => void handleLeave()}
+                            aria-label="Leave this lobby and return to profile"
                         >
                             Leave Lobby
                         </button>
