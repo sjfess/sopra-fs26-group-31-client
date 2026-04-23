@@ -92,8 +92,8 @@ reason).
 | **[@Fanelock](https://github.com/Fanelock)** | 11.4.26   | See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
 | **[@milchazor](https://github.com/milchazor)** |2026-4-19 | [bad7406](https://github.com/sjfess/sopra-fs26-group-31-server/pull/72/changes/bad740610af303d6da60fc0309184ae128ca9a36) | Added Test Cases to Friend Requests and Chat | Not essential, but required for good test coverage |
 |                    | 2026-4-19  | [ddc6feb](https://github.com/sjfess/sopra-fs26-group-31-server/pull/72/changes/ddc6feb5e0a58d1ac78813d7db5ab7c799d35e34) | Moved Turn Timer from backend to frontend| Not essential, but makes game more playable / lets everybody know how much time is left |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@marcokingo](https://github.com/marcokingo)** | 2026-04-11   | See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
+|                    | 2026-04-11   | See contributions Week 3 | See contributions Week 3 | See contributions Week 3 |
 
 ---
 
