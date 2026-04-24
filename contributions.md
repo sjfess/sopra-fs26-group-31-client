@@ -101,7 +101,7 @@ reason).
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | 2026-04-22  | 0f691d2(https://github.com/sjfess/sopra-fs26-group-31-server/commit/0f691d2a298383358e5835de549dc7477ec7952d) | Implemented host-controlled finished-game cleanup and rematch flow: added explicit closeFinishedGame(...) and createRematchAndCloseOldGame(...) logic, ensured finished games can only be closed or rematched by the host, added deletion of related chat messages and game invites when a finished game is removed, updated GameController endpoints for rematch and close actions, and adapted controller/service tests accordingly. Closes #74 | This makes post-game lifecycle handling consistent and safe: finished games are now cleaned up deliberately instead of lingering indefinitely, rematches create a fresh lobby while removing obsolete finished games, and dependent data such as chat and invites is deleted together with the game to prevent stale frontend state and orphaned backend records. |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@Fanelock](https://github.com/Fanelock)** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
@@ -112,6 +112,18 @@ reason).
 
 ---
 
-## Contributions Week 6 - [Begin Date] to [End Date]
+## Contributions Week 6 - [27.04.2026] to [03.05.2026]
+
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@Fanelock](https://github.com/Fanelock)** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 _Continue with the same table format as above._
