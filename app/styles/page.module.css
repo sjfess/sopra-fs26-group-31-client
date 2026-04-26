@@ -312,12 +312,12 @@
   background-color: #0f2557;
   min-height: 100vh;
   color: #fff;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Georgia, serif;
 }
 
 .aboutHero {
   text-align: center;
-  padding: 64px 24px 40px;
+  padding: 40px 24px 40px;
   border-bottom: 1px solid rgba(227, 203, 44, 0.2);
 }
 
