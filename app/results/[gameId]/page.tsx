@@ -12,6 +12,7 @@ import { useGameResults } from "@/hooks/useGameResults";
 import { useGameDuration } from "@/hooks/useGameDuration";
 import { getApiDomain } from "@/utils/domain";
 import useSessionStorage from "@/hooks/useSessionStorage";
+import type { Game } from "@/types/game";
 
 // Display-name mappings
 
@@ -62,10 +63,71 @@ export default function ResultsPage() {
       [results]
   );
 
+  const currentUserId = useMemo(() => {
+    if (!mounted) return null;
+
+    const rawUserId = sessionStorage.getItem("userId");
+    if (!rawUserId) return null;
+
+    const parsedNumber = Number(rawUserId);
+    if (!Number.isNaN(parsedNumber)) return parsedNumber;
+
+    try {
+      const parsedJson = JSON.parse(rawUserId);
+      const fromJson = Number(parsedJson);
+      return Number.isNaN(fromJson) ? null : fromJson;
+    } catch {
+      return null;
+    }
+  }, [mounted]);
+
+  const isHost = game !== null && currentUserId !== null && Number(game.hostId) === currentUserId;
+
+  const getRematchLobbyId = (gameData: Partial<Game> | null | undefined) => {
+    const candidate =
+      gameData?.rematchGameId ?? gameData?.successorGameId ?? gameData?.nextGameId;
+    if (candidate === null || candidate === undefined || candidate === "") {
+      return null;
+    }
+
+    const parsed = Number(candidate);
+    return Number.isNaN(parsed) ? String(candidate) : parsed;
+  };
+
+  useEffect(() => {
+    if (!mounted || !token || !gameId) return;
+
+    let active = true;
+
+    const checkRematch = async () => {
+      try {
+        const res = await fetch(`${getApiDomain()}/games/${gameId}`);
+        if (!res.ok || !active) return;
+
+        const gameData = (await res.json()) as Partial<Game>;
+        const rematchLobbyId = getRematchLobbyId(gameData);
+
+        if (rematchLobbyId !== null) {
+          router.push(`/gamelobby/${rematchLobbyId}`);
+        }
+      } catch (error) {
+        console.error("Failed to check rematch lobby:", error);
+      }
+    };
+
+    void checkRematch();
+    const intervalId = window.setInterval(() => {
+      void checkRematch();
+    }, 2000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [mounted, token, gameId, router]);
+
   const handleRematch = async () => {
-    const userId = sessionStorage.getItem("userId");
-    if (!userId) {
-      console.error("No userId in sessionStorage — cannot request rematch.");
+    if (!isHost || currentUserId === null) {
       return;
     }
 
@@ -73,7 +135,7 @@ export default function ResultsPage() {
       const res = await fetch(`${getApiDomain()}/games/${gameId}/rematch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: Number(userId) }),
+        body: JSON.stringify({ userId: currentUserId }),
       });
 
       if (!res.ok) {
@@ -227,8 +289,10 @@ export default function ResultsPage() {
             <div className={styles.buttons} style={{ marginTop: 28 }}>
               <Button
                   size="large"
-                  className={styles.resultsBtnRematch}
+                  className={`${styles.resultsBtnRematch} ${!isHost ? styles.resultsBtnRematchDisabled : ""}`}
                   onClick={handleRematch}
+                  disabled={!isHost}
+                  title={!isHost ? "Only the host can start a rematch" : undefined}
               >
                 Rematch
               </Button>

@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import type { GameInvite } from "@/types/game";
 import type { Friend, FriendRequest } from "@/types/user";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+const API_BASE = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8080";
 
 const cardStyle: React.CSSProperties = {
     backgroundColor: "#0d1b4b",

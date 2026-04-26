@@ -56,7 +56,7 @@
 }
 
 .navLinks a:hover,
-.navLinkActive {
+.navLinks a.navLinkActive {
     color: #e3cb2c !important;
 }
 
@@ -859,7 +859,19 @@
     to   { opacity: 1; transform: none; }
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 5px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(227, 203, 44, 0.25); border-radius: 3px; }
+
+.navLinkActive {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: white;
+    text-decoration: none;
+    transition: color 180ms ease;
+}
+
+.navLinkActive:hover {
+    color: #f5c542;
+}
+
