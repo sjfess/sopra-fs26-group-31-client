@@ -296,6 +296,16 @@
   height: 46px !important;
 }
 
+.resultsBtnRematchDisabled,
+.resultsBtnRematch:disabled,
+.resultsBtnRematch.ant-btn-disabled {
+  background-color: #9aa0a6 !important;
+  border-color: #9aa0a6 !important;
+  color: #f3f4f6 !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+}
+
 /* About Page */
 
 .aboutPage {

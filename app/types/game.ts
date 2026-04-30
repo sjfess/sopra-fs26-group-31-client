@@ -13,6 +13,9 @@ export interface Game {
     lobbyCode: string;
     era: string;
     status: string;
+    rematchGameId?: number | string | null;
+    successorGameId?: number | string | null;
+    nextGameId?: number | string | null;
     deckSize: number;
     cardsRemaining: number;
     hostId: number;

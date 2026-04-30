@@ -49,7 +49,7 @@ const Profile: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/auth/logout`, {
+            await fetch(`${process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8080"}/auth/logout`, {
                 method: "POST",
                 headers: {
                     "Authorization": token,
