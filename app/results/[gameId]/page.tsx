@@ -14,8 +14,6 @@ import { getApiDomain } from "@/utils/domain";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import type { Game } from "@/types/game";
 
-// Display-name mappings
-
 const ERA_LABELS: Record<string, string> = {
   ANCIENT: "Ancient",
   MEDIEVAL: "Medieval",
@@ -28,8 +26,6 @@ const MODE_LABELS: Record<string, string> = {
   TIMELINE: "Timeline",
   HISTORY_UNO: "History Uno",
 };
-
-// Component
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -85,11 +81,10 @@ export default function ResultsPage() {
 
   const getRematchLobbyId = (gameData: Partial<Game> | null | undefined) => {
     const candidate =
-      gameData?.rematchGameId ?? gameData?.successorGameId ?? gameData?.nextGameId;
+        gameData?.rematchGameId ?? gameData?.successorGameId ?? gameData?.nextGameId;
     if (candidate === null || candidate === undefined || candidate === "") {
       return null;
     }
-
     const parsed = Number(candidate);
     return Number.isNaN(parsed) ? String(candidate) : parsed;
   };
@@ -108,6 +103,7 @@ export default function ResultsPage() {
         const rematchLobbyId = getRematchLobbyId(gameData);
 
         if (rematchLobbyId !== null) {
+          active = false;
           router.push(`/gamelobby/${rematchLobbyId}`);
         }
       } catch (error) {
@@ -127,9 +123,7 @@ export default function ResultsPage() {
   }, [mounted, token, gameId, router]);
 
   const handleRematch = async () => {
-    if (!isHost || currentUserId === null) {
-      return;
-    }
+    if (!isHost || currentUserId === null) return;
 
     try {
       const res = await fetch(`${getApiDomain()}/games/${gameId}/rematch`, {
@@ -144,6 +138,16 @@ export default function ResultsPage() {
       }
 
       const newGame = await res.json();
+
+      // Altes Game nach 15s löschen → gibt Non-Hosts Zeit zum Pollen
+      setTimeout(() => {
+        void fetch(`${getApiDomain()}/games/${gameId}/close`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: currentUserId }),
+        });
+      }, 15000);
+
       router.push(`/gamelobby/${newGame.id}`);
     } catch (e) {
       console.error("Rematch error:", e);
@@ -184,9 +188,7 @@ export default function ResultsPage() {
             <h1 className={styles.resultsCardTitle}>Match Results</h1>
 
             <p className={styles.resultsCardSubtitle}>
-              {game
-                  ? `${ERA_LABELS[game.era]} · ${MODE_LABELS[game.gameMode]} Mode`
-                  : ""}
+              {game ? `${ERA_LABELS[game.era]} · ${MODE_LABELS[game.gameMode]} Mode` : ""}
             </p>
 
             {winners.length > 0 && (
@@ -220,18 +222,13 @@ export default function ResultsPage() {
                     <th className={styles.resultsThCenter}>Correct</th>
                   </tr>
                   </thead>
-
                   <tbody>
                   {results.map((r, i) => (
                       <tr key={r.userId}>
                         <td className={styles.resultsTd}>{i + 1}</td>
                         <td className={styles.resultsTd}>{r.username}</td>
-                        <td className={styles.resultsTd}>
-                          {r.score.toLocaleString()}
-                        </td>
-                        <td className={styles.resultsTdCenter}>
-                          {r.correctPlacements}
-                        </td>
+                        <td className={styles.resultsTd}>{r.score.toLocaleString()}</td>
+                        <td className={styles.resultsTdCenter}>{r.correctPlacements}</td>
                       </tr>
                   ))}
                   </tbody>
@@ -244,43 +241,37 @@ export default function ResultsPage() {
 
                     <div className={styles.resultsSummaryRow}>
                       <span className={styles.resultsSummaryLabel}>Mode</span>
-                      <span className={styles.resultsSummaryValue}>
-                    {MODE_LABELS[game.gameMode]}
-                  </span>
+                      <span className={styles.resultsSummaryValue}>{MODE_LABELS[game.gameMode]}</span>
                     </div>
 
                     {duration !== null && (
                         <div className={styles.resultsSummaryRow}>
                           <span className={styles.resultsSummaryLabel}>Duration</span>
-                          <span className={styles.resultsSummaryValue}>
-                      {duration} min
-                    </span>
+                          <span className={styles.resultsSummaryValue}>{duration} min</span>
                         </div>
                     )}
 
                     <div className={styles.resultsSummaryRow}>
                       <span className={styles.resultsSummaryLabel}>Era</span>
-                      <span className={styles.resultsSummaryValue}>
-                    {ERA_LABELS[game.era]}
-                  </span>
+                      <span className={styles.resultsSummaryValue}>{ERA_LABELS[game.era]}</span>
                     </div>
 
                     <div className={styles.resultsSummaryRow}>
                       <span className={styles.resultsSummaryLabel}>Difficulty</span>
                       <span className={styles.resultsSummaryValue}>
-                    {game.difficulty.charAt(0) +
-                        game.difficulty.slice(1).toLowerCase()}
-                  </span>
+                        {game.difficulty.charAt(0) + game.difficulty.slice(1).toLowerCase()}
+                      </span>
                     </div>
+
                     {winners.length > 0 && (
-                      <div className={styles.resultsSummaryRow}>
-                        <span className={styles.resultsSummaryLabel}>
-                          {winners.length === 1 ? "Winner" : "Winners"}
-                        </span>
-                        <span className={styles.resultsSummaryValue}>
-                          {winners.map((w) => w.username).join(", ")}
-                        </span>
-                      </div>
+                        <div className={styles.resultsSummaryRow}>
+                          <span className={styles.resultsSummaryLabel}>
+                            {winners.length === 1 ? "Winner" : "Winners"}
+                          </span>
+                          <span className={styles.resultsSummaryValue}>
+                            {winners.map((w) => w.username).join(", ")}
+                          </span>
+                        </div>
                     )}
                   </div>
               )}

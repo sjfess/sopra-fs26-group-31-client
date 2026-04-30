@@ -390,7 +390,9 @@ const FriendsPanel: React.FC = () => {
                                             backgroundColor:
                                                 friend.status === "ONLINE"
                                                     ? "#52c41a"
-                                                    : "#ff4d4f",
+                                                    : friend.status === "IN_GAME"
+                                                        ? "#f59e0b"
+                                                        : "#ff4d4f",
                                             marginRight: "6px",
                                         }}
                                     />
