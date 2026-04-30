@@ -115,7 +115,7 @@ const GameHub: React.FC = () => {
                         <Button
                             type="primary"
                             block
-                            style={{ backgroundColor: "#b56464", color: "#f5ebd5" }}
+                            style={{ backgroundColor: "#e3cb2c", borderColor: "#e3cb2c", color: "#0f2557", fontWeight: "bold" }}
                             onClick={handleCreateGame}
                         >
                             Create Game
@@ -137,7 +137,7 @@ const GameHub: React.FC = () => {
                         <Button
                             type="primary"
                             block
-                            style={{ backgroundColor: "#b56464", color: "#f5ebd5" }}
+                            style={{ backgroundColor: "#e3cb2c", borderColor: "#e3cb2c", color: "#0f2557", fontWeight: "bold" }}
                             onClick={handleJoinGame}
                         >
                             Join Game

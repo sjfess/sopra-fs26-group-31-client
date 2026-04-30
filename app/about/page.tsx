@@ -56,6 +56,14 @@ export default function AboutPage() {
     return (
         <div className={styles.aboutPage}>
 
+            <nav className="app-navbar">
+                <span className="app-navbar-title">Historical Reconstruction</span>
+                <div className="app-navbar-links">
+                    <span onClick={() => router.push("/")}>Home</span>
+                    <span onClick={() => router.push("/leaderboard")}>Leaderboard</span>
+                </div>
+            </nav>
+
             {/* Hero */}
             <div className={styles.aboutHero}>
                 <h1 className={styles.aboutHeroTitle}>About Historical Reconstruction</h1>
@@ -116,15 +124,6 @@ export default function AboutPage() {
                         </div>
                     ))}
                 </div>
-            </div>
-
-            <hr className={styles.aboutDivider} />
-
-            {/* Back */}
-            <div className={styles.aboutSection}>
-                <button className={styles.aboutBackBtn} onClick={() => router.back()}>
-                    ← Back
-                </button>
             </div>
 
         </div>

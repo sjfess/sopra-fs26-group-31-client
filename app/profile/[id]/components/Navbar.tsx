@@ -29,8 +29,11 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "12px 32px",
-                borderBottom: "1px solid #1e3a7a",
+                padding: "16px 32px",
+                border: "1px solid #e3cb2c",
+                margin: "12px",
+                borderRadius: "4px",
+                flexShrink: 0,
             }}
         >
       <span
@@ -38,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
               color: "#e3cb2c",
               fontFamily: "Georgia, serif",
               fontWeight: "bold",
-              fontSize: "1.2rem",
+              fontSize: "1.1rem",
           }}
       >
         Historical Reconstruction
