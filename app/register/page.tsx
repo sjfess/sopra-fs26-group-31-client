@@ -5,6 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Button, Form, Input, App } from "antd";
 import useSessionStorage from "@/hooks/useSessionStorage";
+import { useState } from "react";
 
 
 interface FormFieldProps {
@@ -18,6 +19,7 @@ const Register: React.FC = () => {
     const apiService = useApi();
     const [form] = Form.useForm();
     const { message } = App.useApp();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { set: setToken } = useSessionStorage<string>("token", "");
     const { set: setId } = useSessionStorage<number>("userId", 0);
     const { set: setUsername } = useSessionStorage<string>("username", "");
@@ -27,6 +29,11 @@ const Register: React.FC = () => {
 
 
     const handleRegister = async (values: FormFieldProps) => {
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
             const {confirmPassword, ...userData} = values;
             const user = await apiService.post<User>("/users", userData);
@@ -53,10 +60,13 @@ const Register: React.FC = () => {
             router.push(`/profile/${user.id}`);
         } catch (error) {
             if (error instanceof Error) {
-                alert(`Something went wrong during registration:\n${error.message}`);
+                message.error(`Registration failed: ${error.message}`);
             } else {
                 console.error("An unknown error occurred during registration.");
+                message.error("Registration failed. Please try again.");
             }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -144,6 +154,8 @@ const Register: React.FC = () => {
                                     type="primary"
                                     htmlType="submit"
                                     block
+                                    disabled={isSubmitting}
+                                    loading={isSubmitting}
                                     style={{
                                         borderRadius: "999px",
                                         height: "48px",
