@@ -105,8 +105,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@Fanelock](https://github.com/Fanelock)** | 23.4.26   | [5a898e8](https://github.com/sjfess/sopra-fs26-group-31-server/commit/5a898e8d415fd8d0f857324706811f14ed5cc014), [2a441bc](https://github.com/sjfess/sopra-fs26-group-31-server/commit/2a441bc52d4793a2944c84b5ec8a8f82477d6fd4) | Reworked the different difficulties to use cards seeded on timeline instead of time-limit | These changes make the game slightly more balanced, since the first players will now not have free points since the timeline is empty, minimizing the risk of surging ahead in points. Refs [Task #75](https://github.com/sjfess/sopra-fs26-group-31-server/issues/75) |
 |                    | 23.4.26   | [3297a3e](https://github.com/sjfess/sopra-fs26-group-31-server/commit/3297a3e0eba4cb24c0c84a545e037635ac04d98d) | Reworked & Improved deletion of finished/abandoned games from the databse as well as player turn update when leaving | These changes minimize the risk of database bloating due to deletion of inactive, abandoned games which should speed up database lookup. Additionally, implementing the turn update will stop a player index to be double booked if a new player joins, which will stop crashing. Refs [Task #76](https://github.com/sjfess/sopra-fs26-group-31-server/issues/76) |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@milchazor](https://github.com/milchazor)** | 2026-04-26   | [4cee13a](https://github.com/sjfess/sopra-fs26-group-31-server/commit/4cee13a03a6e85001a9eab5bc96e5e210c038c5e) |  Polish up backend | Attempt to optimize card loading, to reduce loading time |
+|                    | 2026-04-26   | [4e582b2](https://github.com/sjfess/sopra-fs26-group-31-server/commit/4e582b26b8bee785735c4ff29c17783ef01b7384) | Standardized frontend | Different people designed pages, with different fonts/colors at times, now all same for smoother experience |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
@@ -121,8 +121,8 @@ reason).
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@Fanelock](https://github.com/Fanelock)** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@milchazor](https://github.com/milchazor)** | 2026-05-01   | [e9d1c59](https://github.com/sjfess/sopra-fs26-group-31-server/pull/108/changes/2f98d8a7f9cc294075500e7650fd8365ba6e3eb2) | Ensured Deck Drawing works Properly | We had bugs with this previously, where the deck was not working correctly at times. Hopefully fixed now |
+|                    | 2026-05-01   | [ffda451](https://github.com/sjfess/sopra-fs26-group-31-server/pull/108/changes/2f98d8a7f9cc294075500e7650fd8365ba6e3eb2) | Added Leave Button + Logic for it | Allows players to leave lobby and ensure proper flow of game |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
