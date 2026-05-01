@@ -656,6 +656,7 @@ export default function TimelineGamePage() {
   const [toast, setToast] = useState<{ msg: string; correct: boolean | null } | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
   const TURN_LIMIT_SECONDS = 30;
   const [turnSecondsLeft, setTurnSecondsLeft] = useState<number>(TURN_LIMIT_SECONDS);
@@ -688,6 +689,22 @@ export default function TimelineGamePage() {
     toastTimeoutRef.current = setTimeout(() => {
       setToast(null);
     }, 2500);
+  }
+
+  async function handleLeave() {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    if (game && userId !== null) {
+      try {
+        await api.delete(`/games/leave/${game.lobbyCode}?userId=${userId}`);
+      } catch (err) {
+        console.error("Failed to leave game:", err);
+      }
+    }
+
+    router.push(`/profile/${userId}`);
   }
 
   const fetchAll = useCallback(async () => {
@@ -877,8 +894,98 @@ export default function TimelineGamePage() {
             {activePlayer && (
                 <TurnTimer secondsLeft={turnSecondsLeft} />
             )}
+            <button
+                style={{
+                  padding: screen === "mobile" ? "6px 12px" : "8px 16px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(231,76,60,0.45)",
+                  cursor: "pointer",
+                  fontFamily: "Georgia, serif",
+                  fontWeight: "bold",
+                  fontSize: screen === "mobile" ? "11px" : "12px",
+                  background: "rgba(231,76,60,0.12)",
+                  color: "#e74c3c",
+                  transition: "all 0.15s ease",
+                }}
+                onClick={() => setShowLeaveConfirm(true)}
+            >
+              Leave
+            </button>
           </div>
         </div>
+
+        {showLeaveConfirm && (
+            <div
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.65)",
+                  backdropFilter: "blur(4px)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 2000,
+                }}
+                onClick={() => setShowLeaveConfirm(false)}
+            >
+              <div
+                  style={{
+                    background: "linear-gradient(180deg, rgba(19,47,99,0.98), rgba(10,28,68,0.98))",
+                    border: "1px solid rgba(255,255,255,0.18)",
+                    borderRadius: "20px",
+                    padding: screen === "mobile" ? "24px 20px" : "32px 36px",
+                    maxWidth: "380px",
+                    width: "90%",
+                    textAlign: "center",
+                    boxShadow: "0 28px 64px rgba(0,0,0,0.50)",
+                    backdropFilter: "blur(12px)",
+                    fontFamily: "Georgia, serif",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+              >
+                <div style={{ fontSize: "36px", marginBottom: "12px" }}>🚪</div>
+                <h2 style={{ color: "#e3cb2c", margin: "0 0 10px", fontSize: "20px" }}>Leave Game?</h2>
+                <p style={{ color: "rgba(255,255,255,0.68)", fontSize: "14px", margin: "0 0 28px", lineHeight: "1.6" }}>
+                  Are you sure you want to leave? The game will continue without you.
+                </p>
+                <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+                  <button
+                      style={{
+                        padding: "10px 22px",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255,255,255,0.18)",
+                        cursor: "pointer",
+                        fontFamily: "Georgia, serif",
+                        fontWeight: "bold",
+                        fontSize: "13px",
+                        background: "rgba(255,255,255,0.10)",
+                        color: "#fff",
+                      }}
+                      onClick={() => setShowLeaveConfirm(false)}
+                  >
+                    Stay
+                  </button>
+                  <button
+                      style={{
+                        padding: "10px 22px",
+                        borderRadius: "12px",
+                        border: "none",
+                        cursor: "pointer",
+                        fontFamily: "Georgia, serif",
+                        fontWeight: "bold",
+                        fontSize: "13px",
+                        background: "linear-gradient(180deg, #e74c3c, #c0392b)",
+                        color: "#fff",
+                        boxShadow: "0 8px 20px rgba(231,76,60,0.28)",
+                      }}
+                      onClick={handleLeave}
+                  >
+                    Leave Game
+                  </button>
+                </div>
+              </div>
+            </div>
+        )}
 
         {(screen === "mobile" || screen === "tablet") && (
             <div style={S.mobileTopStats}>
