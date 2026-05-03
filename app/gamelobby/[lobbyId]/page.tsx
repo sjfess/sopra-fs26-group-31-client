@@ -265,7 +265,7 @@ export default function GameLobbyPage() {
 
         setIsStarting(true);
         try {
-            await apiRef.current.put(`/games/${lobbyId}/start?deckSize=20`, {});
+            await apiRef.current.put(`/games/${lobbyId}/start`, {});
         } catch (error) {
             console.error("Failed to start game:", error);
             showToast("Failed to start game. Please try again.");
