@@ -283,7 +283,7 @@ export default function GameLobbyPage() {
                     console.error("Failed to send game starting signal:", error);
                 }
             }
-            await apiRef.current.put(`/games/${lobbyId}/start?deckSize=20`, {});
+            await apiRef.current.put(`/games/${lobbyId}/start`, {});
         } catch (error) {
             console.error("Failed to start game:", error);
             showToast("Failed to start game. Please try again.");
@@ -383,9 +383,9 @@ export default function GameLobbyPage() {
 
     return (
         <div className={styles.root}>
-            <nav className={styles.navbar} aria-label="Main navigation">
-                <div className={styles.navLogo}>Historical Reconstruction</div>
-                <ul className={styles.navLinks} role="list">
+            <nav className="app-navbar" aria-label="Main navigation">
+                <div className="app-navbar-title">Historical Reconstruction</div>
+                <ul className="app-navbar-links" role="list">
                     <li>
                         <button
                             className={styles.navLinkActive}

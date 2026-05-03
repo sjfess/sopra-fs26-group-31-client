@@ -51,6 +51,7 @@
 .navLinks a {
     color: #ffffff;
     font-size: 1rem;
+    font-family: Georgia, serif;
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -645,7 +646,8 @@
 
 .btnInvite {
     align-self: stretch;
-    padding: 0.55rem 1rem;
+    height: 44px;
+    padding: 0 1rem;
     border-radius: 4px;
     font-size: 0.9rem;
     font-weight: bold;
@@ -656,6 +658,10 @@
     cursor: pointer;
     letter-spacing: 0.04em;
     transition: background 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .btnInvite:hover:not(:disabled) {
@@ -769,7 +775,8 @@
 
 .chatInput {
     flex: 1;
-    padding: 0.6rem 0.875rem;
+    height: 44px;
+    padding: 0 0.875rem;
     border: none;
     border-right: 1px solid rgba(227, 203, 44, 0.25);
     background: #0f2557;
@@ -789,7 +796,8 @@
 }
 
 .btnSend {
-    padding: 0.6rem 1rem;
+    height: 44px;
+    padding: 0 1rem;
     font-size: 0.875rem;
     font-weight: bold;
     font-family: Georgia, serif;
@@ -800,6 +808,10 @@
     transition: background 0.15s;
     flex-shrink: 0;
     letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .btnSend:hover:not(:disabled) {
