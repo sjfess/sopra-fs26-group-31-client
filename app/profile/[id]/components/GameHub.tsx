@@ -78,8 +78,8 @@ const GameHub: React.FC = () => {
     };
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ backgroundColor: "#0d1b4b", border: "1px solid #e3cb2c", borderRadius: "16px", padding: "100px"}}>
-                <h2 style={{ color: "#e3cb2c", textAlign: "center" }}>Create Game</h2>
+            <div style={{ backgroundColor: "#1a3570", border: "1px solid #e3cb2c", borderRadius: "8px", padding: "32px"}}>
+                <h2 style={{ color: "#e3cb2c", textAlign: "center", fontFamily: "Georgia, serif", fontSize: "1.05rem", letterSpacing: "0.02em", marginBottom: "16px" }}>Create Game</h2>
                 <ConfigProvider theme={{ token: { colorTextPlaceholder: "rgba(227, 203, 44, 0.6)" } }}>
                     <Form layout="vertical">
                         <Form.Item label={"Era"}>
@@ -124,8 +124,8 @@ const GameHub: React.FC = () => {
                 </ConfigProvider>
             </div>
 
-            <div style={{ backgroundColor: "#0d1b4b", border: "1px solid #e3cb2c", borderRadius: "16px", padding: "100px" }}>
-                <h2 style={{ color: "#e3cb2c", textAlign: "center" }}>Join Game</h2>
+            <div style={{ backgroundColor: "#1a3570", border: "1px solid #e3cb2c", borderRadius: "8px", padding: "32px" }}>
+                <h2 style={{ color: "#e3cb2c", textAlign: "center", fontFamily: "Georgia, serif", fontSize: "1.05rem", letterSpacing: "0.02em", marginBottom: "16px" }}>Join Game</h2>
                 <ConfigProvider theme={{ token: { colorTextPlaceholder: "rgba(227, 203, 44, 0.6)" } }}>
                     <Form layout="vertical">
                         <Form.Item label={"Lobby Code"} name="Lobby Code">

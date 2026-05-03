@@ -9,9 +9,9 @@ interface UserProfileCardProps {
 }
 
 const cardStyle: React.CSSProperties = {
-    backgroundColor: "#0d1b4b",
+    backgroundColor: "#1a3570",
     border: "1px solid #e3cb2c",
-    borderRadius: "12px",
+    borderRadius: "8px",
     padding: "24px",
 };
 
@@ -26,8 +26,8 @@ const cardTitleStyle: React.CSSProperties = {
 
 const statBoxStyle: React.CSSProperties = {
     backgroundColor: "#0f2557",
-    border: "1px solid #e3cb2c",
-    borderRadius: "8px",
+    border: "1px solid rgba(227, 203, 44, 0.4)",
+    borderRadius: "4px",
     padding: "12px",
     textAlign: "center",
     flex: 1,
@@ -54,13 +54,23 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user }) => {
             {/* Avatar */}
             <div
                 style={{
-                    width: "120px",
-                    height: "80px",
-                    backgroundColor: "#c8a97e",
+                    width: "96px",
+                    height: "96px",
+                    backgroundColor: "#0f2557",
+                    border: "1px solid #e3cb2c",
+                    color: "#e3cb2c",
                     borderRadius: "50%",
                     marginBottom: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontFamily: "Georgia, serif",
+                    fontWeight: "bold",
+                    fontSize: "2.2rem",
                 }}
-            />
+            >
+                {(user.username ?? "?").charAt(0).toUpperCase()}
+            </div>
 
             <div style={{ textAlign: "center" }}>
                 <div style={{ color: "white", fontWeight: "bold", fontSize: "1.2rem" }}>
