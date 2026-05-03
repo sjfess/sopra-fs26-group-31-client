@@ -837,6 +837,122 @@
     to { transform: rotate(360deg); }
 }
 
+/* ── Game launch overlay ────────────────────────────────────────────────── */
+.gameLaunchOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at center, rgba(227, 203, 44, 0.14), transparent 36%),
+        rgba(15, 37, 87, 0.96);
+    color: #ffffff;
+    text-align: center;
+    font-family: Georgia, serif;
+    animation: launchOverlayIn 0.22s ease-out both;
+}
+
+.launchAnimation {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    display: grid;
+    place-items: center;
+}
+
+.launchRing {
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(227, 203, 44, 0.22);
+    border-top-color: #e3cb2c;
+    border-radius: 50%;
+    animation: spin 1.25s linear infinite;
+}
+
+.launchCardStack {
+    position: relative;
+    width: 92px;
+    height: 118px;
+}
+
+.launchCard {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 72px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e3cb2c;
+    border-radius: 6px;
+    background: #1a3570;
+    color: #e3cb2c;
+    font-size: 0.95rem;
+    font-weight: bold;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
+    transform-origin: center bottom;
+    animation: cardDeal 1.8s ease-in-out infinite;
+}
+
+.launchCardOne {
+    transform: translate(-50%, -50%) rotate(-10deg);
+}
+
+.launchCardTwo {
+    animation-delay: 0.16s;
+    transform: translate(-50%, -50%);
+}
+
+.launchCardThree {
+    animation-delay: 0.32s;
+    transform: translate(-50%, -50%) rotate(10deg);
+}
+
+.launchText h2 {
+    margin: 0 0 0.45rem;
+    color: #e3cb2c;
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    letter-spacing: 0.02em;
+}
+
+.launchText p {
+    margin: 0;
+    max-width: 32rem;
+    color: #cdd8f0;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+@keyframes launchOverlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes cardDeal {
+    0%, 100% {
+        opacity: 0.82;
+        translate: 0 0;
+    }
+    50% {
+        opacity: 1;
+        translate: 0 -12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gameLaunchOverlay,
+    .launchRing,
+    .launchCard {
+        animation: none;
+    }
+}
+
 /* ── Toast ───────────────────────────────────────────────────────────────── */
 .toast {
     position: fixed;
@@ -874,4 +990,3 @@
 .navLinkActive:hover {
     color: #f5c542;
 }
-
