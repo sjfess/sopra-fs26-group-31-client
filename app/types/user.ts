@@ -27,9 +27,9 @@ export interface Friend {
 }
 
 export interface LeaderboardEntry {
-  rank: number;
   userId: number;
   username: string;
+  rank: number;
   totalPoints: number;
   totalWins: number;
   totalGamesPlayed: number;
