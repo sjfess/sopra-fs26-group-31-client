@@ -56,6 +56,10 @@ export default function RootLayout({
                         labelColor: "#e3cb2c",
                         algorithm: theme.defaultAlgorithm,
                     },
+                    Message: {
+                        colorText: "#0f2557",
+                        colorTextHeading: "#0f2557",
+                    },
                     Select: {
                         colorBgContainer: "#1e4080",
                         colorBorder: "#e3cb2c",

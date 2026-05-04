@@ -29,32 +29,32 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "12px 32px",
-                borderBottom: "1px solid #1e3a7a",
+                padding: "16px 32px",
+                border: "1px solid #e3cb2c",
+                margin: "12px",
+                borderRadius: "4px",
+                flexShrink: 0,
             }}
         >
-      <span
-          style={{
-              color: "#e3cb2c",
-              fontFamily: "Georgia, serif",
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-          }}
-      >
-        Historical Reconstruction
-      </span>
+            <span
+                style={{
+                    color: "#e3cb2c",
+                    fontFamily: "Georgia, serif",
+                    fontWeight: "bold",
+                    fontSize: "1.1rem",
+                }}
+            >
+                Historical Reconstruction
+            </span>
 
             <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
-        <span onClick={() => router.push("/")} style={navLinkStyle}>
-          Home
-        </span>
                 <span style={activeLinkStyle}>Profile</span>
                 <span onClick={() => router.push("/leaderboard")} style={navLinkStyle}>
-          Leaderboard
-        </span>
+                    Leaderboard
+                </span>
                 <span onClick={() => router.push("/about")} style={navLinkStyle}>
-          About
-        </span>
+                    About
+                </span>
             </div>
 
             <Button
