@@ -25,3 +25,14 @@ export interface Friend {
   username: string;
   status: string;
 }
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: number;
+  username: string;
+  totalPoints: number;
+  totalWins: number;
+  totalGamesPlayed: number;
+  totalCorrectPlacements: number;
+  totalIncorrectPlacements: number;
+}
