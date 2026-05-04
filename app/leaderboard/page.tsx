@@ -360,8 +360,11 @@ const LeaderboardPage: React.FC = () => {
                                             }
                                             style={{
                                                 borderRadius: 24,
-                                                minHeight: isFirst ? 250 : 220,
-                                                transform: isFirst ? "translateY(-12px) scale(1.04)" : "translateY(8px)",
+                                                minHeight: isFirst ? 135 : 155,
+                                                maxWidth: isFirst ? 560 : undefined,
+                                                width: isFirst ? "70%" : "100%",
+                                                justifySelf: isFirst ? "center" : "stretch",
+                                                transform: isFirst ? "translateY(8px) scale(0.88)" : "translateY(8px)",
                                             }}
                                         >
                                             <div className="podium-confetti">
