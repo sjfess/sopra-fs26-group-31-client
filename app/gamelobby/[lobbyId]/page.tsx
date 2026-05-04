@@ -5,6 +5,7 @@ import type { Friend } from "@/types/user";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import GameChat, { GAME_STARTING_CHAT_MESSAGE } from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
 
@@ -42,13 +43,15 @@ export default function GameLobbyPage() {
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("EASY");
     const [toast, setToast] = useState<string | null>(null);
     const [codeCopied, setCodeCopied] = useState(false);
-    const [userId, setUserId] = useState<number | null>(null);
-    const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
 
     const params = useParams();
     const lobbyId = params.lobbyId as string;
     const router = useRouter();
     const apiService = useApi();
+    const { value: token } = useSessionStorage<string>("token", "");
+    const { value: storedUserId } = useSessionStorage<string>("userId", "");
+    const { value: storedUsername } = useSessionStorage<string>("username", "");
 
     const apiRef = useRef(apiService);
     apiRef.current = apiService;
@@ -76,20 +79,20 @@ export default function GameLobbyPage() {
     }, []);
 
     useEffect(() => {
-        const stored = window.sessionStorage.getItem("userId");
-        if (!stored) {
-            setUserId(null);
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+        if (!token) {
+            router.push("/login");
             return;
         }
+    }, [mounted, token, router]);
 
-        const parsed = Number(stored);
-        setUserId(Number.isNaN(parsed) ? null : parsed);
-
-        const storedUsername = window.sessionStorage.getItem("username");
-        if (storedUsername) {
-            setCurrentUsername(storedUsername);
-        }
-    }, []);
+    const userId =
+        storedUserId && !Number.isNaN(Number(storedUserId)) ? Number(storedUserId) : null;
+    const currentUsername = storedUsername || null;
 
     const isHost =
         game !== null && userId !== null && Number(game.hostId) === Number(userId);
@@ -196,10 +199,13 @@ export default function GameLobbyPage() {
     }, [getRematchLobbyId, lobbyId, router, showToast]);
 
     useEffect(() => {
+        if (!mounted || !token || userId === null) return;
         void fetchFriends();
-    }, [fetchFriends]);
+    }, [mounted, token, userId, fetchFriends]);
 
     useEffect(() => {
+        if (!mounted || !token || userId === null) return;
+
         void fetchGame();
 
         pollingRef.current = setInterval(() => {
@@ -212,7 +218,7 @@ export default function GameLobbyPage() {
                 clearTimeout(launchNavigationRef.current);
             }
         };
-    }, [fetchGame]);
+    }, [mounted, token, userId, fetchGame]);
 
     const handleSelectMode = async (mode: GameMode) => {
         if (!isHost) return;
@@ -364,7 +370,7 @@ export default function GameLobbyPage() {
         setIsStarting(true);
     }, []);
 
-    if (loading) {
+    if (!mounted || loading) {
         return (
             <div className={styles.loadingScreen}>
                 <div className={styles.loadingSpinner} />
