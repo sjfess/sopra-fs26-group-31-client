@@ -354,10 +354,12 @@ function getStyles(screen: ScreenSize) {
 function PlayersPanel({
                         scores,
                         userId,
+                        turnSecondsLeft,
                         S,
                       }: {
   scores: GamePlayerScore[];
   userId: number | null;
+  turnSecondsLeft: number;
   S: ReturnType<typeof getStyles>;
 }) {
   return (
@@ -384,7 +386,10 @@ function PlayersPanel({
                       {s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
                     </div>
                   </div>
-                  <span style={S.badge}>{s.score}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    {s.activeTurn && <TurnTimer secondsLeft={turnSecondsLeft} compact />}
+                    <span style={S.badge}>{s.score}</span>
+                  </div>
                 </div>
             ))}
       </div>
@@ -633,10 +638,10 @@ function HandSection({
   );
 }
 
-const TimelineGamePage: React.FC = () => {
+export default function TimelineGamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const router = useRouter();
-  const apiService = useApi();
+  const api = useApi();
   const { value: token } = useSessionStorage<string>("token", "");
   const { value: storedUserId } = useSessionStorage<string>("userId", "");
   const { value: storedUsername } = useSessionStorage<string>("username", "");
@@ -649,13 +654,18 @@ const TimelineGamePage: React.FC = () => {
   const [hand, setHand] = useState<HandCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
   const [finalResults, setFinalResults] = useState<FinalResult[] | null>(null);
   const [toast, setToast] = useState<{ msg: string; correct: boolean | null } | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const TURN_LIMIT_SECONDS = 30;
+  const [turnSecondsLeft, setTurnSecondsLeft] = useState<number>(TURN_LIMIT_SECONDS);
 
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -685,13 +695,28 @@ const TimelineGamePage: React.FC = () => {
     }, 2500);
   }
 
+  async function handleLeave() {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    if (game && userId !== null) {
+      try {
+        await api.delete(`/games/leave/${game.lobbyCode}?userId=${userId}`);
+      } catch (err) {
+        console.error("Failed to leave game:", err);
+      }
+    }
+
+    router.push(`/profile/${userId}`);
+  }
+
   const fetchAll = useCallback(async () => {
-    if (userId === null) return;
     try {
       const [g, s, tl] = await Promise.all([
-        apiService.get<Game>(`/games/${gameId}`),
-        apiService.get<GamePlayerScore[]>(`/games/${gameId}/scores`),
-        apiService.get<EventCardReveal[]>(`/games/${gameId}/timeline`),
+        api.get<Game>(`/games/${gameId}`),
+        api.get<GamePlayerScore[]>(`/games/${gameId}/scores`),
+        api.get<EventCardReveal[]>(`/games/${gameId}/timeline`),
       ]);
 
       setGame(g);
@@ -700,16 +725,17 @@ const TimelineGamePage: React.FC = () => {
 
       if (g.status === "FINISHED") return;
 
-      if (g.status === "IN_PROGRESS") {
-        const h = await apiService.get<HandCard[]>(`/games/${gameId}/hand?userId=${userId}`);
+      if (g.status === "IN_PROGRESS" && userId !== null) {
+        const h = await api.get<HandCard[]>(`/games/${gameId}/hand?userId=${userId}`);
         setHand(h);
       } else {
         setHand([]);
       }
+
     } catch (err) {
       console.error("Fetch error:", err);
     }
-  }, [apiService, gameId, userId]);
+  }, [api, gameId, userId]);
 
   useEffect(() => {
     if (!mounted || !token || userId === null) return;
@@ -720,6 +746,7 @@ const TimelineGamePage: React.FC = () => {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
     };
   }, [mounted, token, userId, fetchAll]);
 
@@ -736,6 +763,35 @@ const TimelineGamePage: React.FC = () => {
   const myScore = scores.find((s) => s.userId === userId);
   const isMyTurn = myScore?.activeTurn ?? false;
   const activePlayer = scores.find((s) => s.activeTurn);
+  const activeTurnStartedAt = activePlayer?.turnStartedAt ?? null;
+
+  // Countdown timer — resets whenever the active player changes.
+  // Uses turnStartedAt from the backend as the source of truth so it
+  // self-corrects on every poll even if the local clock drifts.
+  useEffect(() => {
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    if (!activeTurnStartedAt) {
+      setTurnSecondsLeft(TURN_LIMIT_SECONDS);
+      return;
+    }
+
+    function tick() {
+      const elapsedMs = Date.now() - new Date(activeTurnStartedAt!).getTime();
+      const remaining = Math.max(0, Math.round(TURN_LIMIT_SECONDS - elapsedMs / 1000));
+      setTurnSecondsLeft(remaining);
+    }
+
+    tick();
+    countdownRef.current = setInterval(tick, 1000);
+
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+        countdownRef.current = null;
+      }
+    };
+  }, [activeTurnStartedAt]);
 
   useEffect(() => {
     if (!isMyTurn) {
@@ -752,7 +808,7 @@ const TimelineGamePage: React.FC = () => {
     if (!isMyTurn || userId === null) return;
 
     try {
-      await apiService.post<unknown>(`/games/${gameId}/draw`, {
+      await api.post<unknown>(`/games/${gameId}/draw`, {
         userId,
         deckIndex,
       });
@@ -773,7 +829,7 @@ const TimelineGamePage: React.FC = () => {
     if (!isMyTurn || selectedCard === null) return;
 
     try {
-      const result = await apiService.post<PlacementResult>(`/games/${gameId}/moves`, {
+      const result = await api.post<PlacementResult>(`/games/${gameId}/moves`, {
         cardIndex: selectedCard,
         position,
       });
@@ -812,6 +868,8 @@ const TimelineGamePage: React.FC = () => {
     );
   }
 
+
+
   return (
       <div style={S.page}>
         {toast && <div style={S.toast(toast.correct)}>{toast.msg}</div>}
@@ -829,7 +887,7 @@ const TimelineGamePage: React.FC = () => {
             <span style={{ color: "#e3cb2c" }}>{game.difficulty}</span>
           </div>
 
-          <div style={{ fontSize: screen === "mobile" ? "12px" : "13px" }}>
+          <div style={{ fontSize: screen === "mobile" ? "12px" : "13px", display: "flex", alignItems: "center", gap: "10px" }}>
             {isMyTurn ? (
                 <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>⭐ Your turn!</span>
             ) : activePlayer ? (
@@ -837,19 +895,112 @@ const TimelineGamePage: React.FC = () => {
               Waiting for <strong style={{ color: "#fff" }}>{activePlayer.username}</strong>
             </span>
             ) : null}
+            {activePlayer && (
+                <TurnTimer secondsLeft={turnSecondsLeft} />
+            )}
+            <button
+                style={{
+                  padding: screen === "mobile" ? "6px 12px" : "8px 16px",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(231,76,60,0.45)",
+                  cursor: "pointer",
+                  fontFamily: "Georgia, serif",
+                  fontWeight: "bold",
+                  fontSize: screen === "mobile" ? "11px" : "12px",
+                  background: "rgba(231,76,60,0.12)",
+                  color: "#e74c3c",
+                  transition: "all 0.15s ease",
+                }}
+                onClick={() => setShowLeaveConfirm(true)}
+            >
+              Leave
+            </button>
           </div>
         </div>
 
+        {showLeaveConfirm && (
+            <div
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.65)",
+                  backdropFilter: "blur(4px)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 2000,
+                }}
+                onClick={() => setShowLeaveConfirm(false)}
+            >
+              <div
+                  style={{
+                    background: "linear-gradient(180deg, rgba(19,47,99,0.98), rgba(10,28,68,0.98))",
+                    border: "1px solid rgba(255,255,255,0.18)",
+                    borderRadius: "20px",
+                    padding: screen === "mobile" ? "24px 20px" : "32px 36px",
+                    maxWidth: "380px",
+                    width: "90%",
+                    textAlign: "center",
+                    boxShadow: "0 28px 64px rgba(0,0,0,0.50)",
+                    backdropFilter: "blur(12px)",
+                    fontFamily: "Georgia, serif",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+              >
+                <div style={{ fontSize: "36px", marginBottom: "12px" }}>🚪</div>
+                <h2 style={{ color: "#e3cb2c", margin: "0 0 10px", fontSize: "20px" }}>Leave Game?</h2>
+                <p style={{ color: "rgba(255,255,255,0.68)", fontSize: "14px", margin: "0 0 28px", lineHeight: "1.6" }}>
+                  Are you sure you want to leave? The game will continue without you.
+                </p>
+                <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+                  <button
+                      style={{
+                        padding: "10px 22px",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255,255,255,0.18)",
+                        cursor: "pointer",
+                        fontFamily: "Georgia, serif",
+                        fontWeight: "bold",
+                        fontSize: "13px",
+                        background: "rgba(255,255,255,0.10)",
+                        color: "#fff",
+                      }}
+                      onClick={() => setShowLeaveConfirm(false)}
+                  >
+                    Stay
+                  </button>
+                  <button
+                      style={{
+                        padding: "10px 22px",
+                        borderRadius: "12px",
+                        border: "none",
+                        cursor: "pointer",
+                        fontFamily: "Georgia, serif",
+                        fontWeight: "bold",
+                        fontSize: "13px",
+                        background: "linear-gradient(180deg, #e74c3c, #c0392b)",
+                        color: "#fff",
+                        boxShadow: "0 8px 20px rgba(231,76,60,0.28)",
+                      }}
+                      onClick={handleLeave}
+                  >
+                    Leave Game
+                  </button>
+                </div>
+              </div>
+            </div>
+        )}
+
         {(screen === "mobile" || screen === "tablet") && (
             <div style={S.mobileTopStats}>
-              <PlayersPanel scores={scores} userId={userId} S={S} />
+              <PlayersPanel scores={scores} userId={userId} turnSecondsLeft={turnSecondsLeft} S={S} />
               <StatsPanel myScore={myScore} S={S} />
             </div>
         )}
 
         <div style={S.gameGrid}>
           <div style={S.desktopSidePanel}>
-            <PlayersPanel scores={scores} userId={userId} S={S} />
+            <PlayersPanel scores={scores} userId={userId} turnSecondsLeft={turnSecondsLeft} S={S} />
           </div>
 
           <div>
@@ -902,9 +1053,64 @@ const TimelineGamePage: React.FC = () => {
         </div>
       </div>
   );
-};
+}
 
-export default TimelineGamePage;
+function TurnTimer({ secondsLeft, compact = false }: { secondsLeft: number; compact?: boolean }) {
+  const urgent = secondsLeft <= 10;
+  const color = urgent ? "#e74c3c" : secondsLeft <= 20 ? "#f0a500" : "#e3cb2c";
+
+  if (compact) {
+    return (
+        <span
+            style={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              color,
+              minWidth: "26px",
+              textAlign: "right",
+            }}
+        >
+          {secondsLeft}s
+        </span>
+    );
+  }
+
+  const circumference = 2 * Math.PI * 12;
+  const progress = (secondsLeft / 30) * circumference;
+
+  return (
+      <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            background: urgent ? "rgba(231,76,60,0.12)" : "rgba(255,255,255,0.06)",
+            border: `1px solid ${urgent ? "rgba(231,76,60,0.4)" : "rgba(255,255,255,0.12)"}`,
+            borderRadius: "20px",
+            padding: "4px 10px 4px 6px",
+          }}
+      >
+        <svg width="28" height="28" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx="14" cy="14" r="12" fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="2.5" />
+          <circle
+              cx="14"
+              cy="14"
+              r="12"
+              fill="none"
+              stroke={color}
+              strokeWidth="2.5"
+              strokeDasharray={`${circumference}`}
+              strokeDashoffset={`${circumference - progress}`}
+              strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 0.9s linear, stroke 0.3s" }}
+          />
+        </svg>
+        <span style={{ fontSize: "13px", fontWeight: "bold", color, minWidth: "24px" }}>
+          {secondsLeft}s
+        </span>
+      </div>
+  );
+}
 
 function SlotButton({
                       position,
