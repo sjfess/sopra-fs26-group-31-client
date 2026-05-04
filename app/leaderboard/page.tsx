@@ -307,63 +307,93 @@ const LeaderboardPage: React.FC = () => {
                         <>
                             <section
                                 style={{
+                                    position: "relative",
                                     display: "grid",
-                                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                                    gap: 18,
-                                    marginBottom: 28,
+                                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                                    gap: 22,
+                                    marginBottom: 34,
+                                    padding: "28px 18px 18px",
+                                    borderRadius: 24,
+                                    background:
+                                        "radial-gradient(circle at top, rgba(227,203,44,0.20), rgba(255,255,255,0.04) 45%, rgba(0,0,0,0.10))",
+                                    border: "1px solid rgba(227,203,44,0.35)",
+                                    overflow: "hidden",
                                 }}
                             >
+                                <div className="chaos-orbit chaos-orbit-left">🐉</div>
+                                <div className="chaos-orbit chaos-orbit-right">🦄</div>
+                                <div className="chaos-orbit chaos-orbit-bottom">🧌</div>
+
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: 10,
+                                        left: 18,
+                                        color: "#e3cb2c",
+                                        fontWeight: "bold",
+                                        letterSpacing: 1.2,
+                                        fontSize: "0.8rem",
+                                        textTransform: "uppercase",
+                                    }}
+                                >
+                                    Hall of absolutely questionable greatness
+                                </div>
+
                                 {topThree.map((player, index) => {
                                     const badge = getTitleForPlayer(player, index, leaderboard.length);
                                     const isFirst = player.rank === 1;
+                                    const isSecond = player.rank === 2;
+                                    const isThird = player.rank === 3;
                                     const isCurrentUser = String(player.userId) === String(loggedInUserId);
 
                                     return (
                                         <Card
                                             key={player.userId}
+                                            className={
+                                                isFirst
+                                                    ? "podium-card podium-card-first"
+                                                    : isSecond
+                                                        ? "podium-card podium-card-second"
+                                                        : isThird
+                                                            ? "podium-card podium-card-third"
+                                                            : "podium-card"
+                                            }
                                             style={{
-                                                background: isFirst
-                                                    ? "linear-gradient(160deg, rgba(227,203,44,0.95), rgba(255,244,151,0.9))"
-                                                    : "linear-gradient(160deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05))",
-                                                border: isFirst
-                                                    ? "2px solid #fff4a3"
-                                                    : "1px solid rgba(255,255,255,0.25)",
-                                                borderRadius: 18,
-                                                minHeight: 190,
-                                                boxShadow: isFirst
-                                                    ? "0 0 30px rgba(227,203,44,0.45)"
-                                                    : "0 0 20px rgba(0,0,0,0.2)",
-                                                transform: isFirst ? "translateY(-8px)" : "none",
+                                                borderRadius: 24,
+                                                minHeight: isFirst ? 250 : 220,
+                                                transform: isFirst ? "translateY(-12px) scale(1.04)" : "translateY(8px)",
                                             }}
                                         >
+                                            <div className="podium-confetti">
+                                                {isFirst ? "⚡ 👑 🔥 🐉 ⚡" : isSecond ? "🧠 ✨ 🧪 ✨ 🧠" : "🐶 🔥 🦴 🔥 🐶"}
+                                            </div>
+
                                             <div
                                                 style={{
                                                     display: "flex",
                                                     flexDirection: "column",
                                                     alignItems: "center",
                                                     textAlign: "center",
-                                                    color: isFirst ? "#0f2557" : "white",
+                                                    position: "relative",
+                                                    zIndex: 2,
                                                 }}
                                             >
-                                                <div style={{ fontSize: isFirst ? 58 : 46 }}>
+                                                <div className={isFirst ? "boss-icon" : "mini-boss-icon"}>
                                                     {badge.icon}
                                                 </div>
 
-                                                <div
-                                                    style={{
-                                                        fontSize: "0.9rem",
-                                                        fontWeight: "bold",
-                                                        opacity: 0.85,
-                                                        marginTop: 4,
-                                                    }}
-                                                >
+                                                <div className="rank-pill">
                                                     Rank #{player.rank}
                                                 </div>
 
                                                 <h2
                                                     style={{
-                                                        margin: "6px 0 2px",
+                                                        margin: "10px 0 4px",
                                                         color: isFirst ? "#0f2557" : "#e3cb2c",
+                                                        fontSize: isFirst ? "2rem" : "1.55rem",
+                                                        textShadow: isFirst
+                                                            ? "0 2px 0 rgba(255,255,255,0.4)"
+                                                            : "0 3px 0 rgba(0,0,0,0.35)",
                                                     }}
                                                 >
                                                     {badge.title}
@@ -371,17 +401,28 @@ const LeaderboardPage: React.FC = () => {
 
                                                 <div
                                                     style={{
-                                                        fontSize: "1.15rem",
+                                                        fontSize: isFirst ? "1.35rem" : "1.1rem",
                                                         fontWeight: "bold",
-                                                        marginBottom: 8,
+                                                        color: isFirst ? "#0f2557" : "#ffffff",
+                                                        marginBottom: 10,
                                                     }}
                                                 >
                                                     {player.username}
                                                     {isCurrentUser ? " (You)" : ""}
                                                 </div>
 
-                                                <div style={{ fontSize: "0.95rem" }}>
-                                                    {player.totalPoints} pts · {player.totalWins} wins
+                                                <div className={isFirst ? "boss-score" : "mini-score"}>
+                                                    {player.totalPoints} pts
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        marginTop: 8,
+                                                        color: isFirst ? "#0f2557" : "rgba(255,255,255,0.88)",
+                                                        fontWeight: 700,
+                                                    }}
+                                                >
+                                                    {player.totalWins} wins · {player.totalGamesPlayed} games
                                                 </div>
                                             </div>
                                         </Card>
@@ -390,34 +431,23 @@ const LeaderboardPage: React.FC = () => {
                             </section>
 
                             {lastPlayer && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "space-between",
-                                        gap: 16,
-                                        background:
-                                            "linear-gradient(90deg, rgba(246,183,60,0.18), rgba(255,255,255,0.05))",
-                                        border: "1px dashed #f6b73c",
-                                        borderRadius: 16,
-                                        padding: "14px 18px",
-                                        marginBottom: 26,
-                                        color: "white",
-                                    }}
-                                >
-                                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                                        <span style={{ fontSize: 34 }}>🍺</span>
+                                <div className="captain-alcohol-banner">
+                                    <div className="beer-bubble">🍺</div>
+                                    <div className="beer-bubble beer-bubble-two">🍻</div>
+
+                                    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                                        <span className="captain-icon">🍺</span>
                                         <div>
-                                            <strong style={{ color: "#f6b73c" }}>
-                                                Captain Alcohol detected
+                                            <strong className="captain-title">
+                                                Captain Alcohol has entered the tavern
                                             </strong>
-                                            <div style={{ fontSize: "0.95rem" }}>
-                                                {lastPlayer.username} is bravely guarding the bottom of the leaderboard.
+                                            <div style={{ fontSize: "1rem", color: "rgba(255,255,255,0.92)" }}>
+                                                {lastPlayer.username} is bravely protecting the leaderboard basement from total collapse.
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div style={{ fontWeight: "bold", color: "#f6b73c" }}>
+                                    <div className="captain-rank">
                                         Rank #{lastPlayer.rank}
                                     </div>
                                 </div>
@@ -449,16 +479,22 @@ const LeaderboardPage: React.FC = () => {
             </main>
 
             <style jsx global>{`
+                .ant-card-body {
+                    position: relative;
+                }
+
                 .ant-table {
                     background: transparent !important;
                     color: white !important;
                 }
 
                 .ant-table-thead > tr > th {
-                    background: rgba(8, 22, 54, 0.92) !important;
+                    background: rgba(8, 22, 54, 0.96) !important;
                     color: #e3cb2c !important;
                     border-bottom: 1px solid rgba(227, 203, 44, 0.45) !important;
-                    font-weight: 800 !important;
+                    font-weight: 900 !important;
+                    text-transform: uppercase;
+                    letter-spacing: 0.8px;
                 }
 
                 .ant-table-tbody > tr > td {
@@ -468,11 +504,12 @@ const LeaderboardPage: React.FC = () => {
                 }
 
                 .ant-table-tbody > tr:hover > td {
-                    background: rgba(227, 203, 44, 0.12) !important;
+                    background: rgba(227, 203, 44, 0.16) !important;
                 }
 
                 .leaderboard-row-first > td {
                     background: rgba(227, 203, 44, 0.18) !important;
+                    font-weight: bold;
                 }
 
                 .leaderboard-row-second > td {
@@ -484,7 +521,7 @@ const LeaderboardPage: React.FC = () => {
                 }
 
                 .leaderboard-row-last > td {
-                    background: rgba(246, 183, 60, 0.09) !important;
+                    background: rgba(246, 183, 60, 0.11) !important;
                 }
 
                 .ant-pagination-item {
@@ -498,10 +535,269 @@ const LeaderboardPage: React.FC = () => {
 
                 .ant-pagination-item-active {
                     background: rgba(227, 203, 44, 0.18) !important;
+                    box-shadow: 0 0 12px rgba(227, 203, 44, 0.4);
                 }
 
                 .ant-table-column-sorter {
                     color: #e3cb2c !important;
+                }
+
+                .podium-card {
+                    position: relative;
+                    overflow: hidden;
+                    border: 1px solid rgba(255,255,255,0.25) !important;
+                    background: linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04)) !important;
+                    box-shadow: 0 18px 38px rgba(0,0,0,0.25);
+                    transition: transform 0.25s ease, box-shadow 0.25s ease;
+                }
+
+                .podium-card:hover {
+                    transform: translateY(-4px) scale(1.025) !important;
+                    box-shadow: 0 24px 50px rgba(0,0,0,0.35);
+                }
+
+                .podium-card-first {
+                    border: 3px solid #fff4a3 !important;
+                    background: linear-gradient(150deg, #e3cb2c, #fff4a3 45%, #f3b700) !important;
+                    box-shadow:
+                            0 0 22px rgba(227,203,44,0.75),
+                            0 0 60px rgba(227,203,44,0.35),
+                            0 24px 55px rgba(0,0,0,0.35);
+                    animation: bossPulse 2.1s infinite ease-in-out;
+                }
+
+                .podium-card-second {
+                    border: 2px solid rgba(210, 230, 255, 0.75) !important;
+                    box-shadow:
+                            0 0 24px rgba(180,220,255,0.28),
+                            0 18px 38px rgba(0,0,0,0.25);
+                }
+
+                .podium-card-third {
+                    border: 2px solid rgba(255, 173, 89, 0.75) !important;
+                    box-shadow:
+                            0 0 24px rgba(255, 150, 65, 0.25),
+                            0 18px 38px rgba(0,0,0,0.25);
+                }
+
+                .podium-confetti {
+                    position: absolute;
+                    top: 10px;
+                    left: 0;
+                    right: 0;
+                    text-align: center;
+                    font-size: 1rem;
+                    opacity: 0.55;
+                    pointer-events: none;
+                }
+
+                .boss-icon {
+                    font-size: 76px;
+                    line-height: 1;
+                    animation: crownBounce 1.7s infinite ease-in-out;
+                    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.25));
+                }
+
+                .mini-boss-icon {
+                    font-size: 54px;
+                    line-height: 1;
+                    filter: drop-shadow(0 8px 10px rgba(0,0,0,0.25));
+                }
+
+                .rank-pill {
+                    margin-top: 10px;
+                    padding: 5px 13px;
+                    border-radius: 999px;
+                    background: rgba(15,37,87,0.82);
+                    color: #e3cb2c;
+                    font-weight: 900;
+                    font-size: 0.78rem;
+                    letter-spacing: 0.8px;
+                    text-transform: uppercase;
+                    border: 1px solid rgba(227,203,44,0.5);
+                }
+
+                .boss-score {
+                    padding: 9px 18px;
+                    border-radius: 999px;
+                    background: #0f2557;
+                    color: #e3cb2c;
+                    font-weight: 900;
+                    font-size: 1.1rem;
+                    box-shadow: 0 0 18px rgba(15,37,87,0.45);
+                }
+
+                .mini-score {
+                    padding: 8px 16px;
+                    border-radius: 999px;
+                    background: rgba(227,203,44,0.16);
+                    color: #e3cb2c;
+                    font-weight: 900;
+                    font-size: 1rem;
+                    border: 1px solid rgba(227,203,44,0.4);
+                }
+
+                .chaos-orbit {
+                    position: absolute;
+                    pointer-events: none;
+                    opacity: 0.18;
+                    z-index: 0;
+                    font-size: 90px;
+                    filter: blur(0.2px);
+                }
+
+                .chaos-orbit-left {
+                    left: -12px;
+                    top: 60px;
+                    animation: floatyDragon 5s infinite ease-in-out;
+                }
+
+                .chaos-orbit-right {
+                    right: 18px;
+                    top: 28px;
+                    animation: floatyDragon 6s infinite ease-in-out reverse;
+                }
+
+                .chaos-orbit-bottom {
+                    bottom: -18px;
+                    left: 46%;
+                    animation: goblinWiggle 3.5s infinite ease-in-out;
+                }
+
+                .captain-alcohol-banner {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+                    background:
+                            linear-gradient(90deg, rgba(246,183,60,0.24), rgba(255,255,255,0.05)),
+                            radial-gradient(circle at left, rgba(255,210,90,0.25), transparent 35%);
+                    border: 2px dashed #f6b73c;
+                    border-radius: 22px;
+                    padding: 18px 22px;
+                    margin-bottom: 30px;
+                    color: white;
+                    overflow: hidden;
+                    box-shadow: 0 0 25px rgba(246,183,60,0.16);
+                }
+
+                .captain-icon {
+                    font-size: 46px;
+                    animation: beerShake 1.8s infinite ease-in-out;
+                    filter: drop-shadow(0 6px 8px rgba(0,0,0,0.25));
+                }
+
+                .captain-title {
+                    display: block;
+                    color: #f6b73c;
+                    font-size: 1.15rem;
+                    margin-bottom: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.7px;
+                }
+
+                .captain-rank {
+                    position: relative;
+                    z-index: 2;
+                    font-weight: 900;
+                    color: #0f2557;
+                    background: #f6b73c;
+                    border-radius: 999px;
+                    padding: 10px 18px;
+                    box-shadow: 0 0 16px rgba(246,183,60,0.45);
+                    white-space: nowrap;
+                }
+
+                .beer-bubble {
+                    position: absolute;
+                    right: 90px;
+                    top: -16px;
+                    font-size: 38px;
+                    opacity: 0.15;
+                    animation: beerFloat 4s infinite ease-in-out;
+                }
+
+                .beer-bubble-two {
+                    right: 160px;
+                    top: 36px;
+                    font-size: 32px;
+                    animation-delay: 1.2s;
+                }
+
+                @keyframes bossPulse {
+                    0%, 100% {
+                        box-shadow:
+                                0 0 22px rgba(227,203,44,0.75),
+                                0 0 60px rgba(227,203,44,0.35),
+                                0 24px 55px rgba(0,0,0,0.35);
+                    }
+                    50% {
+                        box-shadow:
+                                0 0 34px rgba(227,203,44,0.95),
+                                0 0 85px rgba(227,203,44,0.50),
+                                0 24px 55px rgba(0,0,0,0.35);
+                    }
+                }
+
+                @keyframes crownBounce {
+                    0%, 100% {
+                        transform: translateY(0) rotate(-3deg);
+                    }
+                    50% {
+                        transform: translateY(-8px) rotate(4deg);
+                    }
+                }
+
+                @keyframes floatyDragon {
+                    0%, 100% {
+                        transform: translateY(0) rotate(-8deg);
+                    }
+                    50% {
+                        transform: translateY(-18px) rotate(8deg);
+                    }
+                }
+
+                @keyframes goblinWiggle {
+                    0%, 100% {
+                        transform: translateX(0) rotate(-7deg);
+                    }
+                    50% {
+                        transform: translateX(20px) rotate(7deg);
+                    }
+                }
+
+                @keyframes beerShake {
+                    0%, 100% {
+                        transform: rotate(-7deg);
+                    }
+                    50% {
+                        transform: rotate(8deg) scale(1.08);
+                    }
+                }
+
+                @keyframes beerFloat {
+                    0%, 100% {
+                        transform: translateY(0) rotate(-10deg);
+                    }
+                    50% {
+                        transform: translateY(18px) rotate(12deg);
+                    }
+                }
+
+                @media (max-width: 800px) {
+                    .podium-card-first {
+                        transform: none !important;
+                    }
+
+                    .captain-alcohol-banner {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+
+                    .captain-rank {
+                        align-self: flex-end;
+                    }
                 }
             `}</style>
         </div>
