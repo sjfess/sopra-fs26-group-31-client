@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
-import GameChat from "./GameChat";
+import GameChat, { GAME_STARTING_CHAT_MESSAGE } from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
 
 type GameMode = "TIMELINE" | "HISTORY_UNO";
@@ -57,6 +57,7 @@ export default function GameLobbyPage() {
     apiRef.current = apiService;
 
     const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const launchNavigationRef = useRef<number | null>(null);
     const startedRef = useRef(false);
     const pendingSettingsRef = useRef(false);
 
@@ -114,15 +115,19 @@ export default function GameLobbyPage() {
 
             if (response.status === "IN_PROGRESS" && !startedRef.current) {
                 startedRef.current = true;
+                setIsStarting(true);
 
                 if (pollingRef.current) clearInterval(pollingRef.current);
 
                 const mode = (response.gameMode ?? "TIMELINE") as GameMode;
-                router.push(
+                const gamePath =
                     mode === "HISTORY_UNO"
                         ? `/games/${lobbyId}/play/uno`
-                        : `/games/${lobbyId}/play`
-                );
+                        : `/games/${lobbyId}/play`;
+
+                launchNavigationRef.current = window.setTimeout(() => {
+                    router.push(gamePath);
+                }, 1500);
                 return;
             }
 
@@ -162,6 +167,9 @@ export default function GameLobbyPage() {
 
         return () => {
             if (pollingRef.current) clearInterval(pollingRef.current);
+            if (launchNavigationRef.current) {
+                clearTimeout(launchNavigationRef.current);
+            }
         };
     }, [mounted, token, userId, fetchGame]);
 
@@ -224,7 +232,17 @@ export default function GameLobbyPage() {
 
         setIsStarting(true);
         try {
-            await apiRef.current.put(`/games/${lobbyId}/start?deckSize=20`, {});
+            if (userId !== null) {
+                try {
+                    await apiRef.current.post(`/games/${lobbyId}/chat`, {
+                        playerId: userId,
+                        message: GAME_STARTING_CHAT_MESSAGE,
+                    });
+                } catch (error) {
+                    console.error("Failed to send game starting signal:", error);
+                }
+            }
+            await apiRef.current.put(`/games/${lobbyId}/start`, {});
         } catch (error) {
             console.error("Failed to start game:", error);
             showToast("Failed to start game. Please try again.");
@@ -314,6 +332,10 @@ export default function GameLobbyPage() {
         game?.players?.find(
             (p: PlayerSummary) => Number(p.id) === Number(game?.hostId)
         )?.username ?? "—";
+    const shouldShowLaunchOverlay = isStarting || game?.status === "IN_PROGRESS";
+    const handleGameStartingSignal = useCallback(() => {
+        setIsStarting(true);
+    }, []);
 
     if (!mounted || loading) {
         return (
@@ -334,9 +356,9 @@ export default function GameLobbyPage() {
 
     return (
         <div className={styles.root}>
-            <nav className={styles.navbar} aria-label="Main navigation">
-                <div className={styles.navLogo}>Historical Reconstruction</div>
-                <ul className={styles.navLinks} role="list">
+            <nav className="app-navbar" aria-label="Main navigation">
+                <div className="app-navbar-title">Historical Reconstruction</div>
+                <ul className="app-navbar-links" role="list">
                     <li>
                         <a href="/dashboard" className={styles.navLinkActive}>
                             Home
@@ -658,6 +680,7 @@ export default function GameLobbyPage() {
                             gameId={lobbyId}
                             userId={userId}
                             currentUsername={currentUsername}
+                            onGameStarting={handleGameStartingSignal}
                         />
                     </div>
                 </section>
@@ -666,6 +689,34 @@ export default function GameLobbyPage() {
             {toast && (
                 <div className={styles.toast} role="status" aria-live="polite">
                     {toast}
+                </div>
+            )}
+
+            {shouldShowLaunchOverlay && (
+                <div
+                    className={styles.gameLaunchOverlay}
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Loading game"
+                >
+                    <div className={styles.launchAnimation} aria-hidden="true">
+                        <div className={styles.launchRing} />
+                        <div className={styles.launchCardStack}>
+                            <span className={`${styles.launchCard} ${styles.launchCardOne}`}>
+                                1492
+                            </span>
+                            <span className={`${styles.launchCard} ${styles.launchCardTwo}`}>
+                                1776
+                            </span>
+                            <span className={`${styles.launchCard} ${styles.launchCardThree}`}>
+                                1969
+                            </span>
+                        </div>
+                    </div>
+                    <div className={styles.launchText}>
+                        <h2>Preparing the game</h2>
+                        <p>Building the deck and moving everyone to the match…</p>
+                    </div>
                 </div>
             )}
         </div>
