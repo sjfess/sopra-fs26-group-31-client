@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useApi } from "@/hooks/useApi";
-import useSessionStorage from "@/hooks/useSessionStorage";
+import { ApiService } from "@/api/apiService";
 import GameChat from "@/gamelobby/[lobbyId]/GameChat";
 import type {
   Game,
@@ -668,20 +667,18 @@ export default function TimelineGamePage() {
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const storedUserId = sessionStorage.getItem("userId");
+    const storedUsername = sessionStorage.getItem("username");
 
-  useEffect(() => {
-    if (!mounted) return;
-    if (!token) {
-      router.push("/login");
-      return;
+    if (storedUserId) {
+      const parsed = Number(storedUserId);
+      if (!Number.isNaN(parsed)) setUserId(parsed);
     }
-  }, [mounted, token, router]);
 
-  const userId =
-      storedUserId && !Number.isNaN(Number(storedUserId)) ? Number(storedUserId) : null;
-  const currentUsername = storedUsername || null;
+    if (storedUsername) {
+      setCurrentUsername(storedUsername);
+    }
+  }, []);
 
   function showToast(msg: string, correct: boolean | null) {
     setToast({ msg, correct });
@@ -738,7 +735,7 @@ export default function TimelineGamePage() {
   }, [api, gameId, userId]);
 
   useEffect(() => {
-    if (!mounted || !token || userId === null) return;
+    if (userId === null) return;
 
     fetchAll().finally(() => setLoading(false));
     pollingRef.current = setInterval(fetchAll, 2000);
@@ -748,7 +745,7 @@ export default function TimelineGamePage() {
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
       if (countdownRef.current) clearInterval(countdownRef.current);
     };
-  }, [mounted, token, userId, fetchAll]);
+  }, [fetchAll, userId]);
 
   useEffect(() => {
     if (game?.status === "FINISHED") {
@@ -849,7 +846,7 @@ export default function TimelineGamePage() {
     }
   }
 
-  if (!mounted || loading) {
+  if (loading) {
     return (
         <div style={S.center}>
           <div style={{ color: "#e3cb2c", fontSize: "18px" }}>Loading game…</div>
