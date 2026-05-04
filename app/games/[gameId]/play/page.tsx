@@ -640,8 +640,10 @@ function HandSection({
 export default function TimelineGamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const router = useRouter();
-  const apiRef = useRef(new ApiService());
-  const api = apiRef.current;
+  const api = useApi();
+  const { value: token } = useSessionStorage<string>("token", "");
+  const { value: storedUserId } = useSessionStorage<string>("userId", "");
+  const { value: storedUsername } = useSessionStorage<string>("username", "");
   const screen = useScreenSize();
   const S = getStyles(screen);
 
@@ -654,9 +656,8 @@ export default function TimelineGamePage() {
   const [loading, setLoading] = useState(true);
   const [finalResults, setFinalResults] = useState<FinalResult[] | null>(null);
   const [toast, setToast] = useState<{ msg: string; correct: boolean | null } | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
-  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const TURN_LIMIT_SECONDS = 30;
   const [turnSecondsLeft, setTurnSecondsLeft] = useState<number>(TURN_LIMIT_SECONDS);

@@ -76,6 +76,10 @@ export default function GameLobbyPage() {
     }, []);
 
     useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
         const stored = window.sessionStorage.getItem("userId");
         if (!stored) {
             setUserId(null);
