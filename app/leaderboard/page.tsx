@@ -68,9 +68,9 @@ const LeaderboardPage: React.FC = () => {
     };
 
     const getTitleForPlayer = (record: LeaderboardEntry, index: number, totalPlayers: number) => {
-        if (record.rank === 1) return { icon: "👑", title: "OverBoss", color: "#ffd700" };
-        if (record.rank === 2) return { icon: "🧠", title: "MegaBirne", color: "#c0c0c0" };
-        if (record.rank === 3) return { icon: "🐶", title: "GeileHund", color: "#cd7f32" };
+        if (record.rank === 1) return { icon: "👑", title: "OverBossUltraHistoryGod", color: "#ffd700" };
+        if (record.rank === 2) return { icon: "🧠", title: "MegaBrain", color: "#c0c0c0" };
+        if (record.rank === 3) return { icon: "🐶", title: "CrazyDawg", color: "#cd7f32" };
 
         if (totalPlayers > 3 && index === totalPlayers - 1) {
             return { icon: "🍺", title: "Captain Alcohol", color: "#f6b73c" };
@@ -248,7 +248,7 @@ const LeaderboardPage: React.FC = () => {
                                     fontWeight: "bold",
                                 }}
                             >
-                                🐉 Royal Monster Ranking
+                                🐉 Royal Ranking of Histomaniacs 🐉
                             </div>
 
                             <h1
