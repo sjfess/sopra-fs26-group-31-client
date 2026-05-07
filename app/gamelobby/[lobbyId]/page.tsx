@@ -9,7 +9,7 @@ import useSessionStorage from "@/hooks/useSessionStorage";
 import GameChat, { GAME_STARTING_CHAT_MESSAGE } from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
 
-type GameMode = "TIMELINE" | "HISTORY_UNO";
+type GameMode = "TIMELINE";
 type Era = "ANCIENT" | "MEDIEVAL" | "RENAISSANCE" | "MODERN" | "INFORMATION";
 type Difficulty = "EASY" | "MEDIUM" | "HARD";
 
@@ -24,8 +24,7 @@ const ERA_LABELS: Record<Era, string> = {
 const ERAS = Object.keys(ERA_LABELS) as Era[];
 
 const MODE_LABELS: Record<GameMode, string> = {
-    TIMELINE: "Timeline Mode",
-    HISTORY_UNO: "History Uno Mode",
+    TIMELINE: "Timeline Mode"
 };
 
 const DIFFICULTY_LABELS: Difficulty[] = ["EASY", "MEDIUM", "HARD"];
@@ -167,10 +166,7 @@ export default function GameLobbyPage() {
                 if (pollingRef.current) clearInterval(pollingRef.current);
 
                 const mode = (response.gameMode ?? "TIMELINE") as GameMode;
-                const gamePath =
-                    mode === "HISTORY_UNO"
-                        ? `/games/${lobbyId}/play/uno`
-                        : `/games/${lobbyId}/play`;
+                const gamePath = `/games/${lobbyId}/play`;
 
                 launchNavigationRef.current = window.setTimeout(() => {
                     router.push(gamePath);

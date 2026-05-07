@@ -24,6 +24,7 @@ export interface Game {
     gameMode: string;
     difficulty: Difficulty;
     maxPlayers: number;
+    nextCardIndex: number;
 }
 
 export type ChatMessageGetDTO = {
