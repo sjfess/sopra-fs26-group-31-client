@@ -24,8 +24,7 @@ const ERA_LABELS: Record<Era, string> = {
 const ERAS = Object.keys(ERA_LABELS) as Era[];
 
 const MODE_LABELS: Record<GameMode, string> = {
-    TIMELINE: "Timeline Mode",
-    HISTORY_UNO: "History Uno Mode",
+    TIMELINE: "Timeline Mode"
 };
 
 const DIFFICULTY_LABELS: Difficulty[] = ["EASY", "MEDIUM", "HARD"];
