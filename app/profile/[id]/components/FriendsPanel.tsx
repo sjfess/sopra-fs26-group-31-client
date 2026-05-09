@@ -1,29 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Input, Button, App } from "antd";
+import { Input, App } from "antd";
 import { useRouter } from "next/navigation";
 import type { GameInvite } from "@/types/game";
 import type { Friend, FriendRequest } from "@/types/user";
 
-
 const API_BASE = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8080";
 
-const cardStyle: React.CSSProperties = {
-    backgroundColor: "#1a3570",
-    border: "1px solid #e3cb2c",
-    borderRadius: "8px",
-    padding: "24px",
-};
-
-const cardTitleStyle: React.CSSProperties = {
-    color: "#e3cb2c",
-    fontFamily: "Georgia, serif",
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: "16px",
-};
+const statusClass = (status: string) =>
+    status === "ONLINE" ? "online" : status === "IN_GAME" ? "in-game" : "offline";
 
 const FriendsPanel: React.FC = () => {
     const { message } = App.useApp();
@@ -40,27 +26,17 @@ const FriendsPanel: React.FC = () => {
     }, []);
 
     const showError = (text: string) =>
-        message.error({
-            content: <span style={{ color: "#000000" }}>{text}</span>,
-            duration: 3,
-        });
-
+        message.error({ content: <span style={{ color: "#000000" }}>{text}</span>, duration: 3 });
     const showSuccess = (text: string) =>
-        message.success({
-            content: <span style={{ color: "#000000" }}>{text}</span>,
-            duration: 3,
-        });
+        message.success({ content: <span style={{ color: "#000000" }}>{text}</span>, duration: 3 });
 
     const fetchFriends = useCallback(async () => {
         if (!userId) return;
         try {
             const res = await fetch(`${API_BASE}/users/${userId}/friends`);
             if (!res.ok) throw new Error();
-            const data = await res.json();
-            setFriends(data);
-        } catch {
-            showError("Could not load friends.");
-        }
+            setFriends(await res.json());
+        } catch { showError("Could not load friends."); }
     }, [userId, message]);
 
     const fetchFriendRequests = useCallback(async () => {
@@ -68,11 +44,8 @@ const FriendsPanel: React.FC = () => {
         try {
             const res = await fetch(`${API_BASE}/users/${userId}/friend-requests`);
             if (!res.ok) throw new Error();
-            const data = await res.json();
-            setFriendRequests(data);
-        } catch {
-            showError("Could not load friend requests.");
-        }
+            setFriendRequests(await res.json());
+        } catch { showError("Could not load friend requests."); }
     }, [userId, message]);
 
     const fetchGameInvites = useCallback(async () => {
@@ -80,62 +53,42 @@ const FriendsPanel: React.FC = () => {
         try {
             const res = await fetch(`${API_BASE}/games/invites/${userId}`);
             if (!res.ok) throw new Error();
-            const data = await res.json();
-            setGameInvites(data);
-        } catch {
-            showError("Could not load game invites.");
-        }
+            setGameInvites(await res.json());
+        } catch { showError("Could not load game invites."); }
     }, [userId, message]);
 
     useEffect(() => {
         if (!userId) return;
-
         void fetchFriends();
         void fetchFriendRequests();
         void fetchGameInvites();
-
         const interval = setInterval(() => {
             void fetchFriends();
             void fetchFriendRequests();
             void fetchGameInvites();
         }, 5000);
-
         return () => clearInterval(interval);
     }, [userId, fetchFriends, fetchFriendRequests, fetchGameInvites]);
 
     const handleSendRequest = async () => {
         if (!searchValue.trim() || !userId) return;
-
         try {
             const res = await fetch(`${API_BASE}/friend-requests`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    senderId: Number(userId),
-                    receiverUsername: searchValue.trim(),
-                }),
+                body: JSON.stringify({ senderId: Number(userId), receiverUsername: searchValue.trim() }),
             });
-
             if (res.status === 404) throw new Error("User not found.");
-            if (res.status === 409) {
-                throw new Error("Request already exists or already friends.");
-            }
+            if (res.status === 409) throw new Error("Request already exists or already friends.");
             if (!res.ok) throw new Error("Could not send request.");
-
             showSuccess(`Friend request sent to ${searchValue}!`);
             setSearchValue("");
             void fetchFriendRequests();
-        } catch (e: any) {
-            showError(e.message);
-        }
+        } catch (e: any) { showError(e.message); }
     };
 
-    const handleRespond = async (
-        requestId: number,
-        action: "ACCEPT" | "DENY"
-    ) => {
+    const handleRespond = async (requestId: number, action: "ACCEPT" | "DENY") => {
         if (!userId) return;
-
         try {
             const res = await fetch(`${API_BASE}/friend-requests/${requestId}`, {
                 method: "PUT",
@@ -143,273 +96,148 @@ const FriendsPanel: React.FC = () => {
                 body: JSON.stringify({ receiverId: Number(userId), action }),
             });
             if (!res.ok) throw new Error();
-
             void fetchFriendRequests();
             void fetchFriends();
-        } catch {
-            showError("Could not respond to request.");
-        }
+        } catch { showError("Could not respond to request."); }
     };
 
     const handleRemoveFriend = async (friendId: number) => {
         if (!userId) return;
-
         try {
-            const res = await fetch(`${API_BASE}/users/${userId}/friends/${friendId}`, {
-                method: "DELETE",
-            });
+            const res = await fetch(`${API_BASE}/users/${userId}/friends/${friendId}`, { method: "DELETE" });
             if (!res.ok) throw new Error();
-
             setFriends((prev) => prev.filter((f) => f.id !== friendId));
-        } catch {
-            showError("Could not remove friend.");
-        }
+        } catch { showError("Could not remove friend."); }
     };
 
     const handleDeclineInvite = async (inviteId: number) => {
         try {
-            const res = await fetch(`${API_BASE}/games/invites/${inviteId}`, {
-                method: "DELETE",
-            });
+            const res = await fetch(`${API_BASE}/games/invites/${inviteId}`, { method: "DELETE" });
             if (!res.ok) throw new Error();
-
             showSuccess("Game invite declined.");
             void fetchGameInvites();
-        } catch {
-            showError("Could not decline game invite.");
-        }
+        } catch { showError("Could not decline game invite."); }
     };
 
     const handleAcceptInvite = async (invite: GameInvite) => {
         if (!userId) return;
-
         try {
             const joinRes = await fetch(`${API_BASE}/games/join/${invite.lobbyCode}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId: Number(userId) }),
             });
-
             if (!joinRes.ok) {
                 if (joinRes.status === 404) throw new Error("Lobby not found.");
                 if (joinRes.status === 409) throw new Error("Could not join lobby.");
                 throw new Error("Could not accept invite.");
             }
-
-            const deleteRes = await fetch(`${API_BASE}/games/invites/${invite.id}`, {
-                method: "DELETE",
-            });
-
-            if (!deleteRes.ok) {
-                throw new Error("Joined lobby, but could not remove invite.");
-            }
-
+            const deleteRes = await fetch(`${API_BASE}/games/invites/${invite.id}`, { method: "DELETE" });
+            if (!deleteRes.ok) throw new Error("Joined lobby, but could not remove invite.");
             showSuccess(`Joined lobby ${invite.lobbyCode}`);
             void fetchGameInvites();
             router.push(`/gamelobby/${invite.gameId}`);
-        } catch (e: any) {
-            showError(e.message ?? "Could not accept game invite.");
-        }
+        } catch (e: any) { showError(e.message ?? "Could not accept game invite."); }
     };
 
     return (
-        <div
-            style={{
-                ...cardStyle,
-                flex: 1.2,
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-            }}
-        >
-            <h2 style={cardTitleStyle}>Friends</h2>
+        <div className="panel-card" style={{ flex: 1.2 }}>
+            <h2 className="panel-title">Friends</h2>
 
             <Input
-                placeholder="Add Friend by username"
+                placeholder="Add friend by username"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onPressEnter={handleSendRequest}
                 suffix={
-                    <span style={{ cursor: "pointer" }} onClick={handleSendRequest}>
+                    <span style={{ cursor: "pointer", color: "#e3cb2c" }} onClick={handleSendRequest}>
                         🔍
                     </span>
                 }
             />
 
-            <div>
-                <div
-                    style={{
-                        color: "#e3cb2c",
-                        fontWeight: "bold",
-                        marginBottom: "8px",
-                    }}
-                >
-                    Game Invites ({gameInvites.length})
-                </div>
-                {gameInvites.length === 0 ? (
-                    <div
-                        style={{
-                            color: "#cdd8f0",
-                            fontSize: "0.85rem",
-                            fontStyle: "italic",
-                        }}
-                    >
-                        No game invites
-                    </div>
-                ) : (
-                    gameInvites.map((invite) => (
-                        <div
-                            key={invite.id}
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "8px",
-                                color: "#cdd8f0",
-                            }}
-                        >
-                            <span>
-                                {invite.fromUsername} invited you to lobby{" "}
-                                {invite.lobbyCode}
-                            </span>
-                            <div style={{ display: "flex", gap: "6px" }}>
-                                <Button
-                                    size="small"
-                                    type="primary"
-                                    onClick={() => handleAcceptInvite(invite)}
-                                >
-                                    Accept
-                                </Button>
-                                <Button
-                                    size="small"
-                                    danger
-                                    onClick={() => handleDeclineInvite(invite.id)}
-                                >
-                                    Decline
-                                </Button>
-                            </div>
-                        </div>
-                    ))
-                )}
+            {/* Game invites */}
+            <div className="panel-section-title">
+                Game Invites ({gameInvites.length})
             </div>
-
-            <div>
-                <div
-                    style={{
-                        color: "#e3cb2c",
-                        fontWeight: "bold",
-                        marginBottom: "8px",
-                    }}
-                >
-                    Friend Requests ({friendRequests.length})
-                </div>
-                {friendRequests.length === 0 ? (
-                    <div
-                        style={{
-                            color: "#cdd8f0",
-                            fontSize: "0.85rem",
-                            fontStyle: "italic",
-                        }}
-                    >
-                        No pending requests
-                    </div>
-                ) : (
-                    friendRequests.map((req) => (
-                        <div
-                            key={req.id}
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "8px",
-                                color: "#cdd8f0",
-                            }}
-                        >
-                            <span>{req.senderUsername}</span>
-                            <div style={{ display: "flex", gap: "6px" }}>
-                                <Button
-                                    size="small"
-                                    type="primary"
-                                    onClick={() => handleRespond(req.id, "ACCEPT")}
-                                >
-                                    ✓
-                                </Button>
-                                <Button
-                                    size="small"
-                                    danger
-                                    onClick={() => handleRespond(req.id, "DENY")}
-                                >
-                                    ✗
-                                </Button>
-                            </div>
-                        </div>
-                    ))
-                )}
-            </div>
-
-            <div>
-                <div
-                    style={{
-                        color: "#e3cb2c",
-                        fontWeight: "bold",
-                        marginBottom: "8px",
-                    }}
-                >
-                    Friends ({friends.length})
-                </div>
-                {friends.length === 0 ? (
-                    <div
-                        style={{
-                            color: "#cdd8f0",
-                            fontSize: "0.85rem",
-                            fontStyle: "italic",
-                        }}
-                    >
-                        No friends yet
-                    </div>
-                ) : (
-                    friends.map((friend) => (
-                        <div
-                            key={friend.id}
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "8px",
-                                color: "#cdd8f0",
-                            }}
-                        >
-                            <span>
-                                <span style={{ marginRight: "6px" }}>
-                                    <span
-                                        style={{
-                                            display: "inline-block",
-                                            width: "10px",
-                                            height: "10px",
-                                            borderRadius: "50%",
-                                            backgroundColor:
-                                                friend.status === "ONLINE"
-                                                    ? "#52c41a"
-                                                    : friend.status === "IN_GAME"
-                                                        ? "#f59e0b"
-                                                        : "#ff4d4f",
-                                            marginRight: "6px",
-                                        }}
-                                    />
-                                </span>
-                                {friend.username}
+            {gameInvites.length === 0 ? (
+                <div className="panel-empty">No game invites</div>
+            ) : (
+                gameInvites.map((invite) => (
+                    <div key={invite.id} className="panel-list-row">
+                        <span className="row-name">
+                            <span style={{ color: "#cdd8f0" }}>
+                                <strong style={{ color: "#e3cb2c" }}>{invite.fromUsername}</strong>
+                                {" → lobby "}
+                                <span style={{ color: "#e3cb2c" }}>{invite.lobbyCode}</span>
                             </span>
-                            <Button
-                                size="small"
-                                danger
-                                onClick={() => handleRemoveFriend(friend.id)}
+                        </span>
+                        <span className="row-actions">
+                            <button className="panel-icon-btn accept" onClick={() => handleAcceptInvite(invite)}>
+                                Accept
+                            </button>
+                            <button className="panel-icon-btn deny" onClick={() => handleDeclineInvite(invite.id)}>
+                                Decline
+                            </button>
+                        </span>
+                    </div>
+                ))
+            )}
+
+            {/* Friend requests */}
+            <div className="panel-section-title">
+                Friend Requests ({friendRequests.length})
+            </div>
+            {friendRequests.length === 0 ? (
+                <div className="panel-empty">No pending requests</div>
+            ) : (
+                friendRequests.map((req) => (
+                    <div key={req.id} className="panel-list-row">
+                        <span className="row-name">
+                            <span style={{ color: "#cdd8f0" }}>{req.senderUsername}</span>
+                        </span>
+                        <span className="row-actions">
+                            <button
+                                className="panel-icon-btn accept"
+                                title="Accept"
+                                onClick={() => handleRespond(req.id, "ACCEPT")}
                             >
-                                Remove
-                            </Button>
-                        </div>
-                    ))
-                )}
+                                ✓
+                            </button>
+                            <button
+                                className="panel-icon-btn deny"
+                                title="Deny"
+                                onClick={() => handleRespond(req.id, "DENY")}
+                            >
+                                ✗
+                            </button>
+                        </span>
+                    </div>
+                ))
+            )}
+
+            {/* Friends list */}
+            <div className="panel-section-title">
+                Friends ({friends.length})
             </div>
+            {friends.length === 0 ? (
+                <div className="panel-empty">No friends yet</div>
+            ) : (
+                friends.map((friend) => (
+                    <div key={friend.id} className="panel-list-row">
+                        <span className="row-name">
+                            <span className={`panel-status-dot ${statusClass(friend.status)}`} />
+                            <span>{friend.username}</span>
+                        </span>
+                        <button
+                            className="panel-icon-btn deny"
+                            onClick={() => handleRemoveFriend(friend.id)}
+                        >
+                            Remove
+                        </button>
+                    </div>
+                ))
+            )}
         </div>
     );
 };

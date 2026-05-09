@@ -97,15 +97,11 @@ export default function GameChat({
 
     return (
         <div className={styles.chatSection}>
-            <div className={styles.chatHeader} id="chat-label">
-                Lobby Chat
-            </div>
-
             <div
                 ref={chatContainerRef}
                 className={styles.chatMessages}
                 role="log"
-                aria-labelledby="chat-label"
+                aria-label="Lobby chat messages"
                 aria-live="polite"
             >
                 {chatMessages.length === 0 ? (

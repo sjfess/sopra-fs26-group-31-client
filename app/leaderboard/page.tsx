@@ -68,7 +68,7 @@ const LeaderboardPage: React.FC = () => {
     };
 
     const getTitleForPlayer = (record: LeaderboardEntry, index: number, totalPlayers: number) => {
-        if (record.rank === 1) return { icon: "👑", title: "OverBossUltraHistoryGod", color: "#ffd700" };
+        if (record.rank === 1) return { icon: "👑", title: "UltraHistoryBoss", color: "#ffd700" };
         if (record.rank === 2) return { icon: "🧠", title: "MegaBrain", color: "#c0c0c0" };
         if (record.rank === 3) return { icon: "🐶", title: "CrazyDawg", color: "#cd7f32" };
 
@@ -358,6 +358,7 @@ const LeaderboardPage: React.FC = () => {
                                                             ? "podium-card podium-card-third"
                                                             : "podium-card"
                                             }
+                                            onClick={() => router.push(`/profile/${player.userId}`)}
                                             style={{
                                                 borderRadius: 24,
                                                 minHeight: isFirst ? 135 : 155,
