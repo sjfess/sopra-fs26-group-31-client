@@ -145,3 +145,247 @@ a {
 ::-webkit-scrollbar-track  { background: transparent; }
 ::-webkit-scrollbar-thumb  { background: rgba(227, 203, 44, 0.25); border-radius: 3px; }
 
+/* ================================================================
+   Profile page — unified design system
+   All four panels (UserProfile, Friends, Create Game, Join Game)
+   share these tokens so they read as a single, coherent surface.
+   ================================================================ */
+
+@keyframes panelBarFill {
+  from { width: 0%; }
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+/* Card frame --------------------------------------------------- */
+.panel-card {
+  background-color: #1a3570;
+  border: 1px solid rgba(227, 203, 44, 0.5);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  font-family: Georgia, serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card title (UPPERCASE, gold, with thin underline) ----------- */
+.panel-title {
+  color: #e3cb2c;
+  font-family: Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 20px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(227, 203, 44, 0.25);
+}
+
+/* Sub-section header inside a card ---------------------------- */
+.panel-section-title {
+  color: #e3cb2c;
+  font-family: Georgia, serif;
+  font-size: 0.82rem;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  margin: 14px 0 8px 0;
+  text-transform: uppercase;
+}
+.panel-section-title:first-child { margin-top: 0; }
+
+.panel-empty {
+  color: #8da4cc;
+  font-family: Georgia, serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 4px 2px 2px 2px;
+}
+
+/* List row (used for friends, invites, requests) -------------- */
+.panel-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: rgba(15, 37, 87, 0.55);
+  margin-bottom: 4px;
+  color: #cdd8f0;
+  font-family: Georgia, serif;
+  font-size: 0.92rem;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.panel-list-row:last-child { margin-bottom: 0; }
+.panel-list-row:hover {
+  background-color: rgba(15, 37, 87, 0.9);
+  border-color: rgba(227, 203, 44, 0.22);
+}
+.panel-list-row .row-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-list-row .row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Status dot --------------------------------------------------- */
+.panel-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.panel-status-dot.online   { background-color: #4caf50; }
+.panel-status-dot.in-game  { background-color: #f59e0b; }
+.panel-status-dot.offline  { background-color: #6f7e9c; }
+
+/* Ghost icon button (used everywhere, replaces white-on-red) -- */
+.panel-icon-btn {
+  background-color: transparent;
+  border: 1px solid rgba(227, 203, 44, 0.45);
+  color: #e3cb2c;
+  border-radius: 6px;
+  padding: 0 10px;
+  height: 28px;
+  font-family: Georgia, serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+}
+.panel-icon-btn:hover {
+  background-color: rgba(227, 203, 44, 0.13);
+  border-color: #e3cb2c;
+}
+.panel-icon-btn.accept {
+  border-color: rgba(76, 175, 80, 0.55);
+  color: #81c784;
+}
+.panel-icon-btn.accept:hover {
+  background-color: rgba(76, 175, 80, 0.18);
+  border-color: #81c784;
+}
+.panel-icon-btn.deny {
+  border-color: rgba(229, 115, 115, 0.45);
+  color: #e89797;
+}
+.panel-icon-btn.deny:hover {
+  background-color: rgba(229, 115, 115, 0.15);
+  border-color: #e89797;
+}
+
+/* Primary gold button (Create / Join) ------------------------- */
+.panel-primary-btn {
+  width: 100%;
+  height: 38px;
+  background-color: #e3cb2c;
+  border: 1px solid #e3cb2c;
+  color: #0f2557;
+  border-radius: 6px;
+  font-family: Georgia, serif;
+  font-weight: bold;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+.panel-primary-btn:hover {
+  background-color: #f0d840;
+  box-shadow: 0 0 12px rgba(227, 203, 44, 0.35);
+}
+
+/* Stat tiles in user profile --------------------------------- */
+.panel-stat-tile {
+  flex: 1;
+  background-color: rgba(15, 37, 87, 0.7);
+  border: 1px solid rgba(227, 203, 44, 0.22);
+  border-radius: 8px;
+  padding: 12px 6px;
+  text-align: center;
+  font-family: Georgia, serif;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.panel-stat-tile:hover {
+  border-color: rgba(227, 203, 44, 0.55);
+  transform: translateY(-1px);
+}
+.panel-stat-tile .stat-value {
+  color: #e3cb2c;
+  font-weight: bold;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.panel-stat-tile .stat-label {
+  color: #8da4cc;
+  font-size: 0.7rem;
+  margin-top: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Progress bar ------------------------------------------------- */
+.panel-bar-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background-color: #0a1e4a;
+  overflow: hidden;
+  border: 1px solid rgba(227, 203, 44, 0.15);
+}
+.panel-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background-color: #e3cb2c;
+  animation: panelBarFill 0.7s ease-out both;
+}
+
+/* Avatar (clean, no animated glow) --------------------------- */
+.panel-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: #0f2557;
+  border: 2px solid #e3cb2c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Georgia, serif;
+  font-weight: bold;
+  font-size: 2.4rem;
+  color: #e3cb2c;
+}
+
+/* Override Ant input styling so it matches our gold theme ---- */
+.panel-card .ant-input,
+.panel-card .ant-input-affix-wrapper,
+.panel-card .ant-select-selector {
+  background-color: #0f2557 !important;
+  border: 1px solid rgba(227, 203, 44, 0.4) !important;
+  color: #e3cb2c !important;
+  font-family: Georgia, serif !important;
+  border-radius: 6px !important;
+}
+.panel-card .ant-input:focus,
+.panel-card .ant-input-affix-wrapper-focused,
+.panel-card .ant-select-focused .ant-select-selector {
+  border-color: #e3cb2c !important;
+  box-shadow: 0 0 0 2px rgba(227, 203, 44, 0.18) !important;
+}
+.panel-card .ant-form-item-label > label {
+  color: #cdd8f0 !important;
+  font-family: Georgia, serif !important;
+  font-size: 0.85rem !important;
+}
+

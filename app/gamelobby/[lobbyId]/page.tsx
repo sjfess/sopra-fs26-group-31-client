@@ -9,7 +9,6 @@ import useSessionStorage from "@/hooks/useSessionStorage";
 import GameChat, { GAME_STARTING_CHAT_MESSAGE } from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
 
-type GameMode = "TIMELINE";
 type Era = "ANCIENT" | "MEDIEVAL" | "RENAISSANCE" | "MODERN" | "INFORMATION";
 type Difficulty = "EASY" | "MEDIUM" | "HARD";
 
@@ -23,10 +22,6 @@ const ERA_LABELS: Record<Era, string> = {
 
 const ERAS = Object.keys(ERA_LABELS) as Era[];
 
-const MODE_LABELS: Record<GameMode, string> = {
-    TIMELINE: "Timeline Mode"
-};
-
 const DIFFICULTY_LABELS: Difficulty[] = ["EASY", "MEDIUM", "HARD"];
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
@@ -37,12 +32,13 @@ export default function GameLobbyPage() {
     const [isStarting, setIsStarting] = useState(false);
     const [friendSearch, setFriendSearch] = useState("");
     const [friends, setFriends] = useState<Friend[]>([]);
-    const [selectedMode, setSelectedMode] = useState<GameMode>("TIMELINE");
     const [selectedEra, setSelectedEra] = useState<Era>("ANCIENT");
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("EASY");
     const [toast, setToast] = useState<string | null>(null);
     const [codeCopied, setCodeCopied] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [settingsHeight, setSettingsHeight] = useState<number | null>(null);
+    const settingsPanelRef = useRef<HTMLElement | null>(null);
 
     const params = useParams();
     const lobbyId = params.lobbyId as string;
@@ -152,7 +148,6 @@ export default function GameLobbyPage() {
             }
 
             if (!pendingSettingsRef.current) {
-                if (response.gameMode) setSelectedMode(response.gameMode as GameMode);
                 if (response.era) setSelectedEra(response.era as Era);
                 if (response.difficulty) {
                     setSelectedDifficulty(response.difficulty as Difficulty);
@@ -165,11 +160,8 @@ export default function GameLobbyPage() {
 
                 if (pollingRef.current) clearInterval(pollingRef.current);
 
-                const mode = (response.gameMode ?? "TIMELINE") as GameMode;
-                const gamePath = `/games/${lobbyId}/play`;
-
                 launchNavigationRef.current = window.setTimeout(() => {
-                    router.push(gamePath);
+                    router.push(`/games/${lobbyId}/play`);
                 }, 1500);
                 return;
             }
@@ -216,23 +208,17 @@ export default function GameLobbyPage() {
         };
     }, [mounted, token, userId, fetchGame]);
 
-    const handleSelectMode = async (mode: GameMode) => {
-        if (!isHost) return;
+    useEffect(() => {
+        const node = settingsPanelRef.current;
+        if (!node) return;
 
-        const previous = selectedMode;
-        setSelectedMode(mode);
-        pendingSettingsRef.current = true;
+        const update = () => setSettingsHeight(node.getBoundingClientRect().height);
+        update();
 
-        try {
-            await apiRef.current.put(`/games/${lobbyId}/settings`, { gameMode: mode });
-        } catch (error) {
-            console.error("Could not update game mode:", error);
-            setSelectedMode(previous);
-            showToast("Could not update game mode.");
-        } finally {
-            pendingSettingsRef.current = false;
-        }
-    };
+        const observer = new ResizeObserver(update);
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [mounted, game]);
 
     const handleSelectEra = async (era: Era) => {
         if (!isHost) return;
@@ -417,6 +403,15 @@ export default function GameLobbyPage() {
                 </div>
 
                 <div className={styles.lobbyMeta}>
+                    <div className={styles.lobbyMetaTop}>
+                        <button
+                            className={styles.btnLeave}
+                            onClick={() => void handleLeave()}
+                            aria-label="Leave this lobby and return to profile"
+                        >
+                            ← Leave Lobby
+                        </button>
+                    </div>
                     <div className={styles.lobbyCodeRow}>
                         <span>Lobby Code:</span>
                         <strong className={styles.lobbyCode}>{game.lobbyCode}</strong>
@@ -436,7 +431,11 @@ export default function GameLobbyPage() {
             </div>
 
             <main className={styles.lobbyGrid}>
-                <section className={styles.panel} aria-labelledby="players-heading">
+                <section
+                    className={styles.panel}
+                    aria-labelledby="players-heading"
+                    style={settingsHeight ? { height: settingsHeight } : undefined}
+                >
                     <div className={styles.panelHeader}>
                         <h2 id="players-heading">
                             Players
@@ -446,7 +445,7 @@ export default function GameLobbyPage() {
                         </h2>
                     </div>
 
-                    <div className={styles.panelBody}>
+                    <div className={`${styles.panelBody} ${styles.playersPanelBody}`}>
                         {game.players?.map((player: PlayerSummary) => (
                             <div key={player.id} className={styles.playerRow}>
                                 <div className={styles.avatar} aria-hidden="true">
@@ -499,18 +498,13 @@ export default function GameLobbyPage() {
                             ))}
                     </div>
 
-                    <div className={styles.panelFooter}>
-                        <button
-                            className={styles.btnLeave}
-                            onClick={() => void handleLeave()}
-                            aria-label="Leave this lobby and return to profile"
-                        >
-                            Leave Lobby
-                        </button>
-                    </div>
                 </section>
 
-                <section className={styles.panel} aria-labelledby="settings-heading">
+                <section
+                    ref={settingsPanelRef}
+                    className={styles.panel}
+                    aria-labelledby="settings-heading"
+                >
                     <div className={styles.panelHeader}>
                         <h2 id="settings-heading">Game Settings</h2>
                         {!isHost && (
@@ -522,38 +516,6 @@ export default function GameLobbyPage() {
 
                     <div className={styles.panelBody}>
                         <div className={styles.settingsSection}>
-                            <div className={styles.settingsLabel} id="mode-label">
-                                Game Mode
-                            </div>
-                            <div
-                                className={`${styles.tabGroup} ${
-                                    !isHost ? styles.tabGroupReadonly : ""
-                                }`}
-                                role="group"
-                                aria-labelledby="mode-label"
-                            >
-                                {(Object.keys(MODE_LABELS) as GameMode[]).map((mode) => (
-                                    <button
-                                        key={mode}
-                                        className={`${styles.tabBtn} ${
-                                            selectedMode === mode ? styles.tabBtnActive : ""
-                                        }`}
-                                        onClick={() => handleSelectMode(mode)}
-                                        disabled={!isHost}
-                                        aria-pressed={selectedMode === mode}
-                                        title={
-                                            !isHost ? "Only the host can change this" : undefined
-                                        }
-                                    >
-                                        {MODE_LABELS[mode]}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div
-                            className={`${styles.settingsSection} ${styles.settingsSectionPadTop}`}
-                        >
                             <div className={styles.settingsLabel} id="era-label">
                                 Historical Era
                             </div>
@@ -656,12 +618,34 @@ export default function GameLobbyPage() {
                     </div>
                 </section>
 
-                <section className={styles.panel} aria-labelledby="invite-heading">
+                <div className={styles.gridCol}>
+                <section
+                    className={styles.panel}
+                    aria-labelledby="chat-heading"
+                >
+                    <div className={styles.panelHeader}>
+                        <h2 id="chat-heading">Lobby Chat</h2>
+                    </div>
+
+                    <div className={`${styles.panelBody} ${styles.panelBodyNogap}`}>
+                        <GameChat
+                            gameId={lobbyId}
+                            userId={userId}
+                            currentUsername={currentUsername}
+                            onGameStarting={handleGameStartingSignal}
+                        />
+                    </div>
+                </section>
+
+                <section
+                    className={styles.panel}
+                    aria-labelledby="invite-heading"
+                >
                     <div className={styles.panelHeader}>
                         <h2 id="invite-heading">Invite Friends</h2>
                     </div>
 
-                    <div className={`${styles.panelBody} ${styles.panelBodyNogap}`}>
+                    <div className={styles.panelBody}>
                         <div className={styles.inviteSection}>
                             <input
                                 className={styles.searchInput}
@@ -707,15 +691,9 @@ export default function GameLobbyPage() {
                                 Invite
                             </button>
                         </div>
-
-                        <GameChat
-                            gameId={lobbyId}
-                            userId={userId}
-                            currentUsername={currentUsername}
-                            onGameStarting={handleGameStartingSignal}
-                        />
                     </div>
                 </section>
+                </div>
             </main>
 
             {toast && (
