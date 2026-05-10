@@ -103,7 +103,7 @@
 .resultsCard {
   background: #102b6a;
   border: 2px solid #e3cb2c;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 32px 40px;
   width: 100%;
   max-width: 860px;
@@ -130,7 +130,7 @@
 .resultsWinnerBox {
   background: #0a1a3e;
   border: 2px solid #e3cb2c;
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -218,7 +218,7 @@
 .resultsSummaryBox {
   background: #0a1a3e;
   border: 2px solid #e3cb2c44;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 16px 20px;
   min-width: 190px;
 }
@@ -259,7 +259,8 @@
   font-weight: bold !important;
   border-radius: 999px !important;
   padding: 0 32px !important;
-  height: 46px !important;
+  height: 50px !important;
+  font-family: Georgia, serif !important;
 }
 
 .resultsBtnRematchDisabled,
