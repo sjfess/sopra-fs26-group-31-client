@@ -3,19 +3,20 @@
 import { useRouter } from "next/navigation";
 import { Button } from "antd";
 import styles from "@/styles/page.module.css";
+import AppNavbar from "@/components/AppNavbar";
 
 export default function Home() {
   const router = useRouter();
 
   return (
       <div className={styles.page}>
-        <nav className={styles.navbar}>
-          <span className={styles.navTitle}>Historical Reconstruction</span>
-          <div className={styles.navLinks}>
-            <span onClick={() => router.push("/about")}>About</span>
-            <span onClick={() => router.push("/leaderboard")}>Leaderboard</span>
-          </div>
-        </nav>
+        <AppNavbar
+            variant="minimal"
+            minimalLinks={[
+              { label: "About", href: "/about" },
+              { label: "Leaderboard", href: "/leaderboard" },
+            ]}
+        />
 
         <main className={styles.main}>
           <div className={styles.logo}>

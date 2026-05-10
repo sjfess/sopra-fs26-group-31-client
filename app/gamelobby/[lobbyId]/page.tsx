@@ -5,10 +5,11 @@ import type { Friend } from "@/types/user";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
-import GameChat from "./GameChat";
+import useSessionStorage from "@/hooks/useSessionStorage";
+import GameChat, { GAME_STARTING_CHAT_MESSAGE } from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
+import AppNavbar from "@/components/AppNavbar";
 
-type GameMode = "TIMELINE" | "HISTORY_UNO";
 type Era = "ANCIENT" | "MEDIEVAL" | "RENAISSANCE" | "MODERN" | "INFORMATION";
 type Difficulty = "EASY" | "MEDIUM" | "HARD";
 
@@ -22,11 +23,6 @@ const ERA_LABELS: Record<Era, string> = {
 
 const ERAS = Object.keys(ERA_LABELS) as Era[];
 
-const MODE_LABELS: Record<GameMode, string> = {
-    TIMELINE: "Timeline Mode",
-    HISTORY_UNO: "History Uno Mode",
-};
-
 const DIFFICULTY_LABELS: Difficulty[] = ["EASY", "MEDIUM", "HARD"];
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
@@ -37,23 +33,27 @@ export default function GameLobbyPage() {
     const [isStarting, setIsStarting] = useState(false);
     const [friendSearch, setFriendSearch] = useState("");
     const [friends, setFriends] = useState<Friend[]>([]);
-    const [selectedMode, setSelectedMode] = useState<GameMode>("TIMELINE");
     const [selectedEra, setSelectedEra] = useState<Era>("ANCIENT");
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("EASY");
     const [toast, setToast] = useState<string | null>(null);
     const [codeCopied, setCodeCopied] = useState(false);
-    const [userId, setUserId] = useState<number | null>(null);
-    const [currentUsername, setCurrentUsername] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
+    const [columnHeight, setColumnHeight] = useState<number | null>(null);
+    const rightColumnRef = useRef<HTMLDivElement | null>(null);
 
     const params = useParams();
     const lobbyId = params.lobbyId as string;
     const router = useRouter();
     const apiService = useApi();
+    const { value: token } = useSessionStorage<string>("token", "");
+    const { value: storedUserId } = useSessionStorage<string>("userId", "");
+    const { value: storedUsername } = useSessionStorage<string>("username", "");
 
     const apiRef = useRef(apiService);
     apiRef.current = apiService;
 
     const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const launchNavigationRef = useRef<number | null>(null);
     const startedRef = useRef(false);
     const pendingSettingsRef = useRef(false);
 
@@ -75,20 +75,20 @@ export default function GameLobbyPage() {
     }, []);
 
     useEffect(() => {
-        const stored = window.sessionStorage.getItem("userId");
-        if (!stored) {
-            setUserId(null);
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+        if (!token) {
+            router.push("/login");
             return;
         }
+    }, [mounted, token, router]);
 
-        const parsed = Number(stored);
-        setUserId(Number.isNaN(parsed) ? null : parsed);
-
-        const storedUsername = window.sessionStorage.getItem("username");
-        if (storedUsername) {
-            setCurrentUsername(storedUsername);
-        }
-    }, []);
+    const userId =
+        storedUserId && !Number.isNaN(Number(storedUserId)) ? Number(storedUserId) : null;
+    const currentUsername = storedUsername || null;
 
     const isHost =
         game !== null && userId !== null && Number(game.hostId) === Number(userId);
@@ -149,7 +149,6 @@ export default function GameLobbyPage() {
             }
 
             if (!pendingSettingsRef.current) {
-                if (response.gameMode) setSelectedMode(response.gameMode as GameMode);
                 if (response.era) setSelectedEra(response.era as Era);
                 if (response.difficulty) {
                     setSelectedDifficulty(response.difficulty as Difficulty);
@@ -158,15 +157,13 @@ export default function GameLobbyPage() {
 
             if (response.status === "IN_PROGRESS" && !startedRef.current) {
                 startedRef.current = true;
+                setIsStarting(true);
 
                 if (pollingRef.current) clearInterval(pollingRef.current);
 
-                const mode = (response.gameMode ?? "TIMELINE") as GameMode;
-                router.push(
-                    mode === "HISTORY_UNO"
-                        ? `/games/${lobbyId}/play/uno`
-                        : `/games/${lobbyId}/play`
-                );
+                launchNavigationRef.current = window.setTimeout(() => {
+                    router.push(`/games/${lobbyId}/play`);
+                }, 1500);
                 return;
             }
 
@@ -191,10 +188,13 @@ export default function GameLobbyPage() {
     }, [getRematchLobbyId, lobbyId, router, showToast]);
 
     useEffect(() => {
+        if (!mounted || !token || userId === null) return;
         void fetchFriends();
-    }, [fetchFriends]);
+    }, [mounted, token, userId, fetchFriends]);
 
     useEffect(() => {
+        if (!mounted || !token || userId === null) return;
+
         void fetchGame();
 
         pollingRef.current = setInterval(() => {
@@ -203,26 +203,23 @@ export default function GameLobbyPage() {
 
         return () => {
             if (pollingRef.current) clearInterval(pollingRef.current);
+            if (launchNavigationRef.current) {
+                clearTimeout(launchNavigationRef.current);
+            }
         };
-    }, [fetchGame]);
+    }, [mounted, token, userId, fetchGame]);
 
-    const handleSelectMode = async (mode: GameMode) => {
-        if (!isHost) return;
+    useEffect(() => {
+        const node = rightColumnRef.current;
+        if (!node) return;
 
-        const previous = selectedMode;
-        setSelectedMode(mode);
-        pendingSettingsRef.current = true;
+        const update = () => setColumnHeight(node.getBoundingClientRect().height);
+        update();
 
-        try {
-            await apiRef.current.put(`/games/${lobbyId}/settings`, { gameMode: mode });
-        } catch (error) {
-            console.error("Could not update game mode:", error);
-            setSelectedMode(previous);
-            showToast("Could not update game mode.");
-        } finally {
-            pendingSettingsRef.current = false;
-        }
-    };
+        const observer = new ResizeObserver(update);
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [mounted, game]);
 
     const handleSelectEra = async (era: Era) => {
         if (!isHost) return;
@@ -265,7 +262,17 @@ export default function GameLobbyPage() {
 
         setIsStarting(true);
         try {
-            await apiRef.current.put(`/games/${lobbyId}/start?deckSize=20`, {});
+            if (userId !== null) {
+                try {
+                    await apiRef.current.post(`/games/${lobbyId}/chat`, {
+                        playerId: userId,
+                        message: GAME_STARTING_CHAT_MESSAGE,
+                    });
+                } catch (error) {
+                    console.error("Failed to send game starting signal:", error);
+                }
+            }
+            await apiRef.current.put(`/games/${lobbyId}/start`, {});
         } catch (error) {
             console.error("Failed to start game:", error);
             showToast("Failed to start game. Please try again.");
@@ -341,8 +348,12 @@ export default function GameLobbyPage() {
         game?.players?.find(
             (p: PlayerSummary) => Number(p.id) === Number(game?.hostId)
         )?.username ?? "—";
+    const shouldShowLaunchOverlay = isStarting || game?.status === "IN_PROGRESS";
+    const handleGameStartingSignal = useCallback(() => {
+        setIsStarting(true);
+    }, []);
 
-    if (loading) {
+    if (!mounted || loading) {
         return (
             <div className={styles.loadingScreen}>
                 <div className={styles.loadingSpinner} />
@@ -361,22 +372,13 @@ export default function GameLobbyPage() {
 
     return (
         <div className={styles.root}>
-            <nav className={styles.navbar} aria-label="Main navigation">
-                <div className={styles.navLogo}>Historical Reconstruction</div>
-                <ul className={styles.navLinks} role="list">
-                    <li>
-                        <button
-                            className={styles.navLinkActive}
-                            onClick={() => void handleLeave()}
-                        >
-                            Home
-                        </button>
-                    </li>
-                    {/* <li>
-                        <a href="/leaderboard">Leaderboard</a>
-                    </li> */}
-                </ul>
-            </nav>
+            <AppNavbar
+                variant="minimal"
+                actionButton={{
+                    label: "Leave Lobby",
+                    onClick: () => void handleLeave(),
+                }}
+            />
 
             <div className={styles.lobbyBanner}>
                 <div className={styles.motto} aria-hidden="true">
@@ -387,9 +389,6 @@ export default function GameLobbyPage() {
 
                 <div className={styles.lobbyTitleBlock}>
                     <h1 className={styles.lobbyTitle}>Game Lobby</h1>
-                    <p className={styles.lobbySubtitle}>
-                        Invite your friends and prepare the match
-                    </p>
                 </div>
 
                 <div className={styles.lobbyMeta}>
@@ -412,7 +411,11 @@ export default function GameLobbyPage() {
             </div>
 
             <main className={styles.lobbyGrid}>
-                <section className={styles.panel} aria-labelledby="players-heading">
+                <section
+                    className={styles.panel}
+                    aria-labelledby="players-heading"
+                    style={columnHeight ? { height: columnHeight } : undefined}
+                >
                     <div className={styles.panelHeader}>
                         <h2 id="players-heading">
                             Players
@@ -422,7 +425,7 @@ export default function GameLobbyPage() {
                         </h2>
                     </div>
 
-                    <div className={styles.panelBody}>
+                    <div className={`${styles.panelBody} ${styles.playersPanelBody}`}>
                         {game.players?.map((player: PlayerSummary) => (
                             <div key={player.id} className={styles.playerRow}>
                                 <div className={styles.avatar} aria-hidden="true">
@@ -475,18 +478,13 @@ export default function GameLobbyPage() {
                             ))}
                     </div>
 
-                    <div className={styles.panelFooter}>
-                        <button
-                            className={styles.btnLeave}
-                            onClick={() => void handleLeave()}
-                            aria-label="Leave this lobby and return to profile"
-                        >
-                            Leave Lobby
-                        </button>
-                    </div>
                 </section>
 
-                <section className={styles.panel} aria-labelledby="settings-heading">
+                <section
+                    className={styles.panel}
+                    aria-labelledby="settings-heading"
+                    style={columnHeight ? { height: columnHeight } : undefined}
+                >
                     <div className={styles.panelHeader}>
                         <h2 id="settings-heading">Game Settings</h2>
                         {!isHost && (
@@ -498,38 +496,6 @@ export default function GameLobbyPage() {
 
                     <div className={styles.panelBody}>
                         <div className={styles.settingsSection}>
-                            <div className={styles.settingsLabel} id="mode-label">
-                                Game Mode
-                            </div>
-                            <div
-                                className={`${styles.tabGroup} ${
-                                    !isHost ? styles.tabGroupReadonly : ""
-                                }`}
-                                role="group"
-                                aria-labelledby="mode-label"
-                            >
-                                {(Object.keys(MODE_LABELS) as GameMode[]).map((mode) => (
-                                    <button
-                                        key={mode}
-                                        className={`${styles.tabBtn} ${
-                                            selectedMode === mode ? styles.tabBtnActive : ""
-                                        }`}
-                                        onClick={() => handleSelectMode(mode)}
-                                        disabled={!isHost}
-                                        aria-pressed={selectedMode === mode}
-                                        title={
-                                            !isHost ? "Only the host can change this" : undefined
-                                        }
-                                    >
-                                        {MODE_LABELS[mode]}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div
-                            className={`${styles.settingsSection} ${styles.settingsSectionPadTop}`}
-                        >
                             <div className={styles.settingsLabel} id="era-label">
                                 Historical Era
                             </div>
@@ -632,12 +598,34 @@ export default function GameLobbyPage() {
                     </div>
                 </section>
 
-                <section className={styles.panel} aria-labelledby="invite-heading">
+                <div ref={rightColumnRef} className={styles.gridCol}>
+                <section
+                    className={styles.panel}
+                    aria-labelledby="chat-heading"
+                >
+                    <div className={styles.panelHeader}>
+                        <h2 id="chat-heading">Lobby Chat</h2>
+                    </div>
+
+                    <div className={`${styles.panelBody} ${styles.panelBodyNogap}`}>
+                        <GameChat
+                            gameId={lobbyId}
+                            userId={userId}
+                            currentUsername={currentUsername}
+                            onGameStarting={handleGameStartingSignal}
+                        />
+                    </div>
+                </section>
+
+                <section
+                    className={styles.panel}
+                    aria-labelledby="invite-heading"
+                >
                     <div className={styles.panelHeader}>
                         <h2 id="invite-heading">Invite Friends</h2>
                     </div>
 
-                    <div className={`${styles.panelBody} ${styles.panelBodyNogap}`}>
+                    <div className={styles.panelBody}>
                         <div className={styles.inviteSection}>
                             <input
                                 className={styles.searchInput}
@@ -683,19 +671,42 @@ export default function GameLobbyPage() {
                                 Invite
                             </button>
                         </div>
-
-                        <GameChat
-                            gameId={lobbyId}
-                            userId={userId}
-                            currentUsername={currentUsername}
-                        />
                     </div>
                 </section>
+                </div>
             </main>
 
             {toast && (
                 <div className={styles.toast} role="status" aria-live="polite">
                     {toast}
+                </div>
+            )}
+
+            {shouldShowLaunchOverlay && (
+                <div
+                    className={styles.gameLaunchOverlay}
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Loading game"
+                >
+                    <div className={styles.launchAnimation} aria-hidden="true">
+                        <div className={styles.launchRing} />
+                        <div className={styles.launchCardStack}>
+                            <span className={`${styles.launchCard} ${styles.launchCardOne}`}>
+                                1492
+                            </span>
+                            <span className={`${styles.launchCard} ${styles.launchCardTwo}`}>
+                                1776
+                            </span>
+                            <span className={`${styles.launchCard} ${styles.launchCardThree}`}>
+                                1969
+                            </span>
+                        </div>
+                    </div>
+                    <div className={styles.launchText}>
+                        <h2>Preparing the game</h2>
+                        <p>Building the deck and moving everyone to the match…</p>
+                    </div>
                 </div>
             )}
         </div>

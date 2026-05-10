@@ -9,12 +9,16 @@ type GameChatProps = {
     gameId: string;
     userId: number | null;
     currentUsername: string | null;
+    onGameStarting?: () => void;
 };
+
+export const GAME_STARTING_CHAT_MESSAGE = "__SYSTEM_GAME_STARTING__";
 
 export default function GameChat({
                                      gameId,
                                      userId,
                                      currentUsername,
+                                     onGameStarting,
                                  }: GameChatProps) {
     const api = useApi();
 
@@ -30,19 +34,24 @@ export default function GameChat({
     const fetchChat = useCallback(async () => {
         try {
             const messages = await api.get<ChatMessageGetDTO[]>(`/games/${gameId}/chat`);
+            if (messages.some((m) => m.message === GAME_STARTING_CHAT_MESSAGE)) {
+                onGameStarting?.();
+            }
 
             setChatMessages(
-                messages.map((m, index) => ({
-                    id: `${m.playerId}-${m.timestamp ?? index}-${index}`,
-                    from: m.username,
-                    text: m.message,
-                    mine: m.username === currentUsername,
-                }))
+                messages
+                    .filter((m) => m.message !== GAME_STARTING_CHAT_MESSAGE)
+                    .map((m, index) => ({
+                        id: `${m.playerId}-${m.timestamp ?? index}-${index}`,
+                        from: m.username,
+                        text: m.message,
+                        mine: m.username === currentUsername,
+                    }))
             );
         } catch (error) {
             console.error("Failed to fetch chat:", error);
         }
-    }, [api, gameId, currentUsername]);
+    }, [api, gameId, currentUsername, onGameStarting]);
 
     useEffect(() => {
         void fetchChat();
@@ -88,15 +97,11 @@ export default function GameChat({
 
     return (
         <div className={styles.chatSection}>
-            <div className={styles.chatHeader} id="chat-label">
-                Lobby Chat
-            </div>
-
             <div
                 ref={chatContainerRef}
                 className={styles.chatMessages}
                 role="log"
-                aria-labelledby="chat-label"
+                aria-label="Lobby chat messages"
                 aria-live="polite"
             >
                 {chatMessages.length === 0 ? (

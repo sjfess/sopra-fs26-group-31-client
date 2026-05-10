@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Button } from "antd";
 import styles from "@/styles/page.module.css";
 
-import Navbar from "@/results/[gameId]/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 import VictorPopup from "@/results/[gameId]/components/VictorPopup";
 
 import { useGameResults } from "@/hooks/useGameResults";
@@ -157,7 +157,7 @@ export default function ResultsPage() {
   if (loading) {
     return (
         <div className={styles.page}>
-          <Navbar />
+          <AppNavbar />
           <main className={styles.main}>
             <p className={styles.description}>Loading results…</p>
           </main>
@@ -168,7 +168,7 @@ export default function ResultsPage() {
   if (error) {
     return (
         <div className={styles.page}>
-          <Navbar />
+          <AppNavbar />
           <main className={styles.main}>
             <p className={styles.description} style={{ color: "#e74c3c" }}>
               {error}
@@ -180,7 +180,7 @@ export default function ResultsPage() {
 
   return (
       <div className={styles.page}>
-        <Navbar />
+        <AppNavbar />
 
         <main className={styles.main} style={{ padding: "32px 16px" }}>
           <div className={styles.resultsCard}>

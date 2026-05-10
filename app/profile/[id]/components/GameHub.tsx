@@ -1,9 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import { Button, Form, Input, Select, ConfigProvider } from "antd";
-import React, { useState, useEffect} from "react"
-
+import { Form, Input, Select, ConfigProvider } from "antd";
+import React, { useState, useEffect } from "react";
 
 const GameHub: React.FC = () => {
     const [gameEra, setGameEra] = useState("");
@@ -11,32 +10,27 @@ const GameHub: React.FC = () => {
     const [lobbyCode, setLobbyCode] = useState("");
     const apiService = useApi();
     const router = useRouter();
-    const [userId, setUserId] = useState<string | null>(null);
-    useEffect(() => {
-        const id = sessionStorage.getItem("userId");
-        setUserId(id);
-    }, []);
+    const [, setUserId] = useState<string | null>(null);
 
+    useEffect(() => {
+        setUserId(sessionStorage.getItem("userId"));
+    }, []);
 
     const handleCreateGame = async () => {
         try {
             const userId = sessionStorage.getItem("userId");
-            console.log("createGame called with userId={}", userId);
             if (!userId) {
                 alert("No userId found. Please log in again.");
                 return;
             }
-
             if (!gameEra || !gameDifficulty) {
                 alert("Please select era and difficulty.");
                 return;
             }
-
             const response = await apiService.post<{ id: number }>(
                 `/games`,
                 { era: gameEra, difficulty: gameDifficulty, userId }
             );
-
             router.push("/gamelobby/" + response.id);
         } catch (error) {
             if (error instanceof Error) {
@@ -46,102 +40,81 @@ const GameHub: React.FC = () => {
             }
         }
     };
+
     const handleJoinGame = async () => {
         try {
             const userId = sessionStorage.getItem("userId");
-            console.log("rawUserId:", userId);
-            console.log("lobbyCode:", lobbyCode);
-
             if (!userId) {
                 alert("No userId found. Please log in again.");
                 return;
             }
-
             const response = await apiService.post<{ id: number }>(
                 `/games/join/${lobbyCode}`,
                 { userId }
             );
-
             router.push("/gamelobby/" + response.id);
         } catch (error: any) {
             console.error("FULL JOIN ERROR:", error);
-            console.error("message:", error?.message);
-            console.error("status:", error?.status);
-            console.error("info:", error?.info);
-
-            alert(
-                `Join failed:\n${
-                    error?.message || "Unknown error"
-                }`
-            );
+            alert(`Join failed:\n${error?.message || "Unknown error"}`);
         }
     };
+
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ backgroundColor: "#0d1b4b", border: "1px solid #e3cb2c", borderRadius: "16px", padding: "100px"}}>
-                <h2 style={{ color: "#e3cb2c", textAlign: "center" }}>Create Game</h2>
+            {/* Create Game */}
+            <div className="panel-card">
+                <h2 className="panel-title">Create Game</h2>
                 <ConfigProvider theme={{ token: { colorTextPlaceholder: "rgba(227, 203, 44, 0.6)" } }}>
-                    <Form layout="vertical">
-                        <Form.Item label={"Era"}>
+                    <Form layout="vertical" style={{ marginBottom: 0 }}>
+                        <Form.Item label="Era" style={{ marginBottom: 14 }}>
                             <Select
                                 classNames={{ popup: { root: "custom-select-dropdown" } }}
-                                style={{ width: "100%", color: gameEra ? "#e3cb2c" : "#a0a0a0" }}
+                                style={{ width: "100%" }}
                                 placeholder="Select Era"
                                 onChange={(val) => setGameEra(val)}
                                 options={[
-                                    {value: "ANCIENT", label: "Ancient"},
+                                    { value: "ANCIENT", label: "Ancient" },
                                     { value: "MEDIEVAL", label: "Medieval" },
                                     { value: "RENAISSANCE", label: "Renaissance" },
                                     { value: "MODERN", label: "Modern" },
-                                    { value: "INFORMATION", label: "Information" }
+                                    { value: "INFORMATION", label: "Information" },
                                 ]}
                             />
-
                         </Form.Item>
-                        <Form.Item label={"Game Difficulty"}>
+                        <Form.Item label="Game Difficulty" style={{ marginBottom: 18 }}>
                             <Select
                                 classNames={{ popup: { root: "custom-select-dropdown" } }}
-                                style={{ width: "100%", color: gameDifficulty ? "#e3cb2c" : "#a0a0a0" }}
-                                placeholder={"Select Game Difficulty"}
+                                style={{ width: "100%" }}
+                                placeholder="Select Game Difficulty"
                                 onChange={(val) => setGameDifficulty(val)}
                                 options={[
                                     { value: "EASY", label: "Easy" },
                                     { value: "MEDIUM", label: "Medium" },
-                                    { value: "HARD", label: "Hard" }
+                                    { value: "HARD", label: "Hard" },
                                 ]}
                             />
-
                         </Form.Item>
-                        <Button
-                            type="primary"
-                            block
-                            style={{ backgroundColor: "#e3cb2c", borderColor: "#e3cb2c", color: "#0f2557", fontWeight: "bold" }}
-                            onClick={handleCreateGame}
-                        >
+                        <button className="panel-primary-btn" onClick={handleCreateGame} type="button">
                             Create Game
-                        </Button>
+                        </button>
                     </Form>
                 </ConfigProvider>
             </div>
 
-            <div style={{ backgroundColor: "#0d1b4b", border: "1px solid #e3cb2c", borderRadius: "16px", padding: "100px" }}>
-                <h2 style={{ color: "#e3cb2c", textAlign: "center" }}>Join Game</h2>
+            {/* Join Game */}
+            <div className="panel-card">
+                <h2 className="panel-title">Join Game</h2>
                 <ConfigProvider theme={{ token: { colorTextPlaceholder: "rgba(227, 203, 44, 0.6)" } }}>
-                    <Form layout="vertical">
-                        <Form.Item label={"Lobby Code"} name="Lobby Code">
+                    <Form layout="vertical" style={{ marginBottom: 0 }}>
+                        <Form.Item label="Lobby Code" style={{ marginBottom: 18 }}>
                             <Input
-                                placeholder={"Please input your Lobby Code!"}
+                                placeholder="Please input your Lobby Code!"
                                 onChange={(e) => setLobbyCode(e.target.value)}
                             />
                         </Form.Item>
-                        <Button
-                            type="primary"
-                            block
-                            style={{ backgroundColor: "#e3cb2c", borderColor: "#e3cb2c", color: "#0f2557", fontWeight: "bold" }}
-                            onClick={handleJoinGame}
-                        >
+                        <button className="panel-primary-btn" onClick={handleJoinGame} type="button">
                             Join Game
-                        </Button>
+                        </button>
                     </Form>
                 </ConfigProvider>
             </div>

@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
-import { Button, Form, Input } from "antd";
+import { useState } from "react";
+import { App, Button, Form, Input } from "antd";
+import AppNavbar from "@/components/AppNavbar";
 
 interface FormFieldProps {
     username: string;
@@ -15,11 +17,18 @@ const Login: React.FC = () => {
     const router = useRouter();
     const apiService = useApi();
     const [form] = Form.useForm();
+    const { message } = App.useApp();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { set: setToken } = useSessionStorage<string>("token", "");
     const { set: setUserId } = useSessionStorage<string>("userId", "");
     const { set: setUsername } = useSessionStorage<string>("username", "");
 
     const handleLogin = async (values: FormFieldProps) => {
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
             const response = await apiService.post<User>("/auth/login", values);
 
@@ -36,10 +45,13 @@ const Login: React.FC = () => {
             router.push(`/profile/${response.id}`);
         } catch (error) {
             if (error instanceof Error) {
-                alert(`Something went wrong during the login:\n${error.message}`);
+                message.error(`Login failed: ${error.message}`);
             } else {
                 console.error("An unknown error occurred during login.");
+                message.error("Login failed. Please try again.");
             }
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -53,15 +65,7 @@ const Login: React.FC = () => {
             }}
         >
 
-            <nav className="app-navbar" style={{ flexShrink: 0 }}>
-                <span className="app-navbar-title">Historical Reconstruction</span>
-                <span
-                    onClick={() => router.push("/")}
-                    style={{ cursor: "pointer", color: "white" }}
-                >
-          Back
-        </span>
-            </nav>
+            <AppNavbar variant="minimal" />
 
 
             <main
@@ -109,6 +113,8 @@ const Login: React.FC = () => {
                                     type="primary"
                                     htmlType="submit"
                                     block
+                                    disabled={isSubmitting}
+                                    loading={isSubmitting}
                                     style={{
                                         borderRadius: "999px",
                                         height: "48px",

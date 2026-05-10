@@ -1,14 +1,16 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   GameLobbyPage.module.css
-   Color system matching globals.css:
-     bg-dark:    #0f2557  (deep navy — page background)
-     bg-medium:  #1a3570  (medium navy — panel backgrounds)
-     bg-light:   #243d82  (lighter navy — hover / active states)
-     gold:       #e3cb2c  (primary accent — borders, headings, CTAs)
-     text-white: #ffffff
-     text-muted: #cdd8f0  (light blue-grey)
-     text-faint: rgba(227,203,44,0.45)
-   Font: Georgia, serif (from globals)
+   GameLobbyPage.module.css  —  matches the Profile page design system
+   ───────────────────────────────────────────────────────────────────────────
+   Tokens (mirrors globals.css .panel-card / .panel-title):
+     navy-page    #0f2557
+     navy-card    #1a3570
+     navy-deep    #0a1e4a
+     gold         #e3cb2c
+     gold/40      rgba(227,203,44,0.40)
+     gold/22      rgba(227,203,44,0.22)
+     muted        #cdd8f0
+     muted-soft   #8da4cc
+   Font: Georgia, serif (inherited)
 ───────────────────────────────────────────────────────────────────────────── */
 
 /* ── Root ────────────────────────────────────────────────────────────────── */
@@ -21,51 +23,12 @@
     font-family: Georgia, serif;
 }
 
-/* ── Navbar ──────────────────────────────────────────────────────────────── */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 32px;
-    border: 1px solid #e3cb2c;
-    margin: 12px;
-    border-radius: 4px;
-    flex-shrink: 0;
-}
-
-.navLogo {
-    color: #e3cb2c;
-    font-size: 1.1rem;
-    font-weight: bold;
-    font-family: Georgia, serif;
-}
-
-.navLinks {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.navLinks a {
-    color: #ffffff;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.navLinks a:hover,
-.navLinks a.navLinkActive {
-    color: #e3cb2c !important;
-}
-
 /* ── Banner ──────────────────────────────────────────────────────────────── */
 .lobbyBanner {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    padding: 24px 44px 20px;
+    padding: 12px 32px;
     gap: 1.5rem;
     flex-wrap: wrap;
 }
@@ -75,8 +38,9 @@
     color: #cdd8f0;
     line-height: 1.65;
     font-style: italic;
-    max-width: 180px;
+    max-width: 200px;
     flex-shrink: 0;
+    font-family: Georgia, serif;
 }
 
 .lobbyTitleBlock {
@@ -84,35 +48,31 @@
     text-align: center;
 }
 
+/* Title in gold to match navbar logo + page identity */
 .lobbyTitle {
     font-family: Georgia, serif;
-    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-size: clamp(1.4rem, 2.5vw, 1.75rem);
     font-weight: bold;
-    color: #ffffff;
-    margin: 0 0 0.3rem;
-    letter-spacing: 0.01em;
-}
-
-.lobbySubtitle {
-    font-size: 0.9rem;
-    color: #cdd8f0;
+    color: #e3cb2c;
     margin: 0;
+    letter-spacing: 0.04em;
 }
 
 .lobbyMeta {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
     text-align: right;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     color: #cdd8f0;
     flex-shrink: 0;
+    font-family: Georgia, serif;
 }
 
 .lobbyCodeRow {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
     justify-content: flex-end;
 }
 
@@ -120,56 +80,120 @@
     color: #e3cb2c;
     font-size: 1.05rem;
     font-family: Georgia, serif;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
 }
 
 .copyBtn {
-    padding: 0.2rem 0.6rem;
-    border-radius: 3px;
+    padding: 4px 10px;
+    height: 26px;
+    border-radius: 6px;
     font-size: 0.75rem;
     font-weight: bold;
-    border: 1px solid #e3cb2c;
+    border: 1px solid rgba(227, 203, 44, 0.45);
     background: transparent;
     color: #e3cb2c;
     cursor: pointer;
-    transition: background 0.18s;
+    transition: background 0.15s, border-color 0.15s;
     font-family: Georgia, serif;
+    letter-spacing: 0.04em;
 }
 
 .copyBtn:hover {
-    background: rgba(227, 203, 44, 0.12);
+    background: rgba(227, 203, 44, 0.13);
+    border-color: #e3cb2c;
 }
 
 .copyBtnCopied {
     background: rgba(227, 203, 44, 0.18);
+    border-color: #e3cb2c;
     color: #e3cb2c;
 }
 
 /* ── Main Grid ───────────────────────────────────────────────────────────── */
+/* Three flex columns: Players | Settings | (Chat + Invite stacked).
+   The third column is a .gridCol wrapper so Chat and Invite pack tight
+   independently of Players/Settings height. */
 .lobbyGrid {
-    display: grid;
-    grid-template-columns: 1fr 1.15fr 1fr;
-    gap: 1.25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.5rem;
     padding: 0 1.5rem 2rem;
     flex: 1;
-    align-items: start;
     max-width: 1280px;
     width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
 }
 
+.lobbyGrid > section {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+}
+
+.lobbyGrid > section:nth-of-type(2) {
+    flex: 1.15 1 0;
+}
+
+.gridCol {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Players panel body: scroll internally when the panel's height (set via JS
+   to match Settings) is shorter than the player list. */
+.playersPanelBody {
+    overflow-y: auto;
+    min-height: 0;
+}
+
 @media (max-width: 960px) {
+    /* Row 1: Players + Settings (Players stretches to match Settings).
+       Row 2: Chat + Invite at natural heights. */
     .lobbyGrid {
-        grid-template-columns: 1fr 1fr;
+        flex-wrap: wrap;
+        align-items: flex-start;
         padding: 0 1rem 1.5rem;
+    }
+    .lobbyGrid > section {
+        flex: 1 1 calc(50% - 0.75rem);
+    }
+    .lobbyGrid > section:nth-of-type(2) {
+        flex: 1 1 calc(50% - 0.75rem);
+    }
+    .gridCol {
+        flex: 1 1 100%;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+    .gridCol > section {
+        flex: 1 1 calc(50% - 0.75rem);
+        min-width: 0;
     }
 }
 
 @media (max-width: 600px) {
     .lobbyGrid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         padding: 0 0.75rem 1.5rem;
+    }
+    .lobbyGrid > section {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    .gridCol {
+        flex: 0 0 auto;
+        width: 100%;
+        flex-direction: column;
+    }
+    .gridCol > section {
+        flex: 0 0 auto;
+        width: 100%;
     }
     .lobbyBanner {
         flex-direction: column;
@@ -182,43 +206,47 @@
     .motto { display: none; }
 }
 
-/* ── Panel ───────────────────────────────────────────────────────────────── */
+/* ── Panel — matches globals.css .panel-card ─────────────────────────────── */
 .panel {
     background-color: #1a3570;
-    border: 1px solid #e3cb2c;
-    border-radius: 8px;
+    border: 1px solid rgba(227, 203, 44, 0.5);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    font-family: Georgia, serif;
 }
 
+/* ── Panel header — matches globals.css .panel-title ─────────────────────── */
 .panelHeader {
-    padding: 14px 20px 12px;
-    border-bottom: 1px solid rgba(227, 203, 44, 0.3);
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid rgba(227, 203, 44, 0.25);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
     gap: 0.4rem;
 }
 
 .panelHeader h2 {
     font-family: Georgia, serif;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: bold;
     color: #e3cb2c;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
     margin: 0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.6rem;
 }
 
 .panelBody {
-    padding: 1rem 1.25rem;
+    padding: 18px 22px;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.7rem;
     flex: 1;
 }
 
@@ -228,8 +256,8 @@
 }
 
 .panelFooter {
-    padding: 0.875rem 1.25rem;
-    border-top: 1px solid rgba(227, 203, 44, 0.25);
+    padding: 14px 22px 18px;
+    border-top: 1px solid rgba(227, 203, 44, 0.22);
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -237,13 +265,15 @@
 
 /* ── Player count badge ──────────────────────────────────────────────────── */
 .playerCount {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: bold;
-    padding: 2px 8px;
+    padding: 2px 9px;
     border-radius: 9999px;
     background: rgba(227, 203, 44, 0.12);
     color: #e3cb2c;
     border: 1px solid rgba(227, 203, 44, 0.35);
+    letter-spacing: 0.04em;
+    text-transform: none;
 }
 
 /* ── Player rows ─────────────────────────────────────────────────────────── */
@@ -252,16 +282,20 @@
     align-items: center;
     gap: 0.75rem;
     padding: 10px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    transition: background 0.15s;
+    border-radius: 6px;
+    background-color: rgba(15, 37, 87, 0.55);
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
 }
 
 .playerRow:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
 }
 
 .playerRow:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(15, 37, 87, 0.9);
+    border-color: rgba(227, 203, 44, 0.22);
 }
 
 .playerRowEmpty {
@@ -269,12 +303,9 @@
     align-items: center;
     gap: 0.75rem;
     padding: 10px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    opacity: 0.5;
-}
-
-.playerRowEmpty:last-child {
-    border-bottom: none;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    opacity: 0.45;
 }
 
 .avatar {
@@ -282,7 +313,7 @@
     height: 36px;
     border-radius: 50%;
     background-color: #0f2557;
-    border: 1px solid #e3cb2c;
+    border: 2px solid #e3cb2c;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -297,8 +328,8 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px dashed rgba(227, 203, 44, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(227, 203, 44, 0.28);
     flex-shrink: 0;
 }
 
@@ -308,7 +339,7 @@
 }
 
 .playerName {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: bold;
     color: #ffffff;
     display: flex;
@@ -317,44 +348,47 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: Georgia, serif;
 }
 
 .youBadge {
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: bold;
-    padding: 1px 6px;
+    padding: 1px 7px;
     border-radius: 9999px;
     background: rgba(227, 203, 44, 0.18);
     color: #e3cb2c;
     border: 1px solid rgba(227, 203, 44, 0.4);
     flex-shrink: 0;
     font-family: Georgia, serif;
+    letter-spacing: 0.04em;
 }
 
 .playerStatus {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     font-size: 0.78rem;
     color: #cdd8f0;
     margin-top: 2px;
 }
 
 .statusDot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
 }
 
 .online  { background: #4caf50; }
-.offline { background: #888; }
+.offline { background: #6f7e9c; }
 
 .playerRole {
     font-size: 0.78rem;
     font-weight: bold;
     color: #cdd8f0;
     flex-shrink: 0;
+    letter-spacing: 0.03em;
 }
 
 .hostRole {
@@ -362,36 +396,40 @@
 }
 
 .waitingSlot {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.32);
     font-style: italic;
+    font-family: Georgia, serif;
 }
 
 /* ── Host-only hint ──────────────────────────────────────────────────────── */
 .hostOnlyHint {
-    font-size: 0.75rem;
-    color: rgba(227, 203, 44, 0.6);
+    font-size: 0.74rem;
+    color: rgba(227, 203, 44, 0.7);
     font-style: italic;
     margin: 0;
+    text-align: center;
+    font-family: Georgia, serif;
 }
 
-/* ── Settings ────────────────────────────────────────────────────────────── */
+/* ── Settings ─ section labels match globals.css .panel-section-title ───── */
 .settingsSection {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.55rem;
 }
 
 .settingsSectionPadTop {
-    padding-top: 0.5rem;
+    padding-top: 0.4rem;
 }
 
 .settingsLabel {
     font-size: 0.78rem;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.08em;
     color: #e3cb2c;
+    font-family: Georgia, serif;
 }
 
 /* ── Tab group (Game Mode / Difficulty) ──────────────────────────────────── */
@@ -399,7 +437,7 @@
     display: flex;
     gap: 0;
     border: 1px solid rgba(227, 203, 44, 0.4);
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
     flex-wrap: wrap;
 }
@@ -410,18 +448,19 @@
 
 .tabBtn {
     flex: 1;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.83rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
     font-weight: bold;
     font-family: Georgia, serif;
     border: none;
     border-right: 1px solid rgba(227, 203, 44, 0.3);
-    background: transparent;
+    background: rgba(15, 37, 87, 0.4);
     color: #cdd8f0;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
     text-align: center;
     white-space: nowrap;
+    letter-spacing: 0.02em;
 }
 
 .tabBtn:last-child {
@@ -438,7 +477,7 @@
 }
 
 .tabBtnActive {
-    background: rgba(227, 203, 44, 0.18) !important;
+    background: rgba(227, 203, 44, 0.2) !important;
     color: #e3cb2c !important;
 }
 
@@ -446,13 +485,13 @@
 .eraGroup {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.45rem;
 }
 
 .eraBtn {
-    padding: 0.3rem 0.7rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
     font-weight: bold;
     font-family: Georgia, serif;
     border: 1px solid rgba(227, 203, 44, 0.35);
@@ -460,6 +499,7 @@
     background: transparent;
     cursor: pointer;
     transition: background 0.15s, color 0.15s, border-color 0.15s;
+    letter-spacing: 0.02em;
 }
 
 .eraBtn:hover:not(:disabled) {
@@ -480,9 +520,9 @@
 
 /* ── Static setting rows ─────────────────────────────────────────────────── */
 .settingRows {
-    margin-top: 0.375rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(227, 203, 44, 0.18);
+    padding-top: 0.6rem;
     display: flex;
     flex-direction: column;
 }
@@ -491,8 +531,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.35rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     font-size: 0.85rem;
 }
 
@@ -502,57 +542,59 @@
 
 .settingKey {
     color: #cdd8f0;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     font-weight: bold;
+    font-family: Georgia, serif;
 }
 
 .settingVal {
     font-weight: bold;
     color: #e3cb2c;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
+    font-family: Georgia, serif;
+    letter-spacing: 0.02em;
 }
 
-/* ── Start button ────────────────────────────────────────────────────────── */
+/* ── Start button — gold primary (matches .panel-primary-btn) ────────────── */
 .notEnoughPlayers {
     font-size: 0.8rem;
     color: rgba(205, 216, 240, 0.7);
     text-align: center;
     margin: 0 0 0.25rem;
     font-style: italic;
+    font-family: Georgia, serif;
 }
 
 .btnStart {
     width: 100%;
-    padding: 0.7rem;
-    border-radius: 4px;
-    font-size: 1rem;
+    height: 40px;
+    border-radius: 6px;
+    font-size: 0.95rem;
     font-weight: bold;
     font-family: Georgia, serif;
     border: 1px solid #e3cb2c;
-    background: transparent;
-    color: #e3cb2c;
+    background: #e3cb2c;
+    color: #0f2557;
     cursor: pointer;
-    letter-spacing: 0.05em;
-    text-decoration: underline;
-    transition: background 0.18s, color 0.18s;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, box-shadow 0.15s;
 }
 
 .btnStart:hover:not(:disabled) {
-    background: rgba(227, 203, 44, 0.12);
+    background: #f0d840;
+    box-shadow: 0 0 12px rgba(227, 203, 44, 0.35);
 }
 
 .btnStart:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-    text-decoration: none;
 }
 
 .btnStartLoading {
     opacity: 0.65;
     cursor: wait;
-    text-decoration: none;
 }
 
 .waitingText {
@@ -561,71 +603,50 @@
     color: rgba(205, 216, 240, 0.75);
     font-style: italic;
     margin: 0;
-}
-
-/* ── Leave button ────────────────────────────────────────────────────────── */
-.btnLeave {
-    width: 100%;
-    padding: 0.6rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    font-weight: bold;
     font-family: Georgia, serif;
-    background: transparent;
-    border: none;
-    color: #cdd8f0;
-    cursor: pointer;
-    text-decoration: underline;
-    letter-spacing: 0.03em;
-    transition: color 0.18s;
-}
-
-.btnLeave:hover {
-    color: #e3cb2c;
 }
 
 /* ── Invite section ──────────────────────────────────────────────────────── */
 .inviteSection {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid rgba(227, 203, 44, 0.2);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 .searchInput {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid rgba(227, 203, 44, 0.4);
     background: #0f2557;
     color: #e3cb2c;
-    font-size: 0.875rem;
+    font-size: 0.88rem;
     font-family: Georgia, serif;
     outline: none;
-    transition: border-color 0.18s;
+    transition: border-color 0.18s, box-shadow 0.18s;
 }
 
 .searchInput:focus {
     border-color: #e3cb2c;
+    box-shadow: 0 0 0 2px rgba(227, 203, 44, 0.18);
 }
 
 .searchInput::placeholder {
-    color: rgba(227, 203, 44, 0.45);
+    color: rgba(227, 203, 44, 0.5);
 }
 
 .friendList {
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(227, 203, 44, 0.3);
-    border-radius: 4px;
+    border-radius: 6px;
     overflow: hidden;
     background: #0f2557;
 }
 
 .friendItem {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.875rem;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.88rem;
     font-family: Georgia, serif;
     cursor: pointer;
     color: #e3cb2c;
@@ -643,23 +664,29 @@
     outline: none;
 }
 
+/* Invite — gold primary button (matches .panel-primary-btn) */
 .btnInvite {
     align-self: stretch;
-    padding: 0.55rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    height: 38px;
+    padding: 0 1rem;
+    border-radius: 6px;
+    font-size: 0.92rem;
     font-weight: bold;
     font-family: Georgia, serif;
     background: #e3cb2c;
-    border: none;
+    border: 1px solid #e3cb2c;
     color: #0f2557;
     cursor: pointer;
     letter-spacing: 0.04em;
-    transition: background 0.18s;
+    transition: background 0.15s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btnInvite:hover:not(:disabled) {
-    background: #f0d83a;
+    background: #f0d840;
+    box-shadow: 0 0 12px rgba(227, 203, 44, 0.35);
 }
 
 .btnInvite:disabled {
@@ -671,16 +698,7 @@
 .chatSection {
     display: flex;
     flex-direction: column;
-}
-
-.chatHeader {
-    padding: 0.7rem 1.25rem 0.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    font-family: Georgia, serif;
-    color: #e3cb2c;
-    border-bottom: 1px solid rgba(227, 203, 44, 0.2);
-    letter-spacing: 0.02em;
+    flex: 1;
 }
 
 .chatMessages {
@@ -690,8 +708,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.625rem;
-    min-height: 160px;
-    max-height: 220px;
+    min-height: 320px;
 }
 
 .chatEmpty {
@@ -700,6 +717,7 @@
     text-align: center;
     margin: auto;
     font-style: italic;
+    font-family: Georgia, serif;
 }
 
 .chatMsg {
@@ -746,35 +764,36 @@
 
 .chatText {
     display: inline-block;
-    padding: 0.4rem 0.65rem;
-    border-radius: 4px;
-    font-size: 0.83rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     line-height: 1.45;
-    background: #0f2557;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(15, 37, 87, 0.7);
+    border: 1px solid rgba(227, 203, 44, 0.18);
     color: #ffffff;
     font-family: Georgia, serif;
 }
 
 .chatMsgMine .chatText {
     background: rgba(227, 203, 44, 0.13);
-    border-color: rgba(227, 203, 44, 0.3);
+    border-color: rgba(227, 203, 44, 0.4);
 }
 
 .chatInputRow {
     display: flex;
     gap: 0;
-    border-top: 1px solid rgba(227, 203, 44, 0.2);
+    border-top: 1px solid rgba(227, 203, 44, 0.22);
 }
 
 .chatInput {
     flex: 1;
-    padding: 0.6rem 0.875rem;
+    height: 42px;
+    padding: 0 0.875rem;
     border: none;
-    border-right: 1px solid rgba(227, 203, 44, 0.25);
+    border-right: 1px solid rgba(227, 203, 44, 0.22);
     background: #0f2557;
     color: #ffffff;
-    font-size: 0.875rem;
+    font-size: 0.88rem;
     font-family: Georgia, serif;
     outline: none;
     transition: background 0.15s;
@@ -789,8 +808,9 @@
 }
 
 .btnSend {
-    padding: 0.6rem 1rem;
-    font-size: 0.875rem;
+    height: 42px;
+    padding: 0 1.1rem;
+    font-size: 0.88rem;
     font-weight: bold;
     font-family: Georgia, serif;
     background: #e3cb2c;
@@ -799,11 +819,14 @@
     cursor: pointer;
     transition: background 0.15s;
     flex-shrink: 0;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btnSend:hover:not(:disabled) {
-    background: #f0d83a;
+    background: #f0d840;
 }
 
 .btnSend:disabled {
@@ -837,14 +860,114 @@
     to { transform: rotate(360deg); }
 }
 
+/* ── Game launch overlay ────────────────────────────────────────────────── */
+.gameLaunchOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at center, rgba(227, 203, 44, 0.14), transparent 36%),
+        rgba(15, 37, 87, 0.96);
+    color: #ffffff;
+    text-align: center;
+    font-family: Georgia, serif;
+    animation: launchOverlayIn 0.22s ease-out both;
+}
+
+.launchAnimation {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    display: grid;
+    place-items: center;
+}
+
+.launchRing {
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(227, 203, 44, 0.22);
+    border-top-color: #e3cb2c;
+    border-radius: 50%;
+    animation: spin 1.25s linear infinite;
+}
+
+.launchCardStack {
+    position: relative;
+    width: 92px;
+    height: 118px;
+}
+
+.launchCard {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 72px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e3cb2c;
+    border-radius: 6px;
+    background: #1a3570;
+    color: #e3cb2c;
+    font-size: 0.95rem;
+    font-weight: bold;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
+    transform-origin: center bottom;
+    animation: cardDeal 1.8s ease-in-out infinite;
+}
+
+.launchCardOne   { transform: translate(-50%, -50%) rotate(-10deg); }
+.launchCardTwo   { animation-delay: 0.16s; transform: translate(-50%, -50%); }
+.launchCardThree { animation-delay: 0.32s; transform: translate(-50%, -50%) rotate(10deg); }
+
+.launchText h2 {
+    margin: 0 0 0.45rem;
+    color: #e3cb2c;
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    letter-spacing: 0.04em;
+}
+
+.launchText p {
+    margin: 0;
+    max-width: 32rem;
+    color: #cdd8f0;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+@keyframes launchOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes cardDeal {
+    0%, 100% { opacity: 0.82; translate: 0 0; }
+    50%      { opacity: 1;    translate: 0 -12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gameLaunchOverlay,
+    .launchRing,
+    .launchCard {
+        animation: none;
+    }
+}
+
 /* ── Toast ───────────────────────────────────────────────────────────────── */
 .toast {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
     background: #1a3570;
-    border: 1px solid #e3cb2c;
-    border-radius: 6px;
+    border: 1px solid rgba(227, 203, 44, 0.5);
+    border-radius: 8px;
     padding: 0.75rem 1.25rem;
     font-size: 0.9rem;
     font-family: Georgia, serif;
@@ -852,26 +975,11 @@
     z-index: 500;
     animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
     max-width: 340px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes toastIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: none; }
-}
-
-
-.navLinkActive {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    font: inherit;
-    color: white;
-    text-decoration: none;
-    transition: color 180ms ease;
-}
-
-.navLinkActive:hover {
-    color: #e3cb2c;
 }
 
