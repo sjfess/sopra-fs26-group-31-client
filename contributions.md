@@ -143,8 +143,8 @@ reason).
  |
 | **[@marcokingo](https://github.com/marcokingo)** | [Date]   | [Commit]| Description| Relevance |
 |                    | [Date]   | [Commit]| Description| Relevance |
-| **[@milchazor](https://github.com/milchazor)** | [Date]   | [Commit]| Description| Relevance |
-|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@milchazor](https://github.com/milchazor)** | 2026-05-010| [a1a4a62](https://github.com/sjfess/sopra-fs26-group-31-server/pull/126)| Increased Ammount of Curated Events| Leads to a more replayable experience, by increasing the pool of pregenerated cards |
+|                    | 2026-05-010   |[d0b3e2a](https://github.com/sjfess/sopra-fs26-group-31-client/pull/45) | unify UI design system — design tokens, navbar, auth pages | Nicer look, that triggers my OCD less |
 | **[@sjfess](https://github.com/sjfess)** | [Date]   | [Commit]| Description| Relevance |
 |                    | [Date]   | [Commit]| Description| Relevance |
 
