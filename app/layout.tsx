@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { App as AntdApp, ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import PresenceHeartbeat from "@/components/PresenceHeartbeat";
 import "@/styles/globals.css";
 
 const geistSans = Geist({
@@ -70,7 +71,10 @@ export default function RootLayout({
         >
             <AntdRegistry>
                 <div className="app-shell">
-                    <AntdApp>{children}</AntdApp>
+                    <AntdApp>
+                        <PresenceHeartbeat />
+                        {children}
+                    </AntdApp>
                 </div>
             </AntdRegistry>
         </ConfigProvider>
