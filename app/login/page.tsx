@@ -56,27 +56,10 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-                backgroundColor: "#0f2557",
-            }}
-        >
-
+        <div className="app-shell">
             <AppNavbar variant="minimal" />
 
-
-            <main
-                style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "24px",
-                }}
-            >
+            <main className="page-main-center">
                 <div className="auth-card">
                     <div className="auth-card-header">
                         <h1>Log In</h1>
@@ -115,35 +98,20 @@ const Login: React.FC = () => {
                                     block
                                     disabled={isSubmitting}
                                     loading={isSubmitting}
-                                    style={{
-                                        borderRadius: "999px",
-                                        height: "48px",
-                                        fontSize: "1.1rem",
-                                        fontFamily: "Georgia, serif",
-                                        fontWeight: "bold",
-                                        backgroundColor: "#e3cb2c",
-                                        borderColor: "#e3cb2c",
-                                        color: "#0f2557",
-                                    }}
+                                    className="auth-btn-primary"
                                 >
                                     Log In
                                 </Button>
                             </Form.Item>
                         </Form>
 
-                        <div style={{ textAlign: "center", marginTop: "20px", color: "#cdd8f0" }}>
+                        <div style={{ textAlign: "center", marginTop: "20px" }} className="muted-text">
                             Don&apos;t have an account?
                             <br />
                             <Button
                                 onClick={() => router.push("/register")}
-                                style={{
-                                    marginTop: "8px",
-                                    borderRadius: "999px",
-                                    borderColor: "#e3cb2c",
-                                    color: "white",
-                                    backgroundColor: "transparent",
-                                    fontWeight: "bold",
-                                }}
+                                className="auth-btn-ghost"
+                                style={{ marginTop: "8px" }}
                             >
                                 Register
                             </Button>

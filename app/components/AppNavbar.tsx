@@ -24,9 +24,9 @@ type NavLink = {
 };
 
 const DEFAULT_LINKS: NavLink[] = [
-    { key: "profile", label: "Profile", href: "/profile" },
-    { key: "leaderboard", label: "Leaderboard", href: "/leaderboard" },
-    { key: "about", label: "About", href: "/about" },
+    { key: "profile",      label: "Profile",      href: "/profile"      },
+    { key: "leaderboard",  label: "Leaderboard",  href: "/leaderboard"  },
+    { key: "about",        label: "About",        href: "/about"        },
 ];
 
 interface AppNavbarProps {
@@ -39,14 +39,6 @@ interface AppNavbarProps {
     minimalLinks?: { label: string; href: string }[];
     actionButton?: { label: string; onClick: () => void };
 }
-
-const ACTION_BUTTON_STYLE: React.CSSProperties = {
-    borderRadius: "999px",
-    backgroundColor: "#e3cb2c",
-    borderColor: "#e3cb2c",
-    color: "#0f2557",
-    fontWeight: "bold",
-};
 
 const AppNavbar: React.FC<AppNavbarProps> = ({
     onLogout,
@@ -67,54 +59,25 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
         setResolvedProfileHref(userId ? `/profile/${userId}` : "/login");
     }, [pathname]);
 
-    const navLinkStyle: React.CSSProperties = {
-        color: "white",
-        cursor: "pointer",
-        fontSize: "0.95rem",
-    };
-
-    const activeLinkStyle: React.CSSProperties = {
-        ...navLinkStyle,
-        borderBottom: "2px solid #e3cb2c",
-        paddingBottom: "2px",
-    };
-
     const isActive = (href: string) =>
         href === "/profile" ? pathname.startsWith("/profile") : pathname === href;
 
-    const navStyle: React.CSSProperties = {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "16px 32px",
-        border: "1px solid #e3cb2c",
-        margin: "12px",
-        borderRadius: "4px",
-        flexShrink: 0,
-    };
-
-    const titleStyle: React.CSSProperties = {
-        color: "#e3cb2c",
-        fontFamily: "Georgia, serif",
-        fontWeight: "bold",
-        fontSize: "1.1rem",
-    };
-
     if (variant === "minimal") {
         return (
-            <nav style={navStyle}>
-                <span style={titleStyle}>Historical Reconstruction</span>
+            <nav className="navbar">
+                <span className="navbar-brand">Historical Reconstruction</span>
+
                 {actionButton ? (
-                    <Button onClick={actionButton.onClick} style={ACTION_BUTTON_STYLE}>
+                    <Button onClick={actionButton.onClick} className="navbar-action-btn">
                         {actionButton.label}
                     </Button>
                 ) : minimalLinks && minimalLinks.length > 0 ? (
-                    <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+                    <div className="navbar-links">
                         {minimalLinks.map((link) => (
                             <span
                                 key={link.href}
                                 onClick={() => router.push(link.href)}
-                                style={navLinkStyle}
+                                className="navbar-link"
                             >
                                 {link.label}
                             </span>
@@ -123,7 +86,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
                 ) : (
                     <span
                         onClick={() => (onBack ? onBack() : router.push(backHref))}
-                        style={navLinkStyle}
+                        className="navbar-link"
                     >
                         {backLabel}
                     </span>
@@ -141,15 +104,15 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
     };
 
     return (
-        <nav style={navStyle}>
-            <span style={titleStyle}>Historical Reconstruction</span>
+        <nav className="navbar">
+            <span className="navbar-brand">Historical Reconstruction</span>
 
-            <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+            <div className="navbar-links">
                 {DEFAULT_LINKS.map((link) => (
                     <span
                         key={link.key}
                         onClick={() => handleLinkClick(link)}
-                        style={isActive(link.href) ? activeLinkStyle : navLinkStyle}
+                        className={isActive(link.href) ? "navbar-link-active" : "navbar-link"}
                     >
                         {link.label}
                     </span>
@@ -157,11 +120,11 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             </div>
 
             {onLogout ? (
-                <Button onClick={onLogout} style={ACTION_BUTTON_STYLE}>
+                <Button onClick={onLogout} className="navbar-action-btn">
                     Log Out
                 </Button>
             ) : (
-                <span style={{ width: 100 }} aria-hidden="true" />
+                <span className="navbar-spacer" aria-hidden="true" />
             )}
         </nav>
     );

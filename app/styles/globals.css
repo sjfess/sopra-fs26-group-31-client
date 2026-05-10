@@ -1,3 +1,32 @@
+/* ================================================================
+   Design Tokens — CSS custom properties
+   Use these throughout the app instead of hardcoding colour values.
+   ================================================================ */
+:root {
+  --c-bg:         #0f2557;
+  --c-card:       #1a3570;
+  --c-deep:       #0a1e4a;
+  --c-gold:       #e3cb2c;
+  --c-gold-hover: #f0d840;
+  --c-gold-40:    rgba(227, 203, 44, 0.40);
+  --c-gold-22:    rgba(227, 203, 44, 0.22);
+  --c-gold-10:    rgba(227, 203, 44, 0.10);
+  --c-text:       #ffffff;
+  --c-muted:      #cdd8f0;
+  --c-soft:       #8da4cc;
+  --c-border:     rgba(227, 203, 44, 0.50);
+  --c-border-soft:rgba(227, 203, 44, 0.25);
+
+  --r-card:  12px;
+  --r-btn:   6px;
+  --r-pill:  999px;
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 0 12px rgba(227, 203, 44, 0.35);
+
+  --font-serif: Georgia, serif;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -368,4 +397,158 @@ a {
   box-shadow: none !important;
   padding: 0 !important;
 }
+
+/* ================================================================
+   Navbar — shared across all pages
+   ================================================================ */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  border: 1px solid var(--c-gold);
+  margin: 12px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.navbar-brand {
+  color: var(--c-gold);
+  font-family: var(--font-serif);
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.navbar-link {
+  color: var(--c-text);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: var(--font-serif);
+  transition: color 0.15s;
+  user-select: none;
+}
+
+.navbar-link:hover { color: var(--c-gold); }
+
+.navbar-link-active {
+  color: var(--c-text);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: var(--font-serif);
+  border-bottom: 2px solid var(--c-gold);
+  padding-bottom: 2px;
+  user-select: none;
+}
+
+.navbar-spacer { width: 100px; }
+
+/* Ant Design button inside the navbar */
+.navbar-action-btn {
+  border-radius: var(--r-pill) !important;
+  background-color: var(--c-gold) !important;
+  border-color: var(--c-gold) !important;
+  color: var(--c-bg) !important;
+  font-weight: bold !important;
+  font-family: var(--font-serif) !important;
+}
+
+.navbar-action-btn:hover {
+  background-color: var(--c-gold-hover) !important;
+  border-color: var(--c-gold-hover) !important;
+}
+
+/* ================================================================
+   Page layout helpers
+   ================================================================ */
+.page-main-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ================================================================
+   Shared spinner — can be used on any loading state
+   ================================================================ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(227, 203, 44, 0.20);
+  border-top-color: var(--c-gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.page-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--c-bg);
+  color: var(--c-muted);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+}
+
+/* ================================================================
+   Auth page buttons — override Ant Design with !important
+   ================================================================ */
+.auth-btn-primary {
+  width: 100%;
+  border-radius: var(--r-pill) !important;
+  height: 48px !important;
+  font-size: 1.05rem !important;
+  font-family: var(--font-serif) !important;
+  font-weight: bold !important;
+  background-color: var(--c-gold) !important;
+  border-color: var(--c-gold) !important;
+  color: var(--c-bg) !important;
+}
+
+.auth-btn-primary:hover:not(:disabled) {
+  background-color: var(--c-gold-hover) !important;
+  border-color: var(--c-gold-hover) !important;
+  box-shadow: var(--shadow-glow) !important;
+}
+
+.auth-btn-ghost {
+  border-radius: var(--r-pill) !important;
+  border: 1px solid rgba(227, 203, 44, 0.55) !important;
+  color: var(--c-text) !important;
+  background-color: transparent !important;
+  font-weight: bold !important;
+  font-family: var(--font-serif) !important;
+  font-size: 0.95rem !important;
+}
+
+.auth-btn-ghost:hover {
+  background-color: var(--c-gold-10) !important;
+  border-color: var(--c-gold) !important;
+}
+
+/* ================================================================
+   Utility classes
+   ================================================================ */
+.gold-text  { color: var(--c-gold); }
+.muted-text { color: var(--c-muted); }
+.soft-text  { color: var(--c-soft); }
 
