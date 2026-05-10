@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { getApiDomain } from "@/utils/domain";
 
-const HEARTBEAT_INTERVAL_MS = 5_000;
+const HEARTBEAT_INTERVAL_MS = 30_000;
 
 function readStoredToken(): string | null {
     const rawToken = window.sessionStorage.getItem("token");
