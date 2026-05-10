@@ -357,3 +357,15 @@ a {
   font-size: 0.85rem !important;
 }
 
+/* Friends panel search field: hide AntD's inner input box so only the
+   outer affix wrapper is visible, and ensure the placeholder isn't clipped. */
+.panel-card .ant-input-affix-wrapper.friends-search-input {
+  padding: 6px 11px !important;
+}
+.panel-card .ant-input-affix-wrapper.friends-search-input > .ant-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
