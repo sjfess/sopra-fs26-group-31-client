@@ -144,8 +144,8 @@ reason).
 |                    | 2026-05-10 | [Commit 8f15aad](https://github.com/sjfess/sopra-fs26-group-31-server/commit/8f15aad5b81a6fdf9a12e8b086f96ed43f988fc1), [Commit 6a33286](https://github.com/sjfess/sopra-fs26-group-31-server/commit/6a332862556fb691fcbf8691bda3080c0b410d04) | Fixed online/offline activity tracking by adding a heartbeat endpoint, last-seen tracking, stale-user cleanup, and an adjusted presence timeout ([issue #124](https://github.com/sjfess/sopra-fs26-group-31-server/issues/124)). | This is relevant because friends and lobby participants need accurate presence information. The heartbeat-based tracking prevents inactive users from remaining incorrectly marked online and keeps user availability reliable. |
 | **[@milchazor](https://github.com/milchazor)** | 2026-05-010| [a1a4a62](https://github.com/sjfess/sopra-fs26-group-31-server/pull/126)| Increased Ammount of Curated Events| Leads to a more replayable experience, by increasing the pool of pregenerated cards |
 |                    | 2026-05-010   |[d0b3e2a](https://github.com/sjfess/sopra-fs26-group-31-client/pull/45) | unify UI design system — design tokens, navbar, auth pages | Nicer look, that triggers my OCD less |
-| **[@sjfess](https://github.com/sjfess)** | [Date]   | [Commit]| Description| Relevance |
-|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@sjfess](https://github.com/sjfess)** | 2026-05-06   | [2ba76bd](https://github.com/sjfess/sopra-fs26-group-31-server/commit/2ba76bd536868e2e6f2e4c533d5c945301ea07f4)| Refactored GameService | This task had no impact on the user but for our development team. It helps us to better maintain our code and more quickly add new features or debug our code. |
+|                    | 2026-05-07  | [7b36c96](https://github.com/sjfess/sopra-fs26-group-31-server/commit/7b36c96cef0a51d2531fec437a32deca5f1b621c)| Reworked card fetching | Starting a game took 30 seconds due to the API call. It was reworked so the first start of a game takes around 3-4 seconds.|
 
 
 ## Contributions Week 8 - [11.05.2026] to [17.05.2026]
