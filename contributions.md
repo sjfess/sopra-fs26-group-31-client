@@ -147,4 +147,21 @@ reason).
 | **[@sjfess](https://github.com/sjfess)** | [Date]   | [Commit]| Description| Relevance |
 |                    | [Date]   | [Commit]| Description| Relevance |
 
+
+## Contributions Week 8 - [11.05.2026] to [17.05.2026]
+
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [Date]   | [Commit]| Description| Relevance |
+|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@Fanelock](https://github.com/Fanelock)** | [Date]   | [Commit]| Description| Relevance |
+|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@marcokingo](https://github.com/marcokingo)** | [Date]   | [Commit]| Description| Relevance |
+|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@milchazor](https://github.com/milchazor)** | [Date]   | [Commit]| Description| Relevance |
+|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@sjfess](https://github.com/sjfess)** | [Date]   | [Commit]| Description| Relevance |
+|                    | [Date]   | [Commit]| Description| Relevance |
+
 _Continue with the same table format as above._
