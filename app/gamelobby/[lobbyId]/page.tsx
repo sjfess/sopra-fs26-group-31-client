@@ -8,6 +8,7 @@ import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import GameChat, { GAME_STARTING_CHAT_MESSAGE } from "./GameChat";
 import styles from "./GameLobbyPage.module.css";
+import AppNavbar from "@/components/AppNavbar";
 
 type Era = "ANCIENT" | "MEDIEVAL" | "RENAISSANCE" | "MODERN" | "INFORMATION";
 type Difficulty = "EASY" | "MEDIUM" | "HARD";
@@ -37,8 +38,8 @@ export default function GameLobbyPage() {
     const [toast, setToast] = useState<string | null>(null);
     const [codeCopied, setCodeCopied] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const [settingsHeight, setSettingsHeight] = useState<number | null>(null);
-    const settingsPanelRef = useRef<HTMLElement | null>(null);
+    const [columnHeight, setColumnHeight] = useState<number | null>(null);
+    const rightColumnRef = useRef<HTMLDivElement | null>(null);
 
     const params = useParams();
     const lobbyId = params.lobbyId as string;
@@ -209,10 +210,10 @@ export default function GameLobbyPage() {
     }, [mounted, token, userId, fetchGame]);
 
     useEffect(() => {
-        const node = settingsPanelRef.current;
+        const node = rightColumnRef.current;
         if (!node) return;
 
-        const update = () => setSettingsHeight(node.getBoundingClientRect().height);
+        const update = () => setColumnHeight(node.getBoundingClientRect().height);
         update();
 
         const observer = new ResizeObserver(update);
@@ -371,22 +372,13 @@ export default function GameLobbyPage() {
 
     return (
         <div className={styles.root}>
-            <nav className="app-navbar" aria-label="Main navigation">
-                <div className="app-navbar-title">Historical Reconstruction</div>
-                <ul className="app-navbar-links" role="list">
-                    <li>
-                        <button
-                            className={styles.navLinkActive}
-                            onClick={() => void handleLeave()}
-                        >
-                            Home
-                        </button>
-                    </li>
-                    {/* <li>
-                        <a href="/leaderboard">Leaderboard</a>
-                    </li> */}
-                </ul>
-            </nav>
+            <AppNavbar
+                variant="minimal"
+                actionButton={{
+                    label: "Leave Lobby",
+                    onClick: () => void handleLeave(),
+                }}
+            />
 
             <div className={styles.lobbyBanner}>
                 <div className={styles.motto} aria-hidden="true">
@@ -397,21 +389,9 @@ export default function GameLobbyPage() {
 
                 <div className={styles.lobbyTitleBlock}>
                     <h1 className={styles.lobbyTitle}>Game Lobby</h1>
-                    <p className={styles.lobbySubtitle}>
-                        Invite your friends and prepare the match
-                    </p>
                 </div>
 
                 <div className={styles.lobbyMeta}>
-                    <div className={styles.lobbyMetaTop}>
-                        <button
-                            className={styles.btnLeave}
-                            onClick={() => void handleLeave()}
-                            aria-label="Leave this lobby and return to profile"
-                        >
-                            ← Leave Lobby
-                        </button>
-                    </div>
                     <div className={styles.lobbyCodeRow}>
                         <span>Lobby Code:</span>
                         <strong className={styles.lobbyCode}>{game.lobbyCode}</strong>
@@ -434,7 +414,7 @@ export default function GameLobbyPage() {
                 <section
                     className={styles.panel}
                     aria-labelledby="players-heading"
-                    style={settingsHeight ? { height: settingsHeight } : undefined}
+                    style={columnHeight ? { height: columnHeight } : undefined}
                 >
                     <div className={styles.panelHeader}>
                         <h2 id="players-heading">
@@ -501,9 +481,9 @@ export default function GameLobbyPage() {
                 </section>
 
                 <section
-                    ref={settingsPanelRef}
                     className={styles.panel}
                     aria-labelledby="settings-heading"
+                    style={columnHeight ? { height: columnHeight } : undefined}
                 >
                     <div className={styles.panelHeader}>
                         <h2 id="settings-heading">Game Settings</h2>
@@ -618,7 +598,7 @@ export default function GameLobbyPage() {
                     </div>
                 </section>
 
-                <div className={styles.gridCol}>
+                <div ref={rightColumnRef} className={styles.gridCol}>
                 <section
                     className={styles.panel}
                     aria-labelledby="chat-heading"

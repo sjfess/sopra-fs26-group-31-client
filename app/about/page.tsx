@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import styles from "@/styles/page.module.css";
+import AppNavbar from "@/components/AppNavbar";
 
 interface TeamMember {
     name: string;
@@ -51,18 +51,10 @@ const HOW_TO_PLAY = [
 ];
 
 export default function AboutPage() {
-    const router = useRouter();
-
     return (
         <div className={styles.aboutPage}>
 
-            <nav className="app-navbar">
-                <span className="app-navbar-title">Historical Reconstruction</span>
-                <div className="app-navbar-links">
-                    <span onClick={() => router.push("/")}>Home</span>
-                    <span onClick={() => router.push("/leaderboard")}>Leaderboard</span>
-                </div>
-            </nav>
+            <AppNavbar />
 
             {/* Hero */}
             <div className={styles.aboutHero}>

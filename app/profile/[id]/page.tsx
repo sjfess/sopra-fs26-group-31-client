@@ -6,7 +6,7 @@ import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { User } from "@/types/user";
 import { Spin } from "antd";
-import Navbar from "@/profile/[id]/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 import UserProfileCard from "@/profile/[id]/components/UserProfileCard";
 import FriendsPanel from "@/profile/[id]/components/FriendsPanel";
 import GameHub from "@/profile/[id]/components/GameHub";
@@ -74,7 +74,7 @@ const Profile: React.FC = () => {
 
     return (
         <div style={{ backgroundColor: "#0f2557", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-            <Navbar onLogout={handleLogout} />
+            <AppNavbar onLogout={handleLogout} profileHref={`/profile/${loggedInUserId}`} />
             <div style={{ display: "flex", gap: "24px", padding: "24px 32px", flex: 1 }}>
                 <UserProfileCard user={user} isOwnProfile={isOwnProfile} />
                 <FriendsPanel />

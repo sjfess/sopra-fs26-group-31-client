@@ -6,6 +6,7 @@ import { User } from "@/types/user";
 import { Button, Form, Input, App } from "antd";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { useState } from "react";
+import AppNavbar from "@/components/AppNavbar";
 
 
 interface FormFieldProps {
@@ -80,15 +81,7 @@ const Register: React.FC = () => {
             }}
         >
 
-            <nav className="app-navbar" style={{ flexShrink: 0 }}>
-                <span className="app-navbar-title">Historical Reconstruction</span>
-                <span
-                    onClick={() => router.push("/")}
-                    style={{ cursor: "pointer", color: "white" }}
-                >
-          Back
-        </span>
-            </nav>
+            <AppNavbar variant="minimal" />
 
 
             <main

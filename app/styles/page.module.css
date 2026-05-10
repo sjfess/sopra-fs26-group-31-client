@@ -1,43 +1,9 @@
-/* Hide the global app-header on landing page only */
-.page :global(.app-header) {
-  display: none;
-}
-
 .page {
   min-height: 100vh;
   background-color: #0f2557;
   display: flex;
   flex-direction: column;
   font-family: Georgia, serif;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 26px 32px;
-  border: 2px solid #e3cb2c;
-  margin: 12px;
-  border-radius: 4px;
-}
-
-.navTitle {
-  color: #e3cb2c;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.navLinks {
-  display: flex;
-  gap: 32px;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.navLinks span:hover {
-  color: #e3cb2c;
-  transition: color 0.2s;
 }
 
 .main {

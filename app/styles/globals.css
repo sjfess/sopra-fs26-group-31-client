@@ -57,38 +57,6 @@ a {
   flex-direction: column;
 }
 
-/* Global navbar */
-.app-navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  border: 1px solid #e3cb2c;
-  margin: 12px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-
-.app-navbar-title {
-  color: #e3cb2c;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.app-navbar-links {
-  display: flex;
-  gap: 32px;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.app-navbar-links span:hover {
-  color: #e3cb2c;
-  transition: color 0.2s;
-}
-
 /* Centered page layout */
 .centered-page {
   min-height: 100vh;
