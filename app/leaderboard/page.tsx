@@ -171,7 +171,7 @@ const LeaderboardPage: React.FC = () => {
                 overflow: "hidden",
             }}
         >
-            <AppNavbar onLogout={handleLogout} profileHref={`/profile/${loggedInUserId}`} />
+            <AppNavbar onLogout={handleLogout} />
 
             <div
                 style={{

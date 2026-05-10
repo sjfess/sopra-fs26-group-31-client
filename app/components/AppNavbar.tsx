@@ -1,8 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "antd";
+
+function readUserIdFromSession(): string | null {
+    if (typeof window === "undefined") return null;
+    const raw = window.sessionStorage.getItem("userId");
+    if (!raw) return null;
+    try {
+        const parsed = JSON.parse(raw);
+        if (parsed === null || parsed === undefined || parsed === "") return null;
+        return String(parsed);
+    } catch {
+        return raw;
+    }
+}
 
 type NavLink = {
     key: string;
@@ -47,6 +60,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
 }) => {
     const router = useRouter();
     const pathname = usePathname() ?? "";
+
+    const [resolvedProfileHref, setResolvedProfileHref] = useState<string | null>(null);
+    useEffect(() => {
+        const userId = readUserIdFromSession();
+        setResolvedProfileHref(userId ? `/profile/${userId}` : "/login");
+    }, [pathname]);
 
     const navLinkStyle: React.CSSProperties = {
         color: "white",
@@ -114,8 +133,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
     }
 
     const handleLinkClick = (link: NavLink) => {
-        if (link.key === "profile" && profileHref) {
-            router.push(profileHref);
+        if (link.key === "profile") {
+            router.push(profileHref ?? resolvedProfileHref ?? "/login");
             return;
         }
         router.push(link.href);
