@@ -26,6 +26,7 @@ type NavLink = {
 const DEFAULT_LINKS: NavLink[] = [
     { key: "profile",      label: "Profile",      href: "/profile"      },
     { key: "leaderboard",  label: "Leaderboard",  href: "/leaderboard"  },
+    { key: "tutorial",     label: "Tutorial",     href: "/tutorial"     },
     { key: "about",        label: "About",        href: "/about"        },
 ];
 
