@@ -3,6 +3,8 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import styles from "@/styles/page.module.css";
+import AppNavbar from "@/components/AppNavbar";
+import useSessionStorage from "@/hooks/useSessionStorage";
 
 interface TeamMember {
     name: string;
@@ -52,17 +54,30 @@ const HOW_TO_PLAY = [
 
 export default function AboutPage() {
     const router = useRouter();
+    const { value: token, clear: clearToken } = useSessionStorage<string>("token", "");
+    const { clear: clearUserId } = useSessionStorage<string>("userId", "");
+
+    const handleLogout = async () => {
+        try {
+            await fetch(`${process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8080"}/auth/logout`, {
+                method: "POST",
+                headers: {
+                    Authorization: token,
+                    "Content-Type": "application/json",
+                },
+            });
+        } catch {
+            // proceed anyway
+        }
+        clearToken();
+        clearUserId();
+        router.push("/login");
+    };
 
     return (
         <div className={styles.aboutPage}>
 
-            <nav className="app-navbar">
-                <span className="app-navbar-title">Historical Reconstruction</span>
-                <div className="app-navbar-links">
-                    <span onClick={() => router.push("/")}>Home</span>
-                    <span onClick={() => router.push("/leaderboard")}>Leaderboard</span>
-                </div>
-            </nav>
+            <AppNavbar onLogout={token ? handleLogout : undefined} />
 
             {/* Hero */}
             <div className={styles.aboutHero}>

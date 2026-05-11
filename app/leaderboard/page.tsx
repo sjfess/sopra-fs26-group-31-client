@@ -6,7 +6,7 @@ import { Table, Spin, Alert, Button, Card, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
-import Navbar from "@/profile/[id]/components/Navbar";
+import AppNavbar from "@/components/AppNavbar";
 import { LeaderboardEntry } from "@/types/user";
 
 const LeaderboardPage: React.FC = () => {
@@ -171,7 +171,7 @@ const LeaderboardPage: React.FC = () => {
                 overflow: "hidden",
             }}
         >
-            <Navbar onLogout={handleLogout} />
+            <AppNavbar onLogout={handleLogout} />
 
             <div
                 style={{

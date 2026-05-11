@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Input, App } from "antd";
+import { App, ConfigProvider, Input } from "antd";
 import { useRouter } from "next/navigation";
 import type { GameInvite } from "@/types/game";
 import type { Friend, FriendRequest } from "@/types/user";
@@ -144,17 +144,25 @@ const FriendsPanel: React.FC = () => {
         <div className="panel-card" style={{ flex: 1.2 }}>
             <h2 className="panel-title">Friends</h2>
 
-            <Input
-                placeholder="Add friend by username"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onPressEnter={handleSendRequest}
-                suffix={
-                    <span style={{ cursor: "pointer", color: "#e3cb2c" }} onClick={handleSendRequest}>
-                        🔍
-                    </span>
-                }
-            />
+            <ConfigProvider theme={{ token: { colorTextPlaceholder: "rgba(227, 203, 44, 0.6)" } }}>
+                <Input
+                    className="friends-search-input"
+                    placeholder="Add friend by username"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onPressEnter={handleSendRequest}
+                    suffix={
+                        <span
+                            style={{ cursor: "pointer", color: "#e3cb2c" }}
+                            onClick={handleSendRequest}
+                            role="button"
+                            aria-label="Send friend request"
+                        >
+                            🔍
+                        </span>
+                    }
+                />
+            </ConfigProvider>
 
             {/* Game invites */}
             <div className="panel-section-title">
