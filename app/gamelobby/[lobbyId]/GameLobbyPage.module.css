@@ -120,7 +120,6 @@
     gap: 1.5rem;
     padding: 0 1.5rem 2rem;
     flex: 1;
-    max-width: 1280px;
     width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
@@ -220,8 +219,7 @@
 
 /* ── Panel header — matches globals.css .panel-title ─────────────────────── */
 .panelHeader {
-    padding: 18px 24px 14px;
-    border-bottom: 1px solid rgba(227, 203, 44, 0.25);
+    padding: 18px 24px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -239,7 +237,11 @@
     margin: 0;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.6rem;
+    width: 100%;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(227, 203, 44, 0.25);
 }
 
 .panelBody {
@@ -982,4 +984,3 @@
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: none; }
 }
-
