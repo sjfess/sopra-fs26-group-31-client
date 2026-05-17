@@ -79,7 +79,7 @@ const Profile: React.FC = () => {
                 <UserProfileCard user={user} isOwnProfile={isOwnProfile} />
                 <FriendsPanel />
                 {isOwnProfile && (
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px", minWidth: 0, minHeight: 0 }}>
                         <GameHub />
                     </div>
                 )}

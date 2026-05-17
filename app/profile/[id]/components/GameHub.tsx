@@ -60,7 +60,7 @@ const GameHub: React.FC = () => {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div style={{ display: "flex", flex: 1, flexDirection: "column", gap: "16px", minHeight: 0 }}>
             {/* Create Game */}
             <div className="panel-card">
                 <h2 className="panel-title">Create Game</h2>
@@ -102,7 +102,7 @@ const GameHub: React.FC = () => {
             </div>
 
             {/* Join Game */}
-            <div className="panel-card">
+            <div className="panel-card" style={{ flex: 1, minHeight: 0 }}>
                 <h2 className="panel-title">Join Game</h2>
                 <ConfigProvider theme={{ token: { colorTextPlaceholder: "rgba(227, 203, 44, 0.6)" } }}>
                     <Form layout="vertical" style={{ marginBottom: 0 }}>
