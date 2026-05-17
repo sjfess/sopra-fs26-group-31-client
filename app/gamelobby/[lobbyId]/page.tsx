@@ -429,7 +429,10 @@ export default function GameLobbyPage() {
                         {game.players?.map((player: PlayerSummary) => (
                             <div key={player.id} className={styles.playerRow}>
                                 <div className={styles.avatar} aria-hidden="true">
-                                    {player.username.charAt(0).toUpperCase()}
+                                    {player.avatarUrl
+                                        ? <img src={player.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+                                        : player.username.charAt(0).toUpperCase()
+                                    }
                                 </div>
 
                                 <div className={styles.playerInfo}>

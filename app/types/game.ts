@@ -4,7 +4,8 @@ export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 export interface PlayerSummary {
     id: number;
     username: string;
-    online?:boolean;
+    online?: boolean;
+    avatarUrl?: string | null;
 }
 
 
@@ -71,6 +72,7 @@ export interface PlacementResult {
 export interface GamePlayerScore {
     userId: number;
     username: string;
+    avatarUrl?: string | null;
     score: number;
     turnOrder: number;
     activeTurn: boolean;
