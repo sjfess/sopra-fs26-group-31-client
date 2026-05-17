@@ -23,6 +23,18 @@ interface FinalResult {
   bestStreak: number;
 }
 
+interface RangeJokerHint {
+  cardIndex: number;
+  rangeStart: number;
+  rangeEnd: number;
+}
+
+const RANGE_JOKERS_BY_DIFFICULTY: Record<Game["difficulty"], number> = {
+  EASY: 3,
+  MEDIUM: 2,
+  HARD: 1,
+};
+
 type ScreenSize = "mobile" | "tablet" | "desktop";
 
 function useScreenSize(): ScreenSize {
@@ -567,15 +579,39 @@ function HandSection({
                        hand,
                        selectedCard,
                        isMyTurn,
+                       rangeJokerHint,
+                       rangeJokerLoading,
+                       remainingRangeJokers,
                        handleSelectCard,
+                       handleUseRangeJoker,
                        S,
                      }: {
   hand: HandCard[];
   selectedCard: number | null;
   isMyTurn: boolean;
+  rangeJokerHint: RangeJokerHint | null;
+  rangeJokerLoading: boolean;
+  remainingRangeJokers: number;
   handleSelectCard: (deckIndex: number) => void;
+  handleUseRangeJoker: () => void;
   S: ReturnType<typeof getStyles>;
 }) {
+  const selectedRange =
+      rangeJokerHint && rangeJokerHint.cardIndex === selectedCard ? rangeJokerHint : null;
+  const rangeJokerUsedForSelectedCard = selectedRange !== null;
+  const canUseRangeJoker =
+      isMyTurn &&
+      selectedCard !== null &&
+      !rangeJokerLoading &&
+      remainingRangeJokers > 0 &&
+      !rangeJokerUsedForSelectedCard;
+  let rangeJokerLabel = `Range Joker (${remainingRangeJokers} left)`;
+  if (rangeJokerLoading) {
+    rangeJokerLabel = "Loading Range...";
+  } else if (rangeJokerUsedForSelectedCard || remainingRangeJokers <= 0) {
+    rangeJokerLabel = "Range Joker Used";
+  }
+
   return (
       <div style={S.panel}>
         <div style={S.panelTitle}>
@@ -592,6 +628,43 @@ function HandSection({
               >
             — waiting for your turn
           </span>
+          )}
+        </div>
+
+        <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+              flexWrap: "wrap",
+              marginBottom: "14px",
+            }}
+        >
+          <button
+              type="button"
+              style={{
+                ...S.btn("primary"),
+                opacity: canUseRangeJoker ? 1 : 0.55,
+                cursor: canUseRangeJoker ? "pointer" : "default",
+              }}
+              disabled={!canUseRangeJoker}
+              onClick={handleUseRangeJoker}
+          >
+            {rangeJokerLabel}
+          </button>
+
+          {selectedRange && (
+              <div
+                  style={{
+                    color: "#e3cb2c",
+                    fontSize: "13px",
+                    fontWeight: "bold",
+                    lineHeight: "1.4",
+                  }}
+              >
+                Range Joker: {selectedRange.rangeStart}-{selectedRange.rangeEnd}
+              </div>
           )}
         </div>
 
@@ -645,6 +718,8 @@ export default function TimelineGamePage() {
   const { value: token } = useSessionStorage<string>("token", "");
   const { value: storedUserId } = useSessionStorage<string>("userId", "");
   const { value: storedUsername } = useSessionStorage<string>("username", "");
+  const { value: usedRangeJokersByGameAndUser, set: setUsedRangeJokersByGameAndUser } =
+      useSessionStorage<Record<string, number>>("usedRangeJokersByGameAndUser", {});
   const screen = useScreenSize();
   const S = getStyles(screen);
 
@@ -654,6 +729,8 @@ export default function TimelineGamePage() {
   const [hand, setHand] = useState<HandCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+  const [rangeJokerHint, setRangeJokerHint] = useState<RangeJokerHint | null>(null);
+  const [rangeJokerLoading, setRangeJokerLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [finalResults, setFinalResults] = useState<FinalResult[] | null>(null);
   const [toast, setToast] = useState<{ msg: string; correct: boolean | null } | null>(null);
@@ -682,6 +759,15 @@ export default function TimelineGamePage() {
   const userId =
       storedUserId && !Number.isNaN(Number(storedUserId)) ? Number(storedUserId) : null;
   const currentUsername = storedUsername || null;
+  const rangeJokerKey = userId !== null ? `${gameId}:${userId}` : null;
+  const maxRangeJokers = game ? RANGE_JOKERS_BY_DIFFICULTY[game.difficulty] : 0;
+  const usedRangeJokerCount = rangeJokerKey
+      ? Math.min(
+          maxRangeJokers,
+          Math.max(0, usedRangeJokersByGameAndUser[rangeJokerKey] ?? 0),
+      )
+      : 0;
+  const remainingRangeJokers = Math.max(0, maxRangeJokers - usedRangeJokerCount);
 
   function showToast(msg: string, correct: boolean | null) {
     setToast({ msg, correct });
@@ -797,12 +883,17 @@ export default function TimelineGamePage() {
     if (!isMyTurn) {
       setSelectedCard(null);
       setHoveredSlot(null);
+      setRangeJokerHint(null);
       return;
     }
 
     const backendSelected = myScore?.currentCardIndex ?? null;
     setSelectedCard(backendSelected);
   }, [isMyTurn, myScore?.currentCardIndex]);
+
+  useEffect(() => {
+    setRangeJokerHint(null);
+  }, [selectedCard]);
 
   async function handleSelectCard(deckIndex: number) {
     if (!isMyTurn || userId === null) return;
@@ -825,6 +916,44 @@ export default function TimelineGamePage() {
     }
   }
 
+  async function handleUseRangeJoker() {
+    const rangeJokerUsedForSelectedCard =
+        rangeJokerHint !== null && rangeJokerHint.cardIndex === selectedCard;
+
+    if (
+        !isMyTurn ||
+        selectedCard === null ||
+        rangeJokerLoading ||
+        remainingRangeJokers <= 0 ||
+        rangeJokerKey === null ||
+        rangeJokerUsedForSelectedCard
+    ) {
+      return;
+    }
+
+    setRangeJokerLoading(true);
+
+    try {
+      const revealed = await api.get<EventCardReveal>(`/games/${gameId}/cards/${selectedCard}`);
+      const rangeStart = Math.floor(revealed.year / 50) * 50;
+
+      setRangeJokerHint({
+        cardIndex: selectedCard,
+        rangeStart,
+        rangeEnd: rangeStart + 49,
+      });
+      setUsedRangeJokersByGameAndUser({
+        ...usedRangeJokersByGameAndUser,
+        [rangeJokerKey]: usedRangeJokerCount + 1,
+      });
+    } catch (err: unknown) {
+      console.error("Range joker error:", err);
+      showToast("Could not load range joker", null);
+    } finally {
+      setRangeJokerLoading(false);
+    }
+  }
+
   async function handlePlaceCard(position: number) {
     if (!isMyTurn || selectedCard === null) return;
 
@@ -843,6 +972,7 @@ export default function TimelineGamePage() {
 
       setSelectedCard(null);
       setHoveredSlot(null);
+      setRangeJokerHint(null);
       await fetchAll();
     } catch (err: unknown) {
       showToast(err instanceof Error ? err.message : "Error placing card", null);
@@ -1019,7 +1149,11 @@ export default function TimelineGamePage() {
                 hand={hand}
                 selectedCard={selectedCard}
                 isMyTurn={isMyTurn}
+                rangeJokerHint={rangeJokerHint}
+                rangeJokerLoading={rangeJokerLoading}
+                remainingRangeJokers={remainingRangeJokers}
                 handleSelectCard={handleSelectCard}
+                handleUseRangeJoker={handleUseRangeJoker}
                 S={S}
             />
           </div>
