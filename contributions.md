@@ -161,7 +161,7 @@ reason).
 |                    | [Date]   | [Commit]| Description| Relevance |
 | **[@milchazor](https://github.com/milchazor)** | [Date]   | [Commit]| Description| Relevance |
 |                    | [Date]   | [Commit]| Description| Relevance |
-| **[@sjfess](https://github.com/sjfess)** | [Date]   | [Commit]| Description| Relevance |
+| **[@sjfess](https://github.com/sjfess)** | 17.05.26   | [768a7ad](https://github.com/sjfess/sopra-fs26-group-31-server/commit/768a7ad0cdd1ac11263f47a31783bbee605f35a6)| Adjusted max players | 8 players for a game was too much. For us as development team we thought the size of a SOPRA group (5) would be more fitting for the project. Further for some eras the API does not have enough events available that can be fetched to ensure different cards in different games. |
 |                    | [Date]   | [Commit]| Description| Relevance |
 
 ## Contributions Week 9 - [18.05.2026] to [14.05.2026]
