@@ -596,15 +596,21 @@ function HandSection({
   handleUseRangeJoker: () => void;
   S: ReturnType<typeof getStyles>;
 }) {
-  const canUseRangeJoker =
-      isMyTurn && selectedCard !== null && !rangeJokerLoading && remainingRangeJokers > 0;
   const selectedRange =
       rangeJokerHint && rangeJokerHint.cardIndex === selectedCard ? rangeJokerHint : null;
-  const rangeJokerLabel = rangeJokerLoading
-      ? "Loading Range..."
-      : remainingRangeJokers > 0
-          ? `Range Joker (${remainingRangeJokers} left)`
-          : "Range Joker Used";
+  const rangeJokerUsedForSelectedCard = selectedRange !== null;
+  const canUseRangeJoker =
+      isMyTurn &&
+      selectedCard !== null &&
+      !rangeJokerLoading &&
+      remainingRangeJokers > 0 &&
+      !rangeJokerUsedForSelectedCard;
+  let rangeJokerLabel = `Range Joker (${remainingRangeJokers} left)`;
+  if (rangeJokerLoading) {
+    rangeJokerLabel = "Loading Range...";
+  } else if (rangeJokerUsedForSelectedCard || remainingRangeJokers <= 0) {
+    rangeJokerLabel = "Range Joker Used";
+  }
 
   return (
       <div style={S.panel}>
@@ -911,12 +917,16 @@ export default function TimelineGamePage() {
   }
 
   async function handleUseRangeJoker() {
+    const rangeJokerUsedForSelectedCard =
+        rangeJokerHint !== null && rangeJokerHint.cardIndex === selectedCard;
+
     if (
         !isMyTurn ||
         selectedCard === null ||
         rangeJokerLoading ||
         remainingRangeJokers <= 0 ||
-        rangeJokerKey === null
+        rangeJokerKey === null ||
+        rangeJokerUsedForSelectedCard
     ) {
       return;
     }
