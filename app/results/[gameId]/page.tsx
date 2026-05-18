@@ -226,7 +226,15 @@ export default function ResultsPage() {
                   {results.map((r, i) => (
                       <tr key={r.userId}>
                         <td className={styles.resultsTd}>{i + 1}</td>
-                        <td className={styles.resultsTd}>{r.username}</td>
+                        <td className={styles.resultsTd}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            {r.avatarUrl
+                              ? <img src={r.avatarUrl} alt="" style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover", border: "1px solid rgba(227,203,44,0.4)", flexShrink: 0 }} />
+                              : <div style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(227,203,44,0.12)", border: "1px solid rgba(227,203,44,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#e3cb2c", fontSize: 11, fontWeight: "bold", flexShrink: 0 }}>{r.username.charAt(0).toUpperCase()}</div>
+                            }
+                            {r.username}
+                          </div>
+                        </td>
                         <td className={styles.resultsTd}>{r.score.toLocaleString()}</td>
                         <td className={styles.resultsTdCenter}>{r.correctPlacements}</td>
                       </tr>
