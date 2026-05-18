@@ -45,6 +45,13 @@ export default function Home() {
             >
               Register
             </Button>
+              <Button
+                  size="large"
+                  className={styles.btnSecondary}
+                  onClick={() => router.push("/tutorial")}
+              >
+                  Tutorial
+              </Button>
           </div>
         </main>
       </div>
