@@ -9,6 +9,7 @@ export interface User {
   totalPoints: number | null;
   totalCorrectPlacements?: number;
   totalIncorrectPlacements?: number;
+  avatarUrl?: string | null;
 }
 
 export interface FriendRequest {

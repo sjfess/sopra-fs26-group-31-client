@@ -16,6 +16,7 @@ import type {
 interface FinalResult {
   userId: number;
   username: string;
+  avatarUrl?: string | null;
   score: number;
   correctPlacements: number;
   incorrectPlacements: number;
@@ -382,7 +383,12 @@ function PlayersPanel({
             .sort((a, b) => a.turnOrder - b.turnOrder)
             .map((s) => (
                 <div key={s.userId} style={S.playerRow(s.activeTurn, s.userId === userId)}>
-                  <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {s.avatarUrl
+                      ? <img src={s.avatarUrl} alt="" style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", border: "1px solid rgba(227,203,44,0.5)", flexShrink: 0 }} />
+                      : <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(227,203,44,0.12)", border: "1px solid rgba(227,203,44,0.35)", display: "flex", alignItems: "center", justifyContent: "center", color: "#e3cb2c", fontSize: 11, fontWeight: "bold", flexShrink: 0 }}>{s.username.charAt(0).toUpperCase()}</div>
+                    }
+                    <div>
                     <div style={{ fontWeight: s.userId === userId ? "bold" : "normal" }}>
                       {s.username}
                       {s.userId === userId ? " (you)" : ""}
@@ -396,6 +402,7 @@ function PlayersPanel({
                     >
                       {s.cardsInHand} cards
                       {s.correctStreak > 1 ? ` · 🔥${s.correctStreak}` : ""}
+                    </div>
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -469,7 +476,11 @@ function FinalResultsView({
           <div style={S.panelTitle}>Final Results</div>
           {sorted.map((r, i) => (
               <div key={r.userId} style={S.resultRow(r.winner)}>
-            <span style={{ fontWeight: r.winner ? "bold" : "normal" }}>
+            <span style={{ fontWeight: r.winner ? "bold" : "normal", display: "flex", alignItems: "center", gap: 8 }}>
+              {r.avatarUrl
+                ? <img src={r.avatarUrl} alt="" style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover", border: "1px solid rgba(227,203,44,0.5)", flexShrink: 0 }} />
+                : <div style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(227,203,44,0.12)", border: "1px solid rgba(227,203,44,0.35)", display: "flex", alignItems: "center", justifyContent: "center", color: "#e3cb2c", fontSize: 11, fontWeight: "bold", flexShrink: 0 }}>{r.username.charAt(0).toUpperCase()}</div>
+              }
               {i + 1}. {r.username} {r.winner ? "👑" : ""}
             </span>
                 <span style={{ color: "#e3cb2c", fontWeight: "bold" }}>{r.score} pts</span>

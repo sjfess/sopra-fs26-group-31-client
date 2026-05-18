@@ -552,3 +552,15 @@ a {
 .muted-text { color: var(--c-muted); }
 .soft-text  { color: var(--c-soft); }
 
+/* ================================================================
+   Avatar Picker modal — override Ant Design container
+   ================================================================ */
+.avatar-picker-modal .ant-modal-content {
+  background-color: #0d2a6e !important;
+  border: 1px solid rgba(227,203,44,0.5) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.45) !important;
+  padding: 0 !important;
+}
+

@@ -76,7 +76,11 @@ const Profile: React.FC = () => {
         <div style={{ backgroundColor: "#0f2557", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <AppNavbar onLogout={handleLogout} />
             <div style={{ display: "flex", gap: "24px", padding: "24px 32px", flex: 1 }}>
-                <UserProfileCard user={user} isOwnProfile={isOwnProfile} />
+                <UserProfileCard
+                        user={user}
+                        isOwnProfile={isOwnProfile}
+                        onAvatarUpdated={(url) => setUser(prev => prev ? { ...prev, avatarUrl: url } : prev)}
+                    />
                 <FriendsPanel />
                 {isOwnProfile && (
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px", minWidth: 0, minHeight: 0 }}>
