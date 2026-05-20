@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, {useMemo, useState, useEffect, useCallback} from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "antd";
 import styles from "@/styles/page.module.css";
@@ -13,6 +13,8 @@ import { useGameDuration } from "@/hooks/useGameDuration";
 import { getApiDomain } from "@/utils/domain";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import type { Game } from "@/types/game";
+import {useApi} from "@/hooks/useApi";
+import {useLeaveGame} from "@/hooks/useLeaveGame";
 
 const ERA_LABELS: Record<string, string> = {
   ANCIENT: "Ancient",
@@ -30,9 +32,11 @@ const MODE_LABELS: Record<string, string> = {
 export default function ResultsPage() {
   const router = useRouter();
   const { gameId } = useParams() as { gameId: string };
-
+  const {value: userId } = useSessionStorage<string>("userId", "")
+  const api = useApi();
   const [mounted, setMounted] = useState(false);
   const { value: token } = useSessionStorage<string>("token", "");
+
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -51,6 +55,7 @@ export default function ResultsPage() {
     showPopup,
     setShowPopup,
   } = useGameResults(gameId);
+  const { leaveGame, hasLeft } = useLeaveGame(gameId, game);
 
   const duration = useGameDuration(gameId);
 
@@ -58,6 +63,15 @@ export default function ResultsPage() {
       () => results.filter((r) => r.winner),
       [results]
   );
+  const handleMainMenu = async () => {
+    const userId = await leaveGame();
+    router.push(userId ? `/profile/${userId}` : "/login");
+  };
+
+  const handleLeaderboard = async () => {
+    await leaveGame();
+    router.push("/leaderboard");
+  };
 
   const currentUserId = useMemo(() => {
     if (!mounted) return null;
@@ -91,10 +105,12 @@ export default function ResultsPage() {
 
   useEffect(() => {
     if (!mounted || !token || !gameId) return;
+    if (hasLeft.current) return;
 
     let active = true;
 
     const checkRematch = async () => {
+      if (hasLeft.current) { active = false; return; }
       try {
         const res = await fetch(`${getApiDomain()}/games/${gameId}`);
         if (!res.ok || !active) return;
@@ -139,7 +155,6 @@ export default function ResultsPage() {
 
       const newGame = await res.json();
 
-      // Altes Game nach 15s löschen → gibt Non-Hosts Zeit zum Pollen
       setTimeout(() => {
         void fetch(`${getApiDomain()}/games/${gameId}/close`, {
           method: "DELETE",
@@ -299,11 +314,9 @@ export default function ResultsPage() {
               <Button
                   size="large"
                   className={styles.btnPrimary}
-                  onClick={() => {
-                    const raw = sessionStorage.getItem("userId");
-                    const userId = raw ? JSON.parse(raw) : null;
-                    router.push(userId ? `/profile/${userId}` : "/login");
-                  }}
+                  onClick={
+                  handleMainMenu
+                  }
               >
                 Main Menu
               </Button>
@@ -311,7 +324,7 @@ export default function ResultsPage() {
               <Button
                   size="large"
                   className={styles.btnSecondary}
-                  onClick={() => router.push("/leaderboard")}
+                  onClick={handleLeaderboard}
               >
                 Leaderboard
               </Button>
