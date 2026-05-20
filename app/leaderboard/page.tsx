@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Table, Spin, Alert, Button, Card, Empty } from "antd";
+import { Table, Spin, Alert, Card, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
@@ -272,20 +272,6 @@ const LeaderboardPage: React.FC = () => {
                                 Compare points, wins, placement accuracy, and pure historical dominance.
                             </p>
                         </div>
-
-                        {loggedInUserId && (
-                            <Button
-                                onClick={() => router.push(`/profile/${loggedInUserId}`)}
-                                style={{
-                                    fontWeight: "bold",
-                                    borderRadius: 999,
-                                    height: 46,
-                                    padding: "0 22px",
-                                }}
-                            >
-                                Back to Profile
-                            </Button>
-                        )}
                     </div>
 
                     {error && (
