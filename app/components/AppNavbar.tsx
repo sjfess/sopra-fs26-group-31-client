@@ -78,7 +78,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
                             <span
                                 key={link.href}
                                 onClick={() => router.push(link.href)}
-                                className="navbar-link"
+                                className={isActive(link.href) ? "navbar-link-active" : "navbar-link"}
                             >
                                 {link.label}
                             </span>
