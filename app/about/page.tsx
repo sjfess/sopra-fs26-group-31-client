@@ -52,6 +52,12 @@ const HOW_TO_PLAY = [
     },
 ];
 
+const PUBLIC_NAV_LINKS = [
+    { label: "About", href: "/about" },
+    { label: "Leaderboard", href: "/leaderboard" },
+    { label: "Home", href: "/" },
+];
+
 export default function AboutPage() {
     const router = useRouter();
     const { value: token, clear: clearToken } = useSessionStorage<string>("token", "");
@@ -77,7 +83,11 @@ export default function AboutPage() {
     return (
         <div className={styles.aboutPage}>
 
-            <AppNavbar onLogout={token ? handleLogout : undefined} />
+            <AppNavbar
+                variant={token ? "default" : "minimal"}
+                minimalLinks={PUBLIC_NAV_LINKS}
+                onLogout={token ? handleLogout : undefined}
+            />
 
             {/* Hero */}
             <div className={styles.aboutHero}>

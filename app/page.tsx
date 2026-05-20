@@ -15,6 +15,7 @@ export default function Home() {
             minimalLinks={[
               { label: "About", href: "/about" },
               { label: "Leaderboard", href: "/leaderboard" },
+              { label: "Home", href: "/" },
             ]}
         />
 

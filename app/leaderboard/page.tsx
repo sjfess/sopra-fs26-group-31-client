@@ -9,6 +9,12 @@ import useSessionStorage from "@/hooks/useSessionStorage";
 import AppNavbar from "@/components/AppNavbar";
 import { LeaderboardEntry } from "@/types/user";
 
+const PUBLIC_NAV_LINKS = [
+    { label: "About", href: "/about" },
+    { label: "Leaderboard", href: "/leaderboard" },
+    { label: "Home", href: "/" },
+];
+
 const LeaderboardPage: React.FC = () => {
     const router = useRouter();
     const apiService = useApi();
@@ -28,11 +34,6 @@ const LeaderboardPage: React.FC = () => {
     useEffect(() => {
         if (!mounted) return;
 
-        if (!token) {
-            router.push("/login");
-            return;
-        }
-
         const fetchLeaderboard = async () => {
             try {
                 setLoading(true);
@@ -47,7 +48,7 @@ const LeaderboardPage: React.FC = () => {
         };
 
         fetchLeaderboard();
-    }, [mounted, token, apiService, router]);
+    }, [mounted, apiService]);
 
     const handleLogout = async () => {
         try {
@@ -171,7 +172,11 @@ const LeaderboardPage: React.FC = () => {
                 overflow: "hidden",
             }}
         >
-            <AppNavbar onLogout={handleLogout} />
+            <AppNavbar
+                variant={token ? "default" : "minimal"}
+                minimalLinks={PUBLIC_NAV_LINKS}
+                onLogout={token ? handleLogout : undefined}
+            />
 
             <div
                 style={{
@@ -345,20 +350,25 @@ const LeaderboardPage: React.FC = () => {
                                     const isSecond = player.rank === 2;
                                     const isThird = player.rank === 3;
                                     const isCurrentUser = String(player.userId) === String(loggedInUserId);
+                                    const canOpenProfile = Boolean(loggedInUserId);
 
                                     return (
                                         <Card
                                             key={player.userId}
                                             className={
-                                                isFirst
+                                                `${isFirst
                                                     ? "podium-card podium-card-first"
                                                     : isSecond
                                                         ? "podium-card podium-card-second"
                                                         : isThird
                                                             ? "podium-card podium-card-third"
-                                                            : "podium-card"
+                                                            : "podium-card"}${canOpenProfile ? "" : " podium-card-static"}`
                                             }
-                                            onClick={() => router.push(`/profile/${player.userId}`)}
+                                            onClick={
+                                                canOpenProfile
+                                                    ? () => router.push(`/profile/${player.userId}`)
+                                                    : undefined
+                                            }
                                             style={{
                                                 borderRadius: 24,
                                                 minHeight: isFirst ? 135 : 155,
@@ -366,6 +376,7 @@ const LeaderboardPage: React.FC = () => {
                                                 width: isFirst ? "70%" : "100%",
                                                 justifySelf: isFirst ? "center" : "stretch",
                                                 transform: isFirst ? "translateY(8px) scale(0.88)" : "translateY(8px)",
+                                                cursor: canOpenProfile ? "pointer" : "default",
                                             }}
                                         >
                                             <div className="podium-confetti">
@@ -555,7 +566,7 @@ const LeaderboardPage: React.FC = () => {
                     transition: transform 0.25s ease, box-shadow 0.25s ease;
                 }
 
-                .podium-card:hover {
+                .podium-card:not(.podium-card-static):hover {
                     transform: translateY(-4px) scale(1.025) !important;
                     box-shadow: 0 24px 50px rgba(0,0,0,0.35);
                 }
