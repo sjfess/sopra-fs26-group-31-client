@@ -35,7 +35,9 @@ const FriendsPanel: React.FC = () => {
         try {
             const res = await fetch(`${API_BASE}/users/${userId}/friends`);
             if (!res.ok) throw new Error();
-            setFriends(await res.json());
+            const data: Friend[] = await res.json();
+            data.sort((a, b) => a.username.localeCompare(b.username, undefined, { sensitivity: "base" }));
+            setFriends(data);
         } catch { showError("Could not load friends."); }
     }, [userId, message]);
 
