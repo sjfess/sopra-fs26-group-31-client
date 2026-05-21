@@ -390,3 +390,7 @@ filesystem. You can do this either by
    `ls` to list folders and files, as visible in the screenshot. You can then
    delete the downloaded folder / repository from the Windows filesystem in the
    explorer.
+
+## License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](https://github.com/sjfess/sopra-fs26-group-31-client/blob/main/LICENSE) file for details.
