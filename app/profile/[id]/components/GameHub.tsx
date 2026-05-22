@@ -3,6 +3,8 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { Form, Input, Select, ConfigProvider } from "antd";
 import React, { useState, useEffect } from "react";
+import { App } from "antd";
+import { ApplicationError } from "@/types/ApplicationError";
 
 const GameHub: React.FC = () => {
     const [gameEra, setGameEra] = useState("");
@@ -11,7 +13,7 @@ const GameHub: React.FC = () => {
     const apiService = useApi();
     const router = useRouter();
     const [, setUserId] = useState<string | null>(null);
-
+    const { message } = App.useApp();
     useEffect(() => {
         setUserId(sessionStorage.getItem("userId"));
     }, []);
@@ -50,12 +52,58 @@ const GameHub: React.FC = () => {
             }
             const response = await apiService.post<{ id: number }>(
                 `/games/join/${lobbyCode}`,
-                { userId }
+                {userId}
             );
+            message.success({
+                content: (
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <strong style={{ color: "#e3cb2c" }}>Lobby joined!</strong>
+                        <span style={{ color: "black", fontSize: "0.85rem" }}>
+                Get ready to play 🎮
+            </span>
+                    </div>
+                ),
+                icon: <span>✅</span>,
+                duration: 3,
+            });
             router.push("/gamelobby/" + response.id);
-        } catch (error: any) {
-            console.error("FULL JOIN ERROR:", error);
-            alert(`Join failed:\n${error?.message || "Unknown error"}`);
+        } catch (error) {
+            if (error instanceof Error) {
+                const appError = error as ApplicationError;
+
+                if (appError.status === 404) {
+                    message.error({
+                        content: (
+                            <div style={{display: "flex", flexDirection: "column"}}>
+                                <strong style={{color: "#ff4d4f"}}>Lobby not found</strong>
+                                <span style={{color: "black", fontSize: "0.90rem"}}>
+                            No lobby with that code exists. Please check the code.
+                        </span>
+                            </div>
+                        ),
+                        icon: <span>🔍</span>,
+                        duration: 5,
+                    });
+                } else if (appError.status === 409) {
+                    message.error({
+                        content: (
+                            <div style={{display: "flex", flexDirection: "column"}}>
+                                <strong style={{color: "#ff4d4f"}}>Cannot join lobby</strong>
+                                <span style={{color: "black", fontSize: "0.90rem"}}>
+                            The lobby is either full or the game has already started.
+                        </span>
+                            </div>
+                        ),
+                        icon: <span>🚫</span>,
+                        duration: 5,
+                    });
+                } else {
+                    message.error(`Join failed: ${error.message}`);
+                }
+            } else {
+                console.error("An unknown error occurred while joining.");
+                message.error("Join failed. Please try again.");
+            }
         }
     };
 
