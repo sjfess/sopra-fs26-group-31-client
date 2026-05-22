@@ -26,6 +26,7 @@ type NavLink = {
 const DEFAULT_LINKS: NavLink[] = [
     { key: "profile",      label: "Profile",      href: "/profile"      },
     { key: "leaderboard",  label: "Leaderboard",  href: "/leaderboard"  },
+    { key: "tutorial",     label: "Tutorial",     href: "/tutorial"     },
     { key: "about",        label: "About",        href: "/about"        },
 ];
 
@@ -77,7 +78,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
                             <span
                                 key={link.href}
                                 onClick={() => router.push(link.href)}
-                                className="navbar-link"
+                                className={isActive(link.href) ? "navbar-link-active" : "navbar-link"}
                             >
                                 {link.label}
                             </span>

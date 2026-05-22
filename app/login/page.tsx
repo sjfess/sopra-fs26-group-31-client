@@ -7,6 +7,8 @@ import { User } from "@/types/user";
 import { useState } from "react";
 import { App, Button, Form, Input } from "antd";
 import AppNavbar from "@/components/AppNavbar";
+import { ApplicationError } from "@/types/ApplicationError";
+
 
 interface FormFieldProps {
     username: string;
@@ -41,11 +43,40 @@ const Login: React.FC = () => {
             if (response.username) {
                 setUsername(response.username);
             }
+            message.success({
+                content: (
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <strong style={{ color: "#e3cb2c" }}>Welcome back!</strong>
+                        <span style={{ color: "#black", fontSize: "0.9rem" }}>
+                Good to see you, {values.username}
+            </span>
+                    </div>
+                ),
+                icon: <span>👋</span>,
+                duration: 4,
+            });
 
             router.push(`/profile/${response.id}`);
         } catch (error) {
             if (error instanceof Error) {
-                message.error(`Login failed: ${error.message}`);
+                const appError = error as ApplicationError;
+
+                if (appError.status === 401) {
+                    message.error({
+                        content: (
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <strong style={{ color: "#ff4d4f" }}>Invalid credentials</strong>
+                                <span style={{ color: "black", fontSize: "0.90rem" }}>
+                            Username or password is incorrect.
+                        </span>
+                            </div>
+                        ),
+                        icon: <span>🔒</span>,
+                        duration: 5,
+                    });
+                } else {
+                    message.error(`Login failed: ${error.message}`);
+                }
             } else {
                 console.error("An unknown error occurred during login.");
                 message.error("Login failed. Please try again.");

@@ -15,6 +15,7 @@ export default function Home() {
             minimalLinks={[
               { label: "About", href: "/about" },
               { label: "Leaderboard", href: "/leaderboard" },
+              { label: "Home", href: "/" },
             ]}
         />
 
@@ -45,6 +46,13 @@ export default function Home() {
             >
               Register
             </Button>
+              <Button
+                  size="large"
+                  className={styles.btnSecondary}
+                  onClick={() => router.push("/tutorial")}
+              >
+                  Tutorial
+              </Button>
           </div>
         </main>
       </div>

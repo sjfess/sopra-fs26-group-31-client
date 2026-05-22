@@ -7,6 +7,7 @@ import { Button, Form, Input, App } from "antd";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
+import { ApplicationError } from "@/types/ApplicationError";
 
 
 interface FormFieldProps {
@@ -51,7 +52,7 @@ const Register: React.FC = () => {
                 content: (
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         <strong style={{ color: "#e3cb2c" }}>Successful registration!</strong>
-                        <span style={{ color: "#cdd8f0", fontSize: "0.85rem" }}>Enjoy the game</span>
+                        <span style={{ color: "black", fontSize: "0.9rem" }}>Enjoy the game</span>
                     </div>
                 ),
                 icon: <span>🏆</span>,
@@ -61,7 +62,24 @@ const Register: React.FC = () => {
             router.push(`/profile/${user.id}`);
         } catch (error) {
             if (error instanceof Error) {
-                message.error(`Registration failed: ${error.message}`);
+                const appError = error as ApplicationError;
+
+                if (appError.status === 409) {
+                    message.error({
+                        content: (
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <strong style={{ color: "#ff4d4f" }}>Username already taken</strong>
+                                <span style={{ color: "black", fontSize: "0.90rem" }}>
+                                Please choose a different username.
+                            </span>
+                            </div>
+                        ),
+                        icon: <span>🚫</span>,
+                        duration: 5,
+                    });
+                } else {
+                    message.error(`Registration failed: ${error.message}`);
+                }
             } else {
                 console.error("An unknown error occurred during registration.");
                 message.error("Registration failed. Please try again.");

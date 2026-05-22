@@ -2,12 +2,18 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Table, Spin, Alert, Button, Card, Empty } from "antd";
+import { Table, Spin, Alert, Card, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useApi } from "@/hooks/useApi";
 import useSessionStorage from "@/hooks/useSessionStorage";
 import AppNavbar from "@/components/AppNavbar";
 import { LeaderboardEntry } from "@/types/user";
+
+const PUBLIC_NAV_LINKS = [
+    { label: "About", href: "/about" },
+    { label: "Leaderboard", href: "/leaderboard" },
+    { label: "Home", href: "/" },
+];
 
 const LeaderboardPage: React.FC = () => {
     const router = useRouter();
@@ -28,11 +34,6 @@ const LeaderboardPage: React.FC = () => {
     useEffect(() => {
         if (!mounted) return;
 
-        if (!token) {
-            router.push("/login");
-            return;
-        }
-
         const fetchLeaderboard = async () => {
             try {
                 setLoading(true);
@@ -47,7 +48,7 @@ const LeaderboardPage: React.FC = () => {
         };
 
         fetchLeaderboard();
-    }, [mounted, token, apiService, router]);
+    }, [mounted, apiService]);
 
     const handleLogout = async () => {
         try {
@@ -171,7 +172,11 @@ const LeaderboardPage: React.FC = () => {
                 overflow: "hidden",
             }}
         >
-            <AppNavbar onLogout={handleLogout} />
+            <AppNavbar
+                variant={token ? "default" : "minimal"}
+                minimalLinks={PUBLIC_NAV_LINKS}
+                onLogout={token ? handleLogout : undefined}
+            />
 
             <div
                 style={{
@@ -267,20 +272,6 @@ const LeaderboardPage: React.FC = () => {
                                 Compare points, wins, placement accuracy, and pure historical dominance.
                             </p>
                         </div>
-
-                        {loggedInUserId && (
-                            <Button
-                                onClick={() => router.push(`/profile/${loggedInUserId}`)}
-                                style={{
-                                    fontWeight: "bold",
-                                    borderRadius: 999,
-                                    height: 46,
-                                    padding: "0 22px",
-                                }}
-                            >
-                                Back to Profile
-                            </Button>
-                        )}
                     </div>
 
                     {error && (
@@ -309,10 +300,12 @@ const LeaderboardPage: React.FC = () => {
                                 style={{
                                     position: "relative",
                                     display: "grid",
-                                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                                    gridTemplateColumns: "1fr 1.18fr 1fr",
+                                    gridTemplateAreas: `"second first third"`,
+                                    alignItems: "end",
                                     gap: 22,
                                     marginBottom: 34,
-                                    padding: "28px 18px 18px",
+                                    padding: "34px 18px 22px",
                                     borderRadius: 24,
                                     background:
                                         "radial-gradient(circle at top, rgba(227,203,44,0.20), rgba(255,255,255,0.04) 45%, rgba(0,0,0,0.10))",
@@ -345,27 +338,33 @@ const LeaderboardPage: React.FC = () => {
                                     const isSecond = player.rank === 2;
                                     const isThird = player.rank === 3;
                                     const isCurrentUser = String(player.userId) === String(loggedInUserId);
+                                    const canOpenProfile = Boolean(loggedInUserId);
 
                                     return (
                                         <Card
                                             key={player.userId}
                                             className={
-                                                isFirst
+                                                `${isFirst
                                                     ? "podium-card podium-card-first"
                                                     : isSecond
                                                         ? "podium-card podium-card-second"
                                                         : isThird
                                                             ? "podium-card podium-card-third"
-                                                            : "podium-card"
+                                                            : "podium-card"}${canOpenProfile ? "" : " podium-card-static"}`
                                             }
-                                            onClick={() => router.push(`/profile/${player.userId}`)}
+                                            onClick={
+                                                canOpenProfile
+                                                    ? () => router.push(`/profile/${player.userId}`)
+                                                    : undefined
+                                            }
                                             style={{
                                                 borderRadius: 24,
-                                                minHeight: isFirst ? 135 : 155,
-                                                maxWidth: isFirst ? 560 : undefined,
-                                                width: isFirst ? "70%" : "100%",
-                                                justifySelf: isFirst ? "center" : "stretch",
-                                                transform: isFirst ? "translateY(8px) scale(0.88)" : "translateY(8px)",
+                                                minHeight: isFirst ? 210 : 175,
+                                                width: "100%",
+                                                justifySelf: "stretch",
+                                                gridArea: isFirst ? "first" : isSecond ? "second" : "third",
+                                                transform: isFirst ? "translateY(-10px) scale(1.04)" : "translateY(12px) scale(0.96)",
+                                                cursor: canOpenProfile ? "pointer" : "default",
                                             }}
                                         >
                                             <div className="podium-confetti">
@@ -555,7 +554,7 @@ const LeaderboardPage: React.FC = () => {
                     transition: transform 0.25s ease, box-shadow 0.25s ease;
                 }
 
-                .podium-card:hover {
+                .podium-card:not(.podium-card-static):hover {
                     transform: translateY(-4px) scale(1.025) !important;
                     box-shadow: 0 24px 50px rgba(0,0,0,0.35);
                 }
@@ -790,6 +789,15 @@ const LeaderboardPage: React.FC = () => {
                 }
 
                 @media (max-width: 800px) {
+                    section {
+                        grid-template-columns: 1fr !important;
+                        grid-template-areas:
+            "first"
+            "second"
+            "third" !important;
+                    }
+
+                    .podium-card,
                     .podium-card-first {
                         transform: none !important;
                     }

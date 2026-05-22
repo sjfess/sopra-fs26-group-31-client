@@ -298,6 +298,11 @@ export default function GameLobbyPage() {
         const toUsername = friendSearch.trim();
         if (!toUsername || userId === null) return;
 
+        if ((game?.players?.length ?? 0) >= 5) {
+            showToast("Lobby is full. Cannot invite more players.");
+            return;
+        }
+
         if (
             currentUsername &&
             toUsername.toLowerCase() === currentUsername.toLowerCase()
@@ -420,7 +425,7 @@ export default function GameLobbyPage() {
                         <h2 id="players-heading">
                             Players
                             <span className={styles.playerCount}>
-                                {game.players?.length ?? 0} / {game.maxPlayers ?? "8"}
+                                {game.players?.length ?? 0} / {game.maxPlayers ?? "5"}
                             </span>
                         </h2>
                     </div>
@@ -469,7 +474,7 @@ export default function GameLobbyPage() {
                             Array.from({
                                 length: Math.max(
                                     0,
-                                    game.maxPlayers - (game.players?.length ?? 0)
+                                    Math.min(game.maxPlayers, 5) - (game.players?.length ?? 0)
                                 ),
                             }).map((_, i) => (
                                 <div key={`empty-${i}`} className={styles.playerRowEmpty}>

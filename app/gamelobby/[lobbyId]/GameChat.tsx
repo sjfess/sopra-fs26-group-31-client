@@ -69,11 +69,15 @@ export default function GameChat({
         const chatContainer = chatContainerRef.current;
         if (!chatContainer) return;
 
-        const shouldSmoothScroll = previousMessageCountRef.current > 0;
-        chatContainer.scrollTo({
-            top: chatContainer.scrollHeight,
-            behavior: shouldSmoothScroll ? "smooth" : "auto",
-        });
+        const previousMessageCount = previousMessageCountRef.current;
+        const hasNewMessage = chatMessages.length > previousMessageCount;
+
+        if (hasNewMessage) {
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: previousMessageCount > 0 ? "smooth" : "auto",
+            });
+        }
 
         previousMessageCountRef.current = chatMessages.length;
     }, [chatMessages]);
