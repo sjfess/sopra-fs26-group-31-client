@@ -38,7 +38,35 @@ The main user flow follows the natural progression from sign-in to gameplay:
 5. **Results**: At the end of the match, players are shown the [results screen](app/results) with their score and round breakdown.
 6. **Leaderboard**: Persistent rankings are displayed on the [leaderboard page](app/leaderboard).
 
-Screenshots of each of these screens can be added to this section under `public/screenshots/` and embedded with standard Markdown image links.
+### Screenshots
+
+#### Register
+
+![Register page](public/screenshots/register.png)
+
+#### Login
+
+![Login page](public/screenshots/login.png)
+
+#### Home
+
+![Home page](public/screenshots/home.png)
+
+#### Profile
+
+![Profile page](public/screenshots/profile.png)
+
+#### Lobby
+
+![Game lobby](public/screenshots/lobby.png)
+
+#### Results
+
+![Results screen](public/screenshots/results.png)
+
+#### Leaderboard
+
+![Leaderboard page](public/screenshots/leaderboard.png)
 
 ## Launch & Deployment
 
