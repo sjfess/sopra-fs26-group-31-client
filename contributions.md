@@ -164,7 +164,7 @@ reason).
 | **[@sjfess](https://github.com/sjfess)** | 17.05.26   | [768a7ad](https://github.com/sjfess/sopra-fs26-group-31-server/commit/768a7ad0cdd1ac11263f47a31783bbee605f35a6)| Adjusted max players | 8 players for a game was too much. For us as development team we thought the size of a SOPRA group (5) would be more fitting for the project. Further for some eras the API does not have enough events available that can be fetched to ensure different cards in different games. |
 |                    | [Date]   | [Commit]| Description| Relevance |
 
-## Contributions Week 9 - [18.05.2026] to [14.05.2026]
+## Contributions Week 9 - [18.05.2026] to [22.05.2026]
 
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
@@ -177,7 +177,8 @@ reason).
 |                    | [Date]   | [Commit]| Description| Relevance |
 | **[@milchazor](https://github.com/milchazor)** | [Date]   | [Commit]| Description| Relevance |
 |                    | [Date]   | [Commit]| Description| Relevance |
-| **[@sjfess](https://github.com/sjfess)** | [Date]   | [Commit]| Description| Relevance |
-|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@sjfess](https://github.com/sjfess)** | 20.5.26   | [cf3bd81](https://github.com/sjfess/sopra-fs26-group-31-server/commit/cf3bd81a907f4a7f7f3c5fb8907bbe1a5178a325)| Fixing the rematch functionality | When a user started a rematch and another user of the lobby already quitted the game with the main menu button or leaderboard button, the gamelobby showed also the user that quitted but he was not pulled into the rematch lobby. |
+|                    | 20.5.26  | [31ecc1b](https://github.com/sjfess/sopra-fs26-group-31-client/commit/31ecc1b679b30f2dbfad611d999f975275a362ac)| Fixing the rematch functionality | See the description above |
+|                    | 20.5.26  | [d74a84b](https://github.com/sjfess/sopra-fs26-group-31-client/commit/d74a84b60937cf76979fe4488f4fd1289668cda3)| Fixing the results screen | The results screen showed some unnecessary links in the navbar. These links were removed to further enhance user experience and prevent unwanted behaviour.|
 
 _Continue with the same table format as above._
