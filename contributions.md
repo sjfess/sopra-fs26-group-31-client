@@ -171,8 +171,8 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **[@AlexWimmer1](https://github.com/AlexWimmer1)**  | [Date]   | [Commit]| Joker| Joker |
 |                    | [Date]   | [Commit]| Joker| Joker |
-| **[@Fanelock](https://github.com/Fanelock)** | [Date]   | [Commit]| Description| Relevance |
-|                    | [Date]   | [Commit]| Description| Relevance |
+| **[@Fanelock](https://github.com/Fanelock)** | 19.05.2026   |[81c8d04](https://github.com/sjfess/sopra-fs26-group-31-server/commit/81c8d04872d3849905af7c6f0fb8ccd99ede9ffd)| Expanded [`WikidataService.java`](https://github.com/sjfess/sopra-fs26-group-31-server/blob/main/src/main/java/ch/uzh/ifi/hase/soprafs26/service/WikidataService.java) with more curated cards and removed duplicate entries| Improves game content quality and variety; prevents duplicate questions from appearing during gameplay. Refs [Task #132](https://github.com/sjfess/sopra-fs26-group-31-server/issues/132) |
+|                    | 22.05.2026   | [0c3b8a7](https://github.com/sjfess/sopra-fs26-group-31-server/commit/0c3b8a702b89b529f56382d3ddce27c441e27768), [304b9c5](https://github.com/sjfess/sopra-fs26-group-31-client/commit/304b9c563816d3539c34c26f05a9ae6abaf8b9f8)| Rewrote the server & client README.md to comply with Assignment 4 specifications| Ensures project documentation meets submission requirements for server & client side. Refs [Task #145](https://github.com/sjfess/sopra-fs26-group-31-server/issues/145) |
 | **[@marcokingo](https://github.com/marcokingo)** | [Date]   | [Commit]| Description| Relevance |
 |                    | [Date]   | [Commit]| Description| Relevance |
 | **[@milchazor](https://github.com/milchazor)** | [Date]   | [Commit]| Description| Relevance |
