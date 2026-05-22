@@ -1142,6 +1142,8 @@ export default function TimelineGamePage() {
         <div style={S.gameGrid}>
           <div style={S.desktopSidePanel}>
             <PlayersPanel scores={scores} userId={userId} turnSecondsLeft={turnSecondsLeft} S={S} />
+            <div style={{ height: "12px" }} />
+            <HowToPlayPanel S={S} />
           </div>
 
           <div>
@@ -1171,8 +1173,6 @@ export default function TimelineGamePage() {
 
           <div style={S.desktopSidePanel}>
             <StatsPanel myScore={myScore} S={S} />
-            <div style={{ height: "12px" }} />
-            <HowToPlayPanel S={S} />
             <div style={{ height: "12px" }} />
             <div style={S.panel}>
               <GameChat

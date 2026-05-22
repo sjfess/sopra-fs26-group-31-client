@@ -112,17 +112,23 @@ const Register: React.FC = () => {
                             <Form.Item
                                 name="username"
                                 label="Username"
-                                rules={[{ required: true, message: "Please input your username!" }]}
+                                rules={[
+                                    { required: true, message: "Please input your username!" },
+                                    { max: 30, message: "Username must be 30 characters or fewer." },
+                                ]}
                             >
-                                <Input placeholder="Enter username" />
+                                <Input placeholder="Enter username" maxLength={30} />
                             </Form.Item>
 
                             <Form.Item
                                 name="password"
                                 label="Password"
-                                rules={[{ required: true, message: "Please input your password!" }]}
+                                rules={[
+                                    { required: true, message: "Please input your password!" },
+                                    { max: 30, message: "Password must be 30 characters or fewer." },
+                                ]}
                             >
-                                <Input.Password placeholder="Enter password" />
+                                <Input.Password placeholder="Enter password" maxLength={30} />
                             </Form.Item>
 
                             <Form.Item
@@ -130,6 +136,7 @@ const Register: React.FC = () => {
                                 label="Confirm Password"
                                 rules={[
                                     { required: true, message: "Please confirm your password!" },
+                                    { max: 30, message: "Password must be 30 characters or fewer." },
                                     ({ getFieldValue }) => ({
                                         validator(_, value) {
                                             if (!value || getFieldValue("password") === value) {
@@ -140,7 +147,7 @@ const Register: React.FC = () => {
                                     }),
                                 ]}
                             >
-                                <Input.Password placeholder="Repeat password" />
+                                <Input.Password placeholder="Repeat password" maxLength={30} />
                             </Form.Item>
 
                             <Form.Item style={{ marginBottom: 0 }}>
