@@ -300,10 +300,12 @@ const LeaderboardPage: React.FC = () => {
                                 style={{
                                     position: "relative",
                                     display: "grid",
-                                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                                    gridTemplateColumns: "1fr 1.18fr 1fr",
+                                    gridTemplateAreas: `"second first third"`,
+                                    alignItems: "end",
                                     gap: 22,
                                     marginBottom: 34,
-                                    padding: "28px 18px 18px",
+                                    padding: "34px 18px 22px",
                                     borderRadius: 24,
                                     background:
                                         "radial-gradient(circle at top, rgba(227,203,44,0.20), rgba(255,255,255,0.04) 45%, rgba(0,0,0,0.10))",
@@ -357,11 +359,11 @@ const LeaderboardPage: React.FC = () => {
                                             }
                                             style={{
                                                 borderRadius: 24,
-                                                minHeight: isFirst ? 135 : 155,
-                                                maxWidth: isFirst ? 560 : undefined,
-                                                width: isFirst ? "70%" : "100%",
-                                                justifySelf: isFirst ? "center" : "stretch",
-                                                transform: isFirst ? "translateY(8px) scale(0.88)" : "translateY(8px)",
+                                                minHeight: isFirst ? 210 : 175,
+                                                width: "100%",
+                                                justifySelf: "stretch",
+                                                gridArea: isFirst ? "first" : isSecond ? "second" : "third",
+                                                transform: isFirst ? "translateY(-10px) scale(1.04)" : "translateY(12px) scale(0.96)",
                                                 cursor: canOpenProfile ? "pointer" : "default",
                                             }}
                                         >
@@ -787,6 +789,15 @@ const LeaderboardPage: React.FC = () => {
                 }
 
                 @media (max-width: 800px) {
+                    section {
+                        grid-template-columns: 1fr !important;
+                        grid-template-areas:
+            "first"
+            "second"
+            "third" !important;
+                    }
+
+                    .podium-card,
                     .podium-card-first {
                         transform: none !important;
                     }
